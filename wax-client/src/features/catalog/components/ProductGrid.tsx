@@ -7,13 +7,7 @@ type Props = {
 
 export const ProductGrid = ({ products }: Props) => {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-        gap: '1rem',
-      }}
-    >
+    <div className="catalog-grid">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

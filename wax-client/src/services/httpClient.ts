@@ -51,6 +51,6 @@ httpClient.interceptors.response.use(
         break;
     }
 
-    return Promise.reject(error);
+    throw error instanceof Error ? error : new Error('Error de solicitud HTTP');
   },
 );

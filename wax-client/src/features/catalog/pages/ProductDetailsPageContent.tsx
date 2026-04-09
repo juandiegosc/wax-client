@@ -1,4 +1,5 @@
 import { useParams } from 'react-router';
+import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { useProduct } from '@/features/catalog/hooks/useProduct';
 
@@ -7,40 +8,58 @@ export const ProductDetailsPageContent = () => {
   const { data: product, isLoading, isError } = useProduct(id);
 
   if (isLoading) {
-    return <p>Cargando producto...</p>;
+    return <p style={{ color: waxBrand.color.graphite }}>Cargando producto...</p>;
   }
 
   if (isError || !product) {
-    return <p>No se pudo cargar el producto solicitado.</p>;
+    return <p style={{ color: waxBrand.color.graphite }}>No se pudo cargar el producto solicitado.</p>;
   }
 
   return (
-    <section
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr)',
-        gap: '2rem',
-        alignItems: 'start',
-      }}
-    >
-      <div style={{ borderRadius: '1.5rem', overflow: 'hidden', background: '#e7e5e4' }}>
-        <img src={product.pictureUrl} alt={product.name} style={{ width: '100%', display: 'block' }} />
+    <section className="product-details-layout">
+      <div className="product-details-visual" style={{ background: waxBrand.color.stone, boxShadow: waxBrand.shadow.soft }}>
+        <img src={product.pictureUrl} alt={product.name} className="product-details-image" />
+
+        <div className="product-details-visual-badge">{product.brand}</div>
+
+        <div className="product-details-visual-note">
+          <span>Pieza</span>
+          <strong>{product.type}</strong>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gap: '1rem' }}>
-        <div>
-          <span style={{ color: '#a16207', fontWeight: 700 }}>{product.brand}</span>
-          <h1 style={{ margin: '0.4rem 0 0' }}>{product.name}</h1>
+      <div className="product-details-content">
+        <div className="product-details-header">
+          <span className="product-details-kicker">Edicion WAX</span>
+          <h1 className="product-details-title">{product.name}</h1>
+          <p className="product-details-lead">{product.description}</p>
         </div>
-        <strong style={{ fontSize: '1.5rem' }}>{formatCurrency(product.price)}</strong>
-        <p style={{ margin: 0, color: '#57534e' }}>{product.description}</p>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <span style={{ padding: '0.35rem 0.75rem', borderRadius: '999px', background: '#fef3c7' }}>
-            Tipo: {product.type}
-          </span>
-          <span style={{ padding: '0.35rem 0.75rem', borderRadius: '999px', background: '#f5f5f4' }}>
-            Stock: {product.quantityInStock}
-          </span>
+
+        <div className="product-details-purchase-row">
+          <strong className="product-details-price">{formatCurrency(product.price)}</strong>
+          <span className="product-details-availability">{product.quantityInStock} disponibles</span>
+        </div>
+
+        <div className="product-details-facts">
+          <div className="product-details-fact-card">
+            <span className="product-details-fact-label">Tipo</span>
+            <strong className="product-details-fact-value">{product.type}</strong>
+          </div>
+          <div className="product-details-fact-card">
+            <span className="product-details-fact-label">Presentacion</span>
+            <strong className="product-details-fact-value">Objeto editorial</strong>
+          </div>
+          <div className="product-details-fact-card">
+            <span className="product-details-fact-label">Lectura</span>
+            <strong className="product-details-fact-value">Superficie y presencia</strong>
+          </div>
+        </div>
+
+        <div className="product-details-note" style={{ borderTop: `1px solid rgba(15, 15, 16, 0.08)` }}>
+          <span className="product-details-note-label">Nota de presentacion</span>
+          <div className="product-details-note-body">
+            Esta pieza se lee primero como forma, despues como especificacion.
+          </div>
         </div>
       </div>
     </section>
