@@ -1,11 +1,13 @@
 import type { PropsWithChildren } from 'react';
-import { QueryProvider } from '@/providers/QueryProvider';
 import { ToastProvider } from '@/providers/ToastProvider';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 export const AppProviders = ({ children }: PropsWithChildren) => {
   return (
-    <QueryProvider>
+    <QueryClientProvider client={queryClient}>
       <ToastProvider>{children}</ToastProvider>
-    </QueryProvider>
+    </QueryClientProvider>
   );
 };
