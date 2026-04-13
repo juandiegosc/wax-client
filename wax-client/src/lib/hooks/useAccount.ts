@@ -8,12 +8,16 @@ import type { Address, Login, Register, UserInfo } from "../types/user";
  * Hook for fetching current user info
  */
 export const useCurrentUser = () => {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: queryKeys.user.current(),
     queryFn: async () => {
       const response = await agent.get<UserInfo>("/account/user-info");
       return response.data;
     },
+    //validar uso de cache con react-query
+    // enabled: !queryClient.invalidateQueries({ queryKey: queryKeys.user.current()}), // Only fetch if not already invalidated
     staleTime: 5 * 60 * 1000, // 5 minutes - user data doesn't change frequently
     retry: false, // Don't retry on 401 unauthorized
   });
