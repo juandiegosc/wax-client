@@ -22,7 +22,18 @@ agent.interceptors.response.use(
     async error => {
         await sleep(1000);
 
+        if (!error.response) {
+            toast.error('No fue posible conectar con el servidor.');
+            throw error;
+        }
+
         const {status, data} = error.response;
+        const requestUrl = error.config?.url as string | undefined;
+        const isPassiveUserCheck = status === 401 && requestUrl?.includes('/account/user-info');
+
+        if (isPassiveUserCheck) {
+            throw error;
+        }
 
         switch (status) {
             case 400:
@@ -52,7 +63,7 @@ agent.interceptors.response.use(
                 break;
         }
 
-        return Promise.reject(error);
+        throw error;
     }
 );
 
