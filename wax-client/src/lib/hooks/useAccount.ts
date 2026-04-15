@@ -8,7 +8,7 @@ import type { Address, Login, Register, UserInfo } from "../types/user";
  * Hook for fetching current user info
  */
 export const useCurrentUser = () => {
-  const queryClient = useQueryClient();
+  //const queryClient = useQueryClient();
 
   return useQuery({
     queryKey: queryKeys.user.current(),
