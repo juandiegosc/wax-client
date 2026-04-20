@@ -2,6 +2,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { router } from "../../app/router/routes";
 
+const apiUrl = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "/api" : "http://localhost:5005/api");
+
 const sleep = (delay: number) =>{
     return new Promise(resolve=>{
         setTimeout(resolve, delay)
@@ -9,7 +11,7 @@ const sleep = (delay: number) =>{
 }
 
 const agent = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    baseURL: apiUrl,
     withCredentials: true //allows cookies from backend
 });
 
@@ -30,8 +32,10 @@ agent.interceptors.response.use(
         const {status, data} = error.response;
         const requestUrl = error.config?.url as string | undefined;
         const isPassiveUserCheck = status === 401 && requestUrl?.includes('/account/user-info');
+        const isBillingAddressCheck = requestUrl?.includes('/account/billing-address') && (status === 400 || status === 404);
 
-        if (isPassiveUserCheck) {
+        // Let React Query handle these silently - not actual errors for passive checks
+        if (isPassiveUserCheck || isBillingAddressCheck) {
             throw error;
         }
 

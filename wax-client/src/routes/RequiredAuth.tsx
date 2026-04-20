@@ -23,3 +23,6 @@ export const RequiredAuth = () => {
 
   return <Outlet />;
 };
+
+export const PROFILE_WARNING_KEY = 'wax_profile_warning_shown';
+export const PROFILE_PROMPT_PENDING_KEY = 'wax_profile_prompt_pending';

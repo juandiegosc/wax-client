@@ -2,22 +2,53 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import agent from "../api/agent";
 import { mutationKeys, queryKeys } from "../queryKeys";
-import type { Address, Login, Register, UserInfo } from "../types/user";
+import type { Address, AddressResponse, Login, Register, UserInfo } from "../types/user";
+
+const PROFILE_DETAILS_STORAGE_KEY = "wax.profile.details";
+
+const getStoredProfileDetails = (): Partial<Address> => {
+  if (globalThis.window === undefined) return {};
+
+  try {
+    const rawValue = globalThis.localStorage.getItem(PROFILE_DETAILS_STORAGE_KEY);
+    if (!rawValue) return {};
+    return JSON.parse(rawValue) as Partial<Address>;
+  } catch {
+    return {};
+  }
+};
+
+const storeProfileDetails = (address: Partial<Address>) => {
+  if (globalThis.window === undefined) return;
+
+  const profileDetails: Partial<Address> = {
+    firstName: address.firstName,
+    lastName: address.lastName,
+    identificationType: address.identificationType,
+    identificationNumber: address.identificationNumber,
+    phone: address.phone,
+  };
+
+  globalThis.localStorage.setItem(PROFILE_DETAILS_STORAGE_KEY, JSON.stringify(profileDetails));
+};
+
+const mapAddressResponse = (address: AddressResponse): Address => ({
+  ...address,
+  ...getStoredProfileDetails(),
+});
 
 /**
  * Hook for fetching current user info
  */
 export const useCurrentUser = () => {
-  //const queryClient = useQueryClient();
-
   return useQuery({
     queryKey: queryKeys.user.current(),
     queryFn: async () => {
       const response = await agent.get<UserInfo>("/account/user-info");
+      if (response.status === 204 || !response.data) return null;
+
       return response.data;
     },
-    //validar uso de cache con react-query
-    // enabled: !queryClient.invalidateQueries({ queryKey: queryKeys.user.current()}), // Only fetch if not already invalidated
     staleTime: 5 * 60 * 1000, // 5 minutes - user data doesn't change frequently
     retry: false, // Don't retry on 401 unauthorized
   });
@@ -30,10 +61,18 @@ export const useUserAddress = (enabled = true) => {
   return useQuery({
     queryKey: queryKeys.user.address(),
     queryFn: async () => {
-      const response = await agent.get<Address>("/account/address");
-      return response.data;
+      try {
+        const response = await agent.get<AddressResponse>("/account/billing-address");
+        if (response.status === 204 || !response.data) return null;
+        return mapAddressResponse(response.data);
+      } catch {
+        // User has no billing address yet - this is expected for new users
+        return null;
+      }
     },
     enabled,
+    retry: false,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 };
 
@@ -104,11 +143,20 @@ export const useSaveAddress = () => {
   return useMutation({
     mutationKey: mutationKeys.user.saveAddress,
     mutationFn: async (address: Address) => {
-      const response = await agent.post<Address>("/account/address", address);
-      return response.data;
+      const response = await agent.post<AddressResponse>("/account/billing-address", address);
+      return {
+        ...mapAddressResponse(response.data),
+        firstName: address.firstName,
+        lastName: address.lastName,
+        identificationType: address.identificationType,
+        identificationNumber: address.identificationNumber,
+        phone: address.phone,
+      };
     },
-    onSuccess: (updatedAddress) => {
+    onSuccess: async (updatedAddress) => {
+      storeProfileDetails(updatedAddress);
       queryClient.setQueryData(queryKeys.user.address(), updatedAddress);
+      await queryClient.invalidateQueries({ queryKey: queryKeys.user.current() });
     },
     onError: (error) => {
       console.error("Failed to save address:", error);
@@ -128,6 +176,8 @@ export const useAccount = () => {
     queryKey: queryKeys.user.current(),
     queryFn: async () => {
       const response = await agent.get<UserInfo>("/account/user-info");
+      if (response.status === 204 || !response.data) return null;
+
       return response.data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes - better than checking queryClient.getQueryData
@@ -175,20 +225,36 @@ export const useAccount = () => {
   const { data: savedAddress, isLoading: isLoadingAddress } = useQuery({
     queryKey: queryKeys.user.address(),
     queryFn: async () => {
-      const response = await agent.get<Address>("/account/address");
-      return response.data;
+      try {
+        const response = await agent.get<AddressResponse>("/account/billing-address");
+        if (response.status === 204 || !response.data) return null;
+
+        return mapAddressResponse(response.data);
+      } catch {
+        return null;
+      }
     },
     enabled: !!currentUser,
+    retry: false,
   });
 
   const saveAddress = useMutation({
     mutationKey: mutationKeys.user.saveAddress,
     mutationFn: async (address: Address) => {
-      const response = await agent.post<Address>("/account/address", address);
-      return response.data;
+      const response = await agent.post<AddressResponse>("/account/billing-address", address);
+      return {
+        ...mapAddressResponse(response.data),
+        firstName: address.firstName,
+        lastName: address.lastName,
+        identificationType: address.identificationType,
+        identificationNumber: address.identificationNumber,
+        phone: address.phone,
+      };
     },
-    onSuccess: (updatedAddress) => {
+    onSuccess: async (updatedAddress) => {
+      storeProfileDetails(updatedAddress);
       queryClient.setQueryData(queryKeys.user.address(), updatedAddress);
+      await queryClient.invalidateQueries({ queryKey: queryKeys.user.current() });
     },
     onError: (error) => {
       console.error("Failed to save address:", error);

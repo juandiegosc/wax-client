@@ -4,12 +4,14 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { Badge, IconButton } from '@mui/material';
+import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { waxMenuFooterLinks, waxMenuSections } from '@/config/menu';
-import { useCurrentUser, useLogout } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useLogout, useUserAddress } from '@/lib/hooks/useAccount';
 import { MenuToggle } from '@/layouts/MenuToggle';
+import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
 
 type FooterLink = (typeof waxMenuFooterLinks)[number];
@@ -445,10 +447,29 @@ export const MainLayout = () => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const location = useLocation();
   const { data: currentUser } = useCurrentUser();
+  const { data: billingAddress, isLoading: isLoadingAddress } = useUserAddress(Boolean(currentUser));
   const logoutMutation = useLogout();
   const isHomePage = location.pathname === routePaths.home;
   const isFloatingHeader = isHomePage && !hasScrolled && !isMenuOpen;
   const currentUserEmail = currentUser?.email;
+
+  useEffect(() => {
+    const promptSource = sessionStorage.getItem(PROFILE_PROMPT_PENDING_KEY);
+    if (!promptSource || !currentUser) return;
+
+    const isEnrolledUser = currentUser.roles?.includes('Enrolled') ?? false;
+    if (isLoadingAddress) return;
+
+    const needsProfileCompletion = isEnrolledUser || !billingAddress;
+    if (needsProfileCompletion && !sessionStorage.getItem(PROFILE_WARNING_KEY)) {
+      toast.warn('Completa tu perfil para desbloquear funciones privadas de WAX.', {
+        toastId: PROFILE_WARNING_KEY,
+      });
+      sessionStorage.setItem(PROFILE_WARNING_KEY, 'true');
+    }
+
+    sessionStorage.removeItem(PROFILE_PROMPT_PENDING_KEY);
+  }, [billingAddress, currentUser, isLoadingAddress]);
   const headerTextColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.96)' : waxBrand.color.ink;
   const headerMutedColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.76)' : waxBrand.color.graphite;
   const headerBrandSize = isFloatingHeader ? '3.1rem' : '1.78rem';

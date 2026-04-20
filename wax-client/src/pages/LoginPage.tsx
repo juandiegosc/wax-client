@@ -1,20 +1,27 @@
+import { isAxiosError } from 'axios';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useLocation, useNavigate } from 'react-router';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
-import { useCurrentUser, useLogin } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useLogin, useUserAddress } from '@/lib/hooks/useAccount';
 import { loginSchema } from '@/lib/schemas/loginSchema';
 import type { LoginSchema } from '@/lib/schemas/loginSchema';
 import { routePaths } from '@/routes/routePaths';
+
+const PROFILE_WARNING_KEY = 'wax_profile_warning_shown';
+const PROFILE_PROMPT_PENDING_KEY = 'wax_profile_prompt_pending';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: currentUser, isLoading: isLoadingUser } = useCurrentUser();
+  const { data: savedAddress, isLoading: isLoadingAddress } = useUserAddress(Boolean(currentUser));
   const loginMutation = useLogin();
   const locationState = location.state as { from?: { pathname?: string }; registeredEmail?: string } | null;
   const redirectTo = locationState?.from?.pathname ?? routePaths.home;
   const registeredEmail = locationState?.registeredEmail;
+  const [showProfileWarning, setShowProfileWarning] = useState(false);
   const {
     register,
     handleSubmit,
@@ -29,13 +36,41 @@ export const LoginPage = () => {
     },
   });
 
+  const isEnrolledUser = currentUser?.roles?.includes('Enrolled') ?? false;
+  // Only check role first (immediate), then address when loaded
+  const addressCheckReady = Boolean(currentUser) && !isLoadingAddress;
+  const needsProfileCompletion = isEnrolledUser || (addressCheckReady && !savedAddress);
+
+  // Show profile warning once per session when we detect incomplete profile
+  useEffect(() => {
+    if (!currentUser) return;
+    
+    // Check immediately if Enrolled role
+    if (isEnrolledUser && !sessionStorage.getItem(PROFILE_WARNING_KEY)) {
+      setShowProfileWarning(true);
+      sessionStorage.setItem(PROFILE_WARNING_KEY, 'true');
+      return;
+    }
+    
+    // Check when address query completes
+    if (addressCheckReady && !savedAddress && !sessionStorage.getItem(PROFILE_WARNING_KEY)) {
+      setShowProfileWarning(true);
+      sessionStorage.setItem(PROFILE_WARNING_KEY, 'true');
+    }
+  }, [currentUser, isEnrolledUser, addressCheckReady, savedAddress]);
+
   const submitLogin = async (values: LoginSchema) => {
     try {
       await loginMutation.mutateAsync(values);
+      sessionStorage.setItem(PROFILE_PROMPT_PENDING_KEY, 'login');
       navigate(redirectTo);
-    } catch {
+    } catch (error) {
+      const message = isAxiosError(error) && error.response?.status === 401
+        ? 'El correo o la contrasena no coinciden con una cuenta existente en este entorno.'
+        : 'No pudimos iniciar sesion con esos datos.';
+
       setError('root', {
-        message: 'No pudimos iniciar sesion con esos datos.',
+        message,
       });
     }
   };
@@ -50,7 +85,15 @@ export const LoginPage = () => {
             <p className="login-lead">
               Entraste como {currentUser.email}. Puedes volver a la portada o explorar la seleccion.
             </p>
+            {showProfileWarning ? (
+              <p className="login-feedback login-feedback-warning">
+                Te faltan algunos datos para acceder a todas las funciones. Completa tu perfil cuando puedas.
+              </p>
+            ) : null}
             <div className="login-actions-row">
+              <Link to={routePaths.profile} className="login-button login-button-primary">
+                {needsProfileCompletion ? 'Completar perfil' : 'Ir a mi perfil'}
+              </Link>
               <Link to={routePaths.home} className="login-button login-button-primary">
                 Volver al inicio
               </Link>
