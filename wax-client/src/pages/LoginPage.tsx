@@ -117,7 +117,6 @@ export const LoginPage = () => {
             <span className="login-visual-kicker">Acceso privado</span>
             <strong className="login-visual-title">Entra a tu espacio para seguir el ritmo de la maison.</strong>
             <p className="login-visual-text">
-              Login limpio, silencioso y alineado con la direccion editorial del storefront.
             </p>
           </div>
         </div>
