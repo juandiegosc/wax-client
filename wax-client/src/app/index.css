@@ -1010,7 +1010,7 @@ select {
   font-weight: 600;
   font-family: inherit;
   color: #fff;
-  background: var(--wax-color-gold);
+  background: var(--wax-color-ink);
   border: none;
   border-radius: 0.6rem;
   cursor: pointer;
@@ -1018,8 +1018,8 @@ select {
 }
 
 .profile-submit-btn:hover:not(:disabled) {
-  background: #b8944a;
-  box-shadow: 0 6px 20px rgba(196, 151, 84, 0.4);
+  background: var(--wax-color-graphite);
+  box-shadow: 0 6px 20px rgba(15, 15, 16, 0.2);
 }
 
 .profile-submit-btn:active:not(:disabled) {

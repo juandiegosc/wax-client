@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from 'axios';
 import { useNavigate } from "react-router";
 import agent from "../api/agent";
 import { mutationKeys, queryKeys } from "../queryKeys";
@@ -36,6 +37,12 @@ const mapAddressResponse = (address: AddressResponse): Address => ({
   ...address,
   ...getStoredProfileDetails(),
 });
+
+const isFalseNegativeBillingSaveError = (error: unknown) => {
+  return isAxiosError(error)
+    && error.response?.status === 400
+    && error.response?.data === 'Failed to save billing address';
+};
 
 /**
  * Hook for fetching current user info
@@ -143,15 +150,24 @@ export const useSaveAddress = () => {
   return useMutation({
     mutationKey: mutationKeys.user.saveAddress,
     mutationFn: async (address: Address) => {
-      const response = await agent.post<AddressResponse>("/account/billing-address", address);
-      return {
-        ...mapAddressResponse(response.data),
+      const mergeSavedAddress = (savedAddress: AddressResponse) => ({
+        ...mapAddressResponse(savedAddress),
         firstName: address.firstName,
         lastName: address.lastName,
         identificationType: address.identificationType,
         identificationNumber: address.identificationNumber,
         phone: address.phone,
-      };
+      });
+
+      try {
+        const response = await agent.post<AddressResponse>("/account/billing-address", address);
+        return mergeSavedAddress(response.data);
+      } catch (error) {
+        if (!isFalseNegativeBillingSaveError(error)) throw error;
+
+        const recoveryResponse = await agent.get<AddressResponse>("/account/billing-address");
+        return mergeSavedAddress(recoveryResponse.data);
+      }
     },
     onSuccess: async (updatedAddress) => {
       storeProfileDetails(updatedAddress);

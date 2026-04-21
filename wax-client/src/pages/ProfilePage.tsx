@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useCurrentUser, useSaveAddress, useUserAddress } from '@/lib/hooks/useAccount';
 import { billingProfileSchema } from '@/lib/schemas/billingProfileSchema';
 import type { BillingProfileSchema } from '@/lib/schemas/billingProfileSchema';
-import type { Address } from '@/lib/types/user';
+import type { Address, UserInfo } from '@/lib/types/user';
 import { routePaths } from '@/routes/routePaths';
 
 const countryNames: Record<string, string> = {
@@ -54,6 +54,7 @@ type ProfileStatusBannerProps = {
 
 type ProfileDetailsCardProps = {
   address: Partial<Address>;
+  currentUser: UserInfo;
   onEdit: () => void;
 };
 
@@ -229,7 +230,7 @@ const BillingCompletionForm = ({
   );
 };
 
-const ProfileDetailsCard = ({ address, onEdit }: ProfileDetailsCardProps) => (
+const ProfileDetailsCard = ({ address, currentUser, onEdit }: ProfileDetailsCardProps) => (
   <div className="profile-data-card">
     <div className="profile-data-header">
       <h2 className="profile-data-title">Mis datos</h2>
@@ -239,6 +240,11 @@ const ProfileDetailsCard = ({ address, onEdit }: ProfileDetailsCardProps) => (
     </div>
 
     <div className="profile-data-grid">
+      <div className="profile-data-section profile-span-full">
+        <span className="profile-data-label">Correo</span>
+        <strong className="profile-data-value">{currentUser.email}</strong>
+      </div>
+
       {address.firstName || address.lastName ? (
         <div className="profile-data-section">
           <span className="profile-data-label">Nombre</span>
@@ -260,33 +266,43 @@ const ProfileDetailsCard = ({ address, onEdit }: ProfileDetailsCardProps) => (
         </div>
       ) : null}
 
-      <div className="profile-data-section">
-        <span className="profile-data-label">Facturacion</span>
-        <strong className="profile-data-value">{address.name}</strong>
-      </div>
+      {address.name ? (
+        <div className="profile-data-section profile-span-full">
+          <span className="profile-data-label">Facturacion</span>
+          <strong className="profile-data-value">{address.name}</strong>
+        </div>
+      ) : null}
 
-      <div className="profile-data-section">
-        <span className="profile-data-label">Direccion</span>
-        <strong className="profile-data-value">
-          {address.line1}
-          {address.line2 ? `, ${address.line2}` : ''}
-        </strong>
-      </div>
+      {address.line1 ? (
+        <div className="profile-data-section profile-span-full">
+          <span className="profile-data-label">Direccion</span>
+          <strong className="profile-data-value">
+            {address.line1}
+            {address.line2 ? `, ${address.line2}` : ''}
+          </strong>
+        </div>
+      ) : null}
 
-      <div className="profile-data-section">
-        <span className="profile-data-label">Ciudad</span>
-        <strong className="profile-data-value">{address.city}, {address.state}</strong>
-      </div>
+      {address.city || address.state ? (
+        <div className="profile-data-section">
+          <span className="profile-data-label">Ciudad</span>
+          <strong className="profile-data-value">{[address.city, address.state].filter(Boolean).join(', ')}</strong>
+        </div>
+      ) : null}
 
-      <div className="profile-data-section">
-        <span className="profile-data-label">Codigo postal</span>
-        <strong className="profile-data-value">{address.postalCode}</strong>
-      </div>
+      {address.postalCode ? (
+        <div className="profile-data-section">
+          <span className="profile-data-label">Codigo postal</span>
+          <strong className="profile-data-value">{address.postalCode}</strong>
+        </div>
+      ) : null}
 
-      <div className="profile-data-section">
-        <span className="profile-data-label">Pais</span>
-        <strong className="profile-data-value">{countryNames[address.country ?? ''] ?? address.country}</strong>
-      </div>
+      {address.country ? (
+        <div className="profile-data-section">
+          <span className="profile-data-label">Pais</span>
+          <strong className="profile-data-value">{countryNames[address.country] ?? address.country}</strong>
+        </div>
+      ) : null}
     </div>
   </div>
 );
@@ -378,7 +394,7 @@ export const ProfilePage = () => {
           </div>
         ) : (
           <div className="profile-completed">
-            {address ? <ProfileDetailsCard address={address} onEdit={() => setIsEditing(true)} /> : null}
+            {address ? <ProfileDetailsCard address={address} currentUser={currentUser} onEdit={() => setIsEditing(true)} /> : null}
 
             <div className="profile-quick-actions">
               <Link to={routePaths.catalog} className="profile-btn profile-btn-primary">

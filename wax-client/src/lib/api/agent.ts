@@ -15,6 +15,12 @@ const agent = axios.create({
     withCredentials: true //allows cookies from backend
 });
 
+const isBillingAddressFalseNegative = (requestUrl: string | undefined, status: number, data: unknown) => {
+    return requestUrl?.includes('/account/billing-address')
+        && status === 400
+        && data === 'Failed to save billing address';
+};
+
 
 agent.interceptors.response.use(
    async response => {
@@ -33,9 +39,10 @@ agent.interceptors.response.use(
         const requestUrl = error.config?.url as string | undefined;
         const isPassiveUserCheck = status === 401 && requestUrl?.includes('/account/user-info');
         const isBillingAddressCheck = requestUrl?.includes('/account/billing-address') && (status === 400 || status === 404);
+        const isBillingAddressFalseNegativeError = isBillingAddressFalseNegative(requestUrl, status, data);
 
         // Let React Query handle these silently - not actual errors for passive checks
-        if (isPassiveUserCheck || isBillingAddressCheck) {
+        if (isPassiveUserCheck || isBillingAddressCheck || isBillingAddressFalseNegativeError) {
             throw error;
         }
 
