@@ -6,6 +6,7 @@ import { MainLayout } from '@/layouts/MainLayout';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProductDetailsPage } from '@/pages/ProductDetailsPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { RouteErrorPage } from '@/pages/RouteErrorPage';
 import { RequiredAuth } from '@/routes/RequiredAuth';
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
           {
             path: routePaths.support,
             Component: SupportPage,
+          },
+          {
+            path: routePaths.profile,
+            Component: ProfilePage,
           },
         ],
       },
