@@ -16,6 +16,12 @@ export const waxMenuSections = [
       { label: 'Carrito', to: routePaths.basket, description: 'Revisa las piezas seleccionadas y tu avance' },
     ],
   },
+  {
+    title: 'Cuenta',
+    items: [
+      { label: 'Mi perfil', to: routePaths.profile, description: 'Consulta tu informacion personal y tu direccion guardada' },
+    ],
+  },
 ] as const;
 
 export const waxMenuFooterLinks = [
