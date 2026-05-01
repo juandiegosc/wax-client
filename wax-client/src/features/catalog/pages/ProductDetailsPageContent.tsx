@@ -2,10 +2,12 @@ import { useParams } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { useProduct } from '@/features/catalog/hooks/useProduct';
+import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 
 export const ProductDetailsPageContent = () => {
   const { id } = useParams();
   const { data: product, isLoading, isError } = useProduct(id);
+  const { mutate: addToBasket, isPending: isAdding } = useAddToBasket();
 
   if (isLoading) {
     return <p style={{ color: waxBrand.color.graphite }}>Cargando producto...</p>;
@@ -14,6 +16,8 @@ export const ProductDetailsPageContent = () => {
   if (isError || !product) {
     return <p style={{ color: waxBrand.color.graphite }}>No se pudo cargar el producto solicitado.</p>;
   }
+
+  const outOfStock = product.quantityInStock === 0;
 
   return (
     <section className="product-details-layout">
@@ -39,6 +43,14 @@ export const ProductDetailsPageContent = () => {
           <strong className="product-details-price">{formatCurrency(product.price)}</strong>
           <span className="product-details-availability">{product.quantityInStock} disponibles</span>
         </div>
+
+        <button
+          className="product-details-add-btn"
+          disabled={outOfStock || isAdding}
+          onClick={() => addToBasket({ productId: product.id, quantity: 1 })}
+        >
+          {isAdding ? 'Añadiendo...' : outOfStock ? 'Sin stock' : 'Añadir al carrito'}
+        </button>
 
         <div className="product-details-facts">
           <div className="product-details-fact-card">

@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { routePaths } from '@/routes/routePaths';
 import { formatCurrency } from '@/utils/currency';
+import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 import type { Product } from '@/features/catalog/types/catalog.types';
 
 type Props = {
@@ -9,6 +10,9 @@ type Props = {
 };
 
 export const ProductCard = ({ product }: Props) => {
+  const { mutate: addToBasket, isPending: isAdding } = useAddToBasket();
+  const outOfStock = product.quantityInStock === 0;
+
   return (
     <article className="product-card" style={{ borderRadius: waxBrand.radius.strong, boxShadow: waxBrand.shadow.soft }}>
       <div className="product-card-visual" style={{ background: `linear-gradient(135deg, ${waxBrand.color.stone}, ${waxBrand.color.porcelain})` }}>
@@ -31,16 +35,21 @@ export const ProductCard = ({ product }: Props) => {
 
       <div className="product-card-footer">
         <span className="product-card-stock">{product.quantityInStock} disponibles</span>
-
         <p className="product-card-description">{product.description}</p>
       </div>
 
-      <Link
-        to={routePaths.catalogDetails(product.id)}
-        className="product-card-link"
-      >
-        Ver detalle
-      </Link>
+      <div className="product-card-actions">
+        <Link to={routePaths.catalogDetails(product.id)} className="product-card-link">
+          Ver detalle
+        </Link>
+        <button
+          className="product-card-add-btn"
+          disabled={outOfStock || isAdding}
+          onClick={() => addToBasket({ productId: product.id, quantity: 1 })}
+        >
+          {isAdding ? '...' : outOfStock ? 'Sin stock' : '+ Carrito'}
+        </button>
+      </div>
     </article>
   );
 };
