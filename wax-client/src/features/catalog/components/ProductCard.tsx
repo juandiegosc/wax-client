@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { routePaths } from '@/routes/routePaths';
 import { formatCurrency } from '@/utils/currency';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
+import { useProfileGuard } from '@/lib/hooks/useProfileGuard';
 import type { Product } from '@/features/catalog/types/catalog.types';
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
 
 export const ProductCard = ({ product }: Props) => {
   const { mutate: addToBasket, isPending: isAdding } = useAddToBasket();
+  const { requireProfile } = useProfileGuard();
   const outOfStock = product.quantityInStock === 0;
 
   return (
@@ -30,7 +32,7 @@ export const ProductCard = ({ product }: Props) => {
             type="button"
             className="product-card-quick-add-btn"
             disabled={outOfStock || isAdding}
-            onClick={() => addToBasket({ productId: product.id, quantity: 1 })}
+            onClick={() => requireProfile(() => addToBasket({ productId: product.id, quantity: 1 }))}
           >
             {isAdding ? 'Añadiendo...' : outOfStock ? 'Sin stock' : '+ Añadir al carrito'}
           </button>

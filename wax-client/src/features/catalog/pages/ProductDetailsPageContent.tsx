@@ -3,11 +3,13 @@ import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { useProduct } from '@/features/catalog/hooks/useProduct';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
+import { useProfileGuard } from '@/lib/hooks/useProfileGuard';
 
 export const ProductDetailsPageContent = () => {
   const { id } = useParams();
   const { data: product, isLoading, isError } = useProduct(id);
   const { mutate: addToBasket, isPending: isAdding } = useAddToBasket();
+  const { requireProfile } = useProfileGuard();
 
   if (isLoading) {
     return <p style={{ color: waxBrand.color.graphite }}>Cargando producto...</p>;
@@ -47,7 +49,7 @@ export const ProductDetailsPageContent = () => {
         <button
           className="product-details-add-btn"
           disabled={outOfStock || isAdding}
-          onClick={() => addToBasket({ productId: product.id, quantity: 1 })}
+          onClick={() => requireProfile(() => addToBasket({ productId: product.id, quantity: 1 }))}
         >
           {isAdding ? 'Añadiendo...' : outOfStock ? 'Sin stock' : 'Añadir al carrito'}
         </button>

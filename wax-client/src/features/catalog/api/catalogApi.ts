@@ -1,5 +1,4 @@
 import { httpClient } from '@/services/httpClient';
-import type { PagedList } from '@/types/pagination';
 import { toFormData } from '@/utils/formData';
 import type { CreateProduct, Product, ProductParams, UpdateProduct } from '@/features/catalog/types/catalog.types';
 
