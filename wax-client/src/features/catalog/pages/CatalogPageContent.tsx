@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { ProductGrid } from '@/features/catalog/components/ProductGrid';
 import { useProducts } from '@/features/catalog/hooks/useProducts';
 import { waxBrand } from '@/config/brand';
@@ -13,10 +14,18 @@ const ORDER_OPTIONS = [
 ];
 
 export const CatalogPageContent = () => {
+  const [searchParams] = useSearchParams();
   const [pageNumber, setPageNumber] = useState(1);
   const [orderBy, setOrderBy] = useState('');
-  const [inputValue, setInputValue] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [inputValue, setInputValue] = useState(() => searchParams.get('q') ?? '');
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') ?? '');
+
+  useEffect(() => {
+    const q = searchParams.get('q') ?? '';
+    setInputValue(q);
+    setSearchTerm(q);
+    setPageNumber(1);
+  }, [searchParams]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data, isLoading, isError } = useProducts({ pageNumber, pageSize: PAGE_SIZE, searchTerm, orderBy });

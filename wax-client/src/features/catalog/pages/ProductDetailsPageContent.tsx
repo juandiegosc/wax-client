@@ -20,6 +20,7 @@ export const ProductDetailsPageContent = () => {
   }
 
   const outOfStock = product.quantityInStock === 0;
+  const addBtnLabel = isAdding ? 'Añadiendo...' : outOfStock ? 'Sin stock' : 'Añadir al carrito';
 
   return (
     <section className="product-details-layout">
@@ -51,28 +52,13 @@ export const ProductDetailsPageContent = () => {
           disabled={outOfStock || isAdding}
           onClick={() => requireProfile(() => addToBasket({ productId: product.id, quantity: 1 }))}
         >
-          {isAdding ? 'Añadiendo...' : outOfStock ? 'Sin stock' : 'Añadir al carrito'}
+          {addBtnLabel}
         </button>
 
         <div className="product-details-facts">
           <div className="product-details-fact-card">
             <span className="product-details-fact-label">Tipo</span>
             <strong className="product-details-fact-value">{product.type}</strong>
-          </div>
-          <div className="product-details-fact-card">
-            <span className="product-details-fact-label">Presentacion</span>
-            <strong className="product-details-fact-value">Objeto editorial</strong>
-          </div>
-          <div className="product-details-fact-card">
-            <span className="product-details-fact-label">Lectura</span>
-            <strong className="product-details-fact-value">Superficie y presencia</strong>
-          </div>
-        </div>
-
-        <div className="product-details-note" style={{ borderTop: `1px solid rgba(15, 15, 16, 0.08)` }}>
-          <span className="product-details-note-label">Nota de presentacion</span>
-          <div className="product-details-note-body">
-            Esta pieza se lee primero como forma, despues como especificacion.
           </div>
         </div>
       </div>

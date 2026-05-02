@@ -5,7 +5,7 @@ import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { Badge, IconButton } from '@mui/material';
 import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { waxMenuFooterLinks, waxMenuSections } from '@/config/menu';
 import { useCurrentUser, useLogout, useUserAddress } from '@/lib/hooks/useAccount';
@@ -280,6 +280,9 @@ type SiteHeaderProps = {
   headerBarPadding: string;
   isAuthenticated: boolean;
   basketCount: number;
+  onLogout: () => void;
+  isLoggingOut: boolean;
+  onSearchOpen: () => void;
 };
 
 const SiteHeader = ({
@@ -297,8 +300,13 @@ const SiteHeader = ({
   headerBarPadding,
   isAuthenticated,
   basketCount,
-}: SiteHeaderProps) => (
-  <header
+  onLogout,
+  isLoggingOut,
+  onSearchOpen,
+}: SiteHeaderProps) => {
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
+  return <header
     className="site-header"
     style={{
       position: isHomePage ? 'fixed' : 'sticky',
@@ -336,10 +344,10 @@ const SiteHeader = ({
           labelStyle={utilityLabelStyle}
         />
 
-        <IconButton className="site-search-button" aria-label="Buscar" sx={{ ...utilityButtonStyle, marginLeft: '0.5rem' }}>
+        <IconButton className="site-search-button" aria-label="Buscar" onClick={onSearchOpen} sx={{ ...utilityButtonStyle, marginLeft: '0.5rem' }}>
           <SearchRoundedIcon fontSize="small" />
         </IconButton>
-        <span className="site-search-label" style={utilityLabelStyle}>Buscar</span>
+        <span className="site-search-label" style={utilityLabelStyle} onClick={onSearchOpen} role="button" tabIndex={0}>Buscar</span>
 
         <Link
           to={routePaths.catalog}
@@ -419,15 +427,79 @@ const SiteHeader = ({
           <span className="site-atelier-text">Atelier AI</span>
         </Link>
 
-        <IconButton
-          className="site-utility-secondary site-account-button"
-          aria-label={isAuthenticated ? 'Mi perfil' : 'Iniciar sesion'}
-          component={Link}
-          to={isAuthenticated ? routePaths.profile : routePaths.login}
-          sx={utilityButtonStyle}
-        >
-          <PersonOutlineOutlinedIcon fontSize="small" />
-        </IconButton>
+        {isAuthenticated ? (
+          <div
+            style={{ position: 'relative' }}
+            onMouseEnter={() => setProfileMenuOpen(true)}
+            onMouseLeave={() => setProfileMenuOpen(false)}
+          >
+            <IconButton
+              className="site-utility-secondary site-account-button"
+              aria-label="Mi perfil"
+              sx={utilityButtonStyle}
+            >
+              <PersonOutlineOutlinedIcon fontSize="small" />
+            </IconButton>
+
+            {profileMenuOpen && (
+              <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 20, paddingTop: '0.35rem' }}>
+              <div style={{
+                background: waxBrand.color.porcelain,
+                border: `1px solid rgba(15, 15, 16, 0.1)`,
+                borderRadius: waxBrand.radius.soft,
+                boxShadow: waxBrand.shadow.elevated,
+                overflow: 'hidden',
+                minWidth: '10rem',
+              }}>
+                <Link
+                  to={routePaths.profile}
+                  style={{
+                    display: 'block',
+                    padding: '0.72rem 1.1rem',
+                    fontSize: '0.78rem',
+                    letterSpacing: '0.06em',
+                    color: waxBrand.color.ink,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Ver perfil
+                </Link>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  disabled={isLoggingOut}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '0.72rem 1.1rem',
+                    border: 0,
+                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
+                    background: 'transparent',
+                    fontSize: '0.78rem',
+                    letterSpacing: '0.06em',
+                    color: waxBrand.color.smoke,
+                    cursor: isLoggingOut ? 'wait' : 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {isLoggingOut ? 'Saliendo...' : 'Salir'}
+                </button>
+              </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <IconButton
+            className="site-utility-secondary site-account-button"
+            aria-label="Iniciar sesion"
+            component={Link}
+            to={routePaths.login}
+            sx={utilityButtonStyle}
+          >
+            <PersonOutlineOutlinedIcon fontSize="small" />
+          </IconButton>
+        )}
 
         <IconButton
           aria-label="Carrito"
@@ -452,13 +524,16 @@ const SiteHeader = ({
         </IconButton>
       </div>
     </div>
-  </header>
-);
+  </header>;
+};
 
 export const MainLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
   const { data: currentUser } = useCurrentUser();
   const { data: billingAddress, isLoading: isLoadingAddress } = useUserAddress(Boolean(currentUser));
   const logoutMutation = useLogout();
@@ -533,6 +608,15 @@ export const MainLayout = () => {
     logoutMutation.mutate();
   };
 
+  const openSearch = () => { setSearchInput(''); setIsSearchOpen(true); };
+  const closeSearch = () => setIsSearchOpen(false);
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const q = searchInput.trim();
+    navigate(q ? `${routePaths.catalog}?q=${encodeURIComponent(q)}` : routePaths.catalog);
+    closeSearch();
+  };
+
   const handleOverlayKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === 'Enter' || event.key === ' ' || event.key === 'Escape') {
       event.preventDefault();
@@ -578,7 +662,28 @@ export const MainLayout = () => {
         headerBarPadding={headerBarPadding}
         isAuthenticated={isAuthenticated}
         basketCount={basketCount}
+        onLogout={handleLogout}
+        isLoggingOut={logoutMutation.isPending}
+        onSearchOpen={openSearch}
       />
+
+      {isSearchOpen && (
+        <div className="search-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeSearch(); }}>
+          <form className="search-overlay-form" onSubmit={handleSearchSubmit}>
+            <button type="button" className="search-overlay-close" onClick={closeSearch} aria-label="Cerrar búsqueda">×</button>
+            <span className="search-overlay-label">¿Qué buscas?</span>
+            <input
+              autoFocus
+              className="search-overlay-input"
+              type="search"
+              placeholder="Nombre, tipo, marca..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Escape') closeSearch(); }}
+            />
+          </form>
+        </div>
+      )}
 
       <main
         className="site-main"
