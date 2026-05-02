@@ -5,8 +5,16 @@ import type { CreateProduct, Product, ProductParams, UpdateProduct } from '@/fea
 
 export const catalogApi = {
   getProducts: async (params: ProductParams = {}) => {
-    const response = await httpClient.get<PagedList<Product>>('/product', { params });
-    return response.data;
+    const response = await httpClient.get<Product[]>('/product', { params });
+    const raw = response.headers['pagination'] as string | undefined;
+    const header = raw ? (JSON.parse(raw) as { TotalCount: number; PageSize: number; CurrentPage: number; TotalPages: number }) : null;
+    return {
+      items: response.data,
+      currentPage: header?.CurrentPage ?? 1,
+      totalPages: header?.TotalPages ?? 1,
+      pageSize: header?.PageSize ?? response.data.length,
+      totalCount: header?.TotalCount ?? response.data.length,
+    };
   },
 
   getProduct: async (id: string) => {

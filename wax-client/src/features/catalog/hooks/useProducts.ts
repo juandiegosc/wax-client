@@ -10,10 +10,11 @@ export const catalogKeys = {
   detail: (id: string) => [...catalogKeys.details(), id] as const,
 };
 
-export const useProducts = (params: ProductParams = {}) => {
+export const useProducts = (params: ProductParams = {}, options: { enabled?: boolean } = {}) => {
   return useQuery({
     queryKey: catalogKeys.list(params),
     queryFn: () => catalogApi.getProducts(params),
     placeholderData: keepPreviousData,
+    enabled: options.enabled,
   });
 };
