@@ -9,6 +9,8 @@ export const routePaths = {
   atelier: '/atelier-ai',
   basket: '/basket',
   support: '/support',
+  checkout: '/checkout',
+  checkoutSuccess: '/checkout/success',
   notFound: '/not-found',
   serverError: '/server-error',
 } as const;

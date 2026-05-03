@@ -2,6 +2,8 @@ import { createBrowserRouter } from 'react-router';
 import { AtelierPage } from '@/pages/AtelierPage';
 import { CatalogPage } from '@/pages/CatalogPage';
 import { BasketPage } from '@/pages/BasketPage';
+import { CheckoutPage } from '@/pages/CheckoutPage';
+import { CheckoutSuccessPage } from '@/pages/CheckoutSuccessPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
@@ -47,6 +49,14 @@ export const router = createBrowserRouter([
           {
             path: routePaths.basket,
             Component: BasketPage,
+          },
+          {
+            path: routePaths.checkout,
+            Component: CheckoutPage,
+          },
+          {
+            path: routePaths.checkoutSuccess,
+            Component: CheckoutSuccessPage,
           },
           {
             path: routePaths.support,

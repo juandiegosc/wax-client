@@ -71,6 +71,7 @@ export const mutationKeys = {
   basket: {
     addItem: ["basket", "add"] as const,
     removeItem: ["basket", "remove"] as const,
+    clearBasket: ["basket", "clear"] as const,
   },
   orders: {
     create: ["orders", "create"] as const,
