@@ -1,15 +1,15 @@
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { Badge, IconButton } from '@mui/material';
 import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { waxMenuFooterLinks, waxMenuSections } from '@/config/menu';
 import { useCurrentUser, useLogout, useUserAddress } from '@/lib/hooks/useAccount';
+import { useBasket } from '@/features/basket/hooks/useBasket';
 import { MenuToggle } from '@/layouts/MenuToggle';
 import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
@@ -21,83 +21,80 @@ type MenuItem = MenuSection['items'][number];
 const renderMenuItem = (item: MenuItem, closeMenu: () => void) => {
   const content = (
     <>
-      <div style={{ fontSize: '1rem', color: waxBrand.color.ink }}>{item.label}</div>
+      <span style={{
+        display: 'block',
+        fontFamily: 'var(--wax-font-display)',
+        fontSize: '1.22rem',
+        fontWeight: 400,
+        color: waxBrand.color.ink,
+        lineHeight: 1.15,
+        letterSpacing: '-0.01em',
+      }}>
+        {item.label}
+      </span>
       {item.description ? (
-        <div style={{ fontSize: '0.82rem', color: waxBrand.color.smoke, marginTop: '0.15rem' }}>
+        <span style={{
+          display: 'block',
+          fontSize: '0.78rem',
+          color: waxBrand.color.smoke,
+          marginTop: '0.22rem',
+          lineHeight: 1.5,
+          letterSpacing: '0.01em',
+        }}>
           {item.description}
-        </div>
+        </span>
       ) : null}
     </>
   );
 
+  const itemStyle = { display: 'block', padding: '0.75rem 0' };
+
   if ('to' in item) {
     return (
-      <Link
-        key={item.label}
-        to={item.to}
-        onClick={closeMenu}
-        style={{
-          display: 'block',
-          padding: '0.6rem 0',
-          borderBottom: `1px solid rgba(15, 15, 16, 0.06)`,
-        }}
-      >
+      <Link key={item.label} to={item.to} onClick={closeMenu} style={itemStyle}>
         {content}
       </Link>
     );
   }
 
-  return (
-    <div
-      key={item.label}
-      style={{
-        display: 'block',
-        padding: '0.6rem 0',
-        borderBottom: `1px solid rgba(15, 15, 16, 0.06)`,
-      }}
-    >
-      {content}
-    </div>
-  );
+  return <div key={item.label} style={itemStyle}>{content}</div>;
 };
 
 const renderMenuSection = (section: MenuSection, closeMenu: () => void) => (
-  <section key={section.title} style={{ display: 'grid', gap: '0.5rem' }}>
-    <div
-      style={{
-        fontSize: '0.7rem',
-        textTransform: 'uppercase',
-        letterSpacing: '0.16em',
-        color: waxBrand.color.smoke,
-        marginBottom: '0.2rem',
-      }}
-    >
+  <section key={section.title}>
+    <div style={{
+      fontSize: '0.62rem',
+      textTransform: 'uppercase',
+      letterSpacing: '0.22em',
+      color: waxBrand.color.smoke,
+      marginBottom: '0.75rem',
+      fontWeight: 600,
+    }}>
       {section.title}
     </div>
-
-    {section.items.map((item) => renderMenuItem(item, closeMenu))}
+    <div style={{ display: 'grid' }}>
+      {section.items.map((item) => renderMenuItem(item, closeMenu))}
+    </div>
   </section>
 );
 
 const renderFooterLink = (item: FooterLink) => {
+  const style = {
+    fontSize: '0.75rem',
+    letterSpacing: '0.06em',
+    color: waxBrand.color.smoke,
+    textDecoration: 'none' as const,
+  };
+
   if ('href' in item) {
     return (
-      <a
-        key={item.label}
-        href={item.href}
-        style={{ fontSize: '0.86rem', color: waxBrand.color.graphite }}
-      >
+      <a key={item.label} href={item.href} style={style}>
         {item.label}
-        {'value' in item && item.value ? ` · ${item.value}` : ''}
       </a>
     );
   }
 
-  return (
-    <div key={item.label} style={{ fontSize: '0.86rem', color: waxBrand.color.graphite }}>
-      {item.label}
-    </div>
-  );
+  return <span key={item.label} style={style}>{item.label}</span>;
 };
 
 type MenuOverlayProps = {
@@ -147,81 +144,114 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
       top: 0,
       left: 0,
       zIndex: 19,
-      width: 'min(29rem, 100vw)',
+      width: 'min(27rem, 100vw)',
       height: '100vh',
       background: waxBrand.color.porcelain,
-      borderRight: `1px solid ${waxBrand.color.stone}`,
+      borderRight: `1px solid rgba(15, 15, 16, 0.08)`,
       boxShadow: waxBrand.shadow.elevated,
       transform: isMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
       transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
       display: 'grid',
       gridTemplateRows: 'auto 1fr auto',
+      overflow: 'hidden',
     }}
   >
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '1.1rem 1.3rem',
-        borderBottom: `1px solid ${waxBrand.color.stone}`,
-      }}
-    >
+    {/* Cabecera: wordmark + cerrar */}
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '1.4rem 1.75rem',
+      borderBottom: `1px solid rgba(15, 15, 16, 0.07)`,
+    }}>
+      <Link
+        to={routePaths.home}
+        onClick={closeMenu}
+        style={{
+          fontFamily: 'var(--wax-font-display)',
+          fontSize: '1.55rem',
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: waxBrand.color.ink,
+          fontWeight: 400,
+          lineHeight: 1,
+        }}
+      >
+        WAX
+      </Link>
       <MenuToggle
         isOpen={isMenuOpen}
         onToggle={toggleMenu}
         color={waxBrand.color.ink}
-        size={20}
-        gap="0.85rem"
-        labelStyle={{
-          fontSize: '0.9rem',
-          letterSpacing: '0.08em',
-        }}
+        size={18}
       />
     </div>
 
-    <div style={{ overflowY: 'auto', padding: '1.5rem 1.3rem 1.75rem' }}>
-      <div style={{ display: 'grid', gap: '1.75rem' }}>
+    {/* Navegación */}
+    <nav style={{ overflowY: 'auto', padding: '2.25rem 1.75rem 2rem' }}>
+      <div style={{ display: 'grid', gap: '2.75rem' }}>
         {waxMenuSections.map((section) => renderMenuSection(section, closeMenu))}
       </div>
-    </div>
+    </nav>
 
-    <div
-      style={{
-        padding: '1rem 1.3rem 1.3rem',
-        borderTop: `1px solid ${waxBrand.color.stone}`,
-        display: 'grid',
-        gap: '0.7rem',
-      }}
-    >
+    {/* Pie: sesión + links */}
+    <div style={{
+      padding: '1.25rem 1.75rem 1.75rem',
+      borderTop: `1px solid rgba(15, 15, 16, 0.07)`,
+      display: 'grid',
+      gap: '1.1rem',
+    }}>
       {currentUserEmail ? (
-        <div style={{ display: 'grid', gap: '0.55rem', paddingBottom: '0.45rem', borderBottom: `1px solid ${waxBrand.color.stone}` }}>
-          <span style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: waxBrand.color.smoke }}>
-            Sesion activa
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+          <span style={{
+            fontSize: '0.82rem',
+            color: waxBrand.color.graphite,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}>
+            {currentUserEmail}
           </span>
-          <strong style={{ fontSize: '0.95rem', color: waxBrand.color.ink, overflowWrap: 'anywhere' }}>{currentUserEmail}</strong>
           <button
             type="button"
             onClick={onLogout}
             disabled={isLoggingOut}
             style={{
-              width: 'fit-content',
+              flexShrink: 0,
               padding: 0,
               border: 0,
               background: 'transparent',
-              fontSize: '0.72rem',
+              fontSize: '0.68rem',
               fontWeight: 700,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
-              color: waxBrand.color.ink,
+              color: waxBrand.color.smoke,
               cursor: isLoggingOut ? 'wait' : 'pointer',
+              whiteSpace: 'nowrap',
             }}
           >
-            {isLoggingOut ? 'Saliendo...' : 'Cerrar sesion'}
+            {isLoggingOut ? 'Saliendo...' : 'Salir'}
           </button>
         </div>
-      ) : null}
-      {waxMenuFooterLinks.map((item) => renderFooterLink(item))}
+      ) : (
+        <Link
+          to={routePaths.login}
+          onClick={closeMenu}
+          style={{
+            fontSize: '0.72rem',
+            fontWeight: 700,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            color: waxBrand.color.ink,
+          }}
+        >
+          Iniciar sesión
+        </Link>
+      )}
+
+      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+        {waxMenuFooterLinks.map((item) => renderFooterLink(item))}
+      </div>
     </div>
   </aside>
 );
@@ -248,9 +278,11 @@ type SiteHeaderProps = {
   headerBrandSpacing: string;
   headerKickerSize: string;
   headerBarPadding: string;
-  currentUserEmail?: string;
+  isAuthenticated: boolean;
+  basketCount: number;
   onLogout: () => void;
   isLoggingOut: boolean;
+  onSearchOpen: () => void;
 };
 
 const SiteHeader = ({
@@ -266,11 +298,15 @@ const SiteHeader = ({
   headerBrandSpacing,
   headerKickerSize,
   headerBarPadding,
-  currentUserEmail,
+  isAuthenticated,
+  basketCount,
   onLogout,
   isLoggingOut,
-}: SiteHeaderProps) => (
-  <header
+  onSearchOpen,
+}: SiteHeaderProps) => {
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
+  return <header
     className="site-header"
     style={{
       position: isHomePage ? 'fixed' : 'sticky',
@@ -298,6 +334,7 @@ const SiteHeader = ({
         gap: '1rem',
       }}
     >
+      {/* LEFT: menu + search + coleccion */}
       <div className="site-header-left" style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', minWidth: 0 }}>
         <MenuToggle
           isOpen={isMenuOpen}
@@ -307,12 +344,27 @@ const SiteHeader = ({
           labelStyle={utilityLabelStyle}
         />
 
-        <IconButton className="site-search-button" aria-label="Buscar" sx={{ ...utilityButtonStyle, marginLeft: '0.5rem' }}>
+        <IconButton className="site-search-button" aria-label="Buscar" onClick={onSearchOpen} sx={{ ...utilityButtonStyle, marginLeft: '0.5rem' }}>
           <SearchRoundedIcon fontSize="small" />
         </IconButton>
-        <span className="site-search-label" style={utilityLabelStyle}>Buscar</span>
+        <span className="site-search-label" style={utilityLabelStyle} onClick={onSearchOpen} role="button" tabIndex={0}>Buscar</span>
+
+        <Link
+          to={routePaths.catalog}
+          className="site-catalog-nav-link"
+          style={{
+            ...utilityLabelStyle,
+            marginLeft: '0.75rem',
+            padding: '0.3rem 0',
+            borderBottom: '1px solid transparent',
+            transition: 'border-color 180ms ease, opacity 180ms ease',
+          }}
+        >
+          Colección
+        </Link>
       </div>
 
+      {/* CENTER: brand */}
       <div className="site-header-center" style={{ justifySelf: 'center', textAlign: 'center', minWidth: 0 }}>
         <Link to={routePaths.home} style={{ display: 'grid', gap: '0.08rem', minWidth: 0 }}>
           <span
@@ -343,6 +395,7 @@ const SiteHeader = ({
         </Link>
       </div>
 
+      {/* RIGHT: atelier + perfil + carrito */}
       <div
         className="site-header-right"
         style={{
@@ -355,17 +408,6 @@ const SiteHeader = ({
           flexWrap: 'wrap',
         }}
       >
-        {currentUserEmail ? (
-          <div className="site-session-chip" style={{ display: 'grid', justifyItems: 'end', gap: '0.05rem', marginRight: '0.35rem' }}>
-            <span style={{ fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: headerMutedColor }}>
-              Sesion activa
-            </span>
-            <strong style={{ fontSize: '0.82rem', fontWeight: 600, color: headerTextColor, maxWidth: '10rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {currentUserEmail}
-            </strong>
-          </div>
-        ) : null}
-
         <Link
           className="site-atelier-link"
           to={routePaths.atelier}
@@ -385,34 +427,72 @@ const SiteHeader = ({
           <span className="site-atelier-text">Atelier AI</span>
         </Link>
 
-        <IconButton className="site-utility-secondary" aria-label="Favoritos" sx={utilityButtonStyle}>
-          <FavoriteBorderOutlinedIcon fontSize="small" />
-        </IconButton>
-
-        {currentUserEmail ? (
-          <button
-            type="button"
-            onClick={onLogout}
-            disabled={isLoggingOut}
-            className="site-utility-secondary"
-            style={{
-              border: 0,
-              background: 'transparent',
-              padding: '0.35rem 0.45rem',
-              fontSize: '0.72rem',
-              fontWeight: 700,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: headerTextColor,
-              cursor: isLoggingOut ? 'wait' : 'pointer',
-            }}
+        {isAuthenticated ? (
+          <div
+            style={{ position: 'relative' }}
+            onMouseEnter={() => setProfileMenuOpen(true)}
+            onMouseLeave={() => setProfileMenuOpen(false)}
           >
-            {isLoggingOut ? 'Saliendo...' : 'Salir'}
-          </button>
+            <IconButton
+              className="site-utility-secondary site-account-button"
+              aria-label="Mi perfil"
+              sx={utilityButtonStyle}
+            >
+              <PersonOutlineOutlinedIcon fontSize="small" />
+            </IconButton>
+
+            {profileMenuOpen && (
+              <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 20, paddingTop: '0.35rem' }}>
+              <div style={{
+                background: waxBrand.color.porcelain,
+                border: `1px solid rgba(15, 15, 16, 0.1)`,
+                borderRadius: waxBrand.radius.soft,
+                boxShadow: waxBrand.shadow.elevated,
+                overflow: 'hidden',
+                minWidth: '10rem',
+              }}>
+                <Link
+                  to={routePaths.profile}
+                  style={{
+                    display: 'block',
+                    padding: '0.72rem 1.1rem',
+                    fontSize: '0.78rem',
+                    letterSpacing: '0.06em',
+                    color: waxBrand.color.ink,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Ver perfil
+                </Link>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  disabled={isLoggingOut}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '0.72rem 1.1rem',
+                    border: 0,
+                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
+                    background: 'transparent',
+                    fontSize: '0.78rem',
+                    letterSpacing: '0.06em',
+                    color: waxBrand.color.smoke,
+                    cursor: isLoggingOut ? 'wait' : 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {isLoggingOut ? 'Saliendo...' : 'Salir'}
+                </button>
+              </div>
+              </div>
+            )}
+          </div>
         ) : (
           <IconButton
             className="site-utility-secondary site-account-button"
-            aria-label="Cuenta"
+            aria-label="Iniciar sesion"
             component={Link}
             to={routePaths.login}
             sx={utilityButtonStyle}
@@ -421,9 +501,14 @@ const SiteHeader = ({
           </IconButton>
         )}
 
-        <IconButton aria-label="Carrito" sx={utilityButtonStyle}>
+        <IconButton
+          aria-label="Carrito"
+          component={Link}
+          to={routePaths.basket}
+          sx={utilityButtonStyle}
+        >
           <Badge
-            badgeContent={0}
+            badgeContent={basketCount || null}
             sx={{
               '& .MuiBadge-badge': {
                 backgroundColor: waxBrand.color.ink,
@@ -439,19 +524,26 @@ const SiteHeader = ({
         </IconButton>
       </div>
     </div>
-  </header>
-);
+  </header>;
+};
 
 export const MainLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
   const { data: currentUser } = useCurrentUser();
   const { data: billingAddress, isLoading: isLoadingAddress } = useUserAddress(Boolean(currentUser));
   const logoutMutation = useLogout();
+  const isAuthenticated = Boolean(currentUser);
+
+  const { data: basket } = useBasket(isAuthenticated);
+  const basketCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+
   const isHomePage = location.pathname === routePaths.home;
   const isFloatingHeader = isHomePage && !hasScrolled && !isMenuOpen;
-  const currentUserEmail = currentUser?.email;
 
   useEffect(() => {
     const promptSource = sessionStorage.getItem(PROFILE_PROMPT_PENDING_KEY);
@@ -470,6 +562,7 @@ export const MainLayout = () => {
 
     sessionStorage.removeItem(PROFILE_PROMPT_PENDING_KEY);
   }, [billingAddress, currentUser, isLoadingAddress]);
+
   const headerTextColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.96)' : waxBrand.color.ink;
   const headerMutedColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.76)' : waxBrand.color.graphite;
   const headerBrandSize = isFloatingHeader ? '3.1rem' : '1.78rem';
@@ -507,17 +600,21 @@ export const MainLayout = () => {
     color: headerMutedColor,
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen((current) => !current);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  const toggleMenu = () => setIsMenuOpen((current) => !current);
+  const closeMenu = () => setIsMenuOpen(false);
 
   const handleLogout = () => {
     closeMenu();
     logoutMutation.mutate();
+  };
+
+  const openSearch = () => { setSearchInput(''); setIsSearchOpen(true); };
+  const closeSearch = () => setIsSearchOpen(false);
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const q = searchInput.trim();
+    navigate(q ? `${routePaths.catalog}?q=${encodeURIComponent(q)}` : routePaths.catalog);
+    closeSearch();
   };
 
   const handleOverlayKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -535,8 +632,7 @@ export const MainLayout = () => {
           position: 'absolute',
           inset: 0,
           pointerEvents: 'none',
-          background:
-            'linear-gradient(180deg, rgba(15, 15, 16, 0.02), transparent 28%)',
+          background: 'linear-gradient(180deg, rgba(15, 15, 16, 0.02), transparent 28%)',
         }}
       />
 
@@ -546,7 +642,7 @@ export const MainLayout = () => {
         isMenuOpen={isMenuOpen}
         toggleMenu={toggleMenu}
         closeMenu={closeMenu}
-        currentUserEmail={currentUserEmail}
+        currentUserEmail={currentUser?.email}
         onLogout={handleLogout}
         isLoggingOut={logoutMutation.isPending}
       />
@@ -564,10 +660,30 @@ export const MainLayout = () => {
         headerBrandSpacing={headerBrandSpacing}
         headerKickerSize={headerKickerSize}
         headerBarPadding={headerBarPadding}
-        currentUserEmail={currentUserEmail}
+        isAuthenticated={isAuthenticated}
+        basketCount={basketCount}
         onLogout={handleLogout}
         isLoggingOut={logoutMutation.isPending}
+        onSearchOpen={openSearch}
       />
+
+      {isSearchOpen && (
+        <div className="search-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeSearch(); }}>
+          <form className="search-overlay-form" onSubmit={handleSearchSubmit}>
+            <button type="button" className="search-overlay-close" onClick={closeSearch} aria-label="Cerrar búsqueda">×</button>
+            <span className="search-overlay-label">¿Qué buscas?</span>
+            <input
+              autoFocus
+              className="search-overlay-input"
+              type="search"
+              placeholder="Nombre, tipo, marca..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Escape') closeSearch(); }}
+            />
+          </form>
+        </div>
+      )}
 
       <main
         className="site-main"
