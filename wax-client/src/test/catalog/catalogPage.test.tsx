@@ -44,7 +44,7 @@ describe('CatalogPageContent', () => {
       isLoading: true,
       isError: false,
       data: undefined,
-    } as ReturnType<typeof useProducts>);
+    } as unknown as ReturnType<typeof useProducts>);
 
     renderCatalog();
 
@@ -56,7 +56,7 @@ describe('CatalogPageContent', () => {
       isLoading: false,
       isError: false,
       data: { items: fakeProducts, totalPages: 1, totalCount: 2, currentPage: 1, pageSize: 12 },
-    } as ReturnType<typeof useProducts>);
+    } as unknown as ReturnType<typeof useProducts>);
 
     renderCatalog();
 
@@ -70,7 +70,7 @@ describe('CatalogPageContent', () => {
       isLoading: false,
       isError: false,
       data: { items: fakeProducts, totalPages: 1, totalCount: 2, currentPage: 1, pageSize: 12 },
-    } as ReturnType<typeof useProducts>);
+    } as unknown as ReturnType<typeof useProducts>);
 
     renderCatalog();
 
@@ -82,7 +82,7 @@ describe('CatalogPageContent', () => {
       isLoading: false,
       isError: false,
       data: { items: [], totalPages: 1, totalCount: 0, currentPage: 1, pageSize: 12 },
-    } as ReturnType<typeof useProducts>);
+    } as unknown as ReturnType<typeof useProducts>);
 
     renderCatalog();
 
@@ -94,7 +94,7 @@ describe('CatalogPageContent', () => {
       isLoading: false,
       isError: false,
       data: { items: [], totalPages: 1, totalCount: 0, currentPage: 1, pageSize: 12 },
-    } as ReturnType<typeof useProducts>);
+    } as unknown as ReturnType<typeof useProducts>);
 
     renderCatalog();
 
@@ -108,7 +108,7 @@ describe('CatalogPageContent', () => {
       isLoading: false,
       isError: true,
       data: undefined,
-    } as ReturnType<typeof useProducts>);
+    } as unknown as ReturnType<typeof useProducts>);
 
     renderCatalog();
 
@@ -120,7 +120,7 @@ describe('CatalogPageContent', () => {
       isLoading: false,
       isError: false,
       data: { items: fakeProducts, totalPages: 3, totalCount: 30, currentPage: 1, pageSize: 12 },
-    } as ReturnType<typeof useProducts>);
+    } as unknown as ReturnType<typeof useProducts>);
 
     renderCatalog();
 
@@ -134,7 +134,7 @@ describe('CatalogPageContent', () => {
       isLoading: false,
       isError: false,
       data: { items: fakeProducts, totalPages: 1, totalCount: 2, currentPage: 1, pageSize: 12 },
-    } as ReturnType<typeof useProducts>);
+    } as unknown as ReturnType<typeof useProducts>);
 
     renderCatalog();
 

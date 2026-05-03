@@ -31,16 +31,16 @@ const mockToast = vi.mocked(toast.info);
 const setupUser = (roles: string[] = [], hasAddress = true) => {
   mockUseCurrentUser.mockReturnValue({
     data: { email: 'test@wax.mx', roles },
-  } as ReturnType<typeof useCurrentUser>);
+  } as unknown as ReturnType<typeof useCurrentUser>);
 
   mockUseUserAddress.mockReturnValue({
     data: hasAddress ? { street: 'Calle 1' } : undefined,
-  } as ReturnType<typeof useUserAddress>);
+  } as unknown as ReturnType<typeof useUserAddress>);
 };
 
 const setupNoUser = () => {
-  mockUseCurrentUser.mockReturnValue({ data: undefined } as ReturnType<typeof useCurrentUser>);
-  mockUseUserAddress.mockReturnValue({ data: undefined } as ReturnType<typeof useUserAddress>);
+  mockUseCurrentUser.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useCurrentUser>);
+  mockUseUserAddress.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useUserAddress>);
 };
 
 describe('useProfileGuard', () => {

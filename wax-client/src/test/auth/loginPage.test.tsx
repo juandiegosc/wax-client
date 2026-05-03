@@ -47,8 +47,8 @@ const renderLogin = () => {
 };
 
 const setupGuest = () => {
-  mockUseCurrentUser.mockReturnValue({ data: null, isLoading: false } as ReturnType<typeof useCurrentUser>);
-  mockUseUserAddress.mockReturnValue({ data: null, isLoading: false } as ReturnType<typeof useUserAddress>);
+  mockUseCurrentUser.mockReturnValue({ data: null, isLoading: false } as unknown as ReturnType<typeof useCurrentUser>);
+  mockUseUserAddress.mockReturnValue({ data: null, isLoading: false } as unknown as ReturnType<typeof useUserAddress>);
   mockUseLogin.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false } as unknown as ReturnType<typeof useLogin>);
 };
 
@@ -56,8 +56,8 @@ const setupLoggedIn = () => {
   mockUseCurrentUser.mockReturnValue({
     data: { email: 'dani@wax.mx', roles: [] },
     isLoading: false,
-  } as ReturnType<typeof useCurrentUser>);
-  mockUseUserAddress.mockReturnValue({ data: { street: 'Calle 1' }, isLoading: false } as ReturnType<typeof useUserAddress>);
+  } as unknown as ReturnType<typeof useCurrentUser>);
+  mockUseUserAddress.mockReturnValue({ data: { street: 'Calle 1' }, isLoading: false } as unknown as ReturnType<typeof useUserAddress>);
   mockUseLogin.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false } as unknown as ReturnType<typeof useLogin>);
 };
 
