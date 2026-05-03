@@ -1,9 +1,6 @@
 import { Link } from 'react-router';
 import { routePaths } from '@/routes/routePaths';
-import bagBlack01 from '@/assets/images/editorial/bag-black-01.png';
-import bagBlackCloudStructured from '@/assets/images/editorial/bag-black-cloud-structured.png';
-import bagBlackStuds02 from '@/assets/images/editorial/bag-black-studs-02.png';
-import bagWhiteCloud from '@/assets/images/editorial/bag-white-cloud.png';
+import { useProducts } from '@/features/catalog/hooks/useProducts';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
 
 type HomeFooterLink =
@@ -22,29 +19,6 @@ type HomeFooterColumn = {
   description?: string;
   links: HomeFooterLink[];
 };
-
-const editorialStudies = [
-  {
-    title: 'Noir Silhouette',
-    image: bagBlack01,
-    tone: 'Estudio 01',
-  },
-  {
-    title: 'Cloud Veil',
-    image: bagWhiteCloud,
-    tone: 'Estudio 02',
-  },
-  {
-    title: 'Spike Accent',
-    image: bagBlackStuds02,
-    tone: 'Estudio 03',
-  },
-  {
-    title: 'Seduction Structure',
-    image: bagBlackCloudStructured,
-    tone: 'Estudio 04',
-  },
-] as const;
 
 const homeServiceBlocks: HomeServiceBlock[] = [
   {
@@ -89,6 +63,22 @@ const homeFooterColumns: HomeFooterColumn[] = [
 ] as const;
 
 export const HomePage = () => {
+  // Paso 1 — saber cuántos productos hay en total
+  const { data: meta } = useProducts({ pageSize: 1 });
+  const totalCount = meta?.totalCount ?? 0;
+
+  // Paso 2 — pedir la última página de 4 (los más recientes al final de la lista)
+  // Math.max(1, totalCount - 3) calcula el primer item del bloque final,
+  // y Math.ceil lo convierte a número de página con pageSize=4.
+  const lastPage = totalCount > 0 ? Math.ceil(Math.max(1, totalCount - 3) / 4) : 1;
+  const { data, isLoading, isError } = useProducts(
+    { pageSize: 4, pageNumber: lastPage },
+    { enabled: totalCount > 0 },
+  );
+
+  const featuredProducts = data?.items ?? [];
+  const showSection = isLoading || (!isError && featuredProducts.length > 0);
+
   return (
     <section className="home-page">
       <section className="home-campaign-shell">
@@ -118,29 +108,38 @@ export const HomePage = () => {
         </div>
       </section>
 
-      <section className="home-editorial-section">
-        <div className="home-editorial-header">
-          <span className="home-editorial-kicker">Coleccion Umbral</span>
-          <h2 className="home-editorial-title"> COLECCIÓN UMBRAL </h2>
-        </div>
+      {showSection && (
+        <section className="home-editorial-section">
+          <div className="home-editorial-header">
+            <span className="home-editorial-kicker">Coleccion Umbral</span>
+            <h2 className="home-editorial-title">COLECCIÓN UMBRAL</h2>
+          </div>
 
-        <div className="home-editorial-grid">
-          {editorialStudies.map((study, index) => (
-            <Link
-              key={study.title}
-              to={routePaths.catalog}
-              className={`home-editorial-card ${index === 0 ? 'home-editorial-card-featured' : ''}`}
-            >
-              <img className="home-editorial-card-image" src={study.image} alt={study.title} />
-              <div className="home-editorial-card-overlay" />
-              <div className="home-editorial-card-copy">
-                <span className="home-editorial-card-tone">{study.tone}</span>
-                <strong className="home-editorial-card-title">{study.title}</strong>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+          <div className="home-editorial-grid">
+            {isLoading
+              ? Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`home-editorial-card home-editorial-card-skeleton ${i === 0 ? 'home-editorial-card-featured' : ''}`}
+                  />
+                ))
+              : featuredProducts.map((product, index) => (
+                  <Link
+                    key={product.id}
+                    to={routePaths.catalogDetails(product.id)}
+                    className={`home-editorial-card ${index === 0 ? 'home-editorial-card-featured' : ''}`}
+                  >
+                    <img className="home-editorial-card-image" src={product.pictureUrl} alt={product.name} />
+                    <div className="home-editorial-card-overlay" />
+                    <div className="home-editorial-card-copy">
+                      <span className="home-editorial-card-tone">{product.type}</span>
+                      <strong className="home-editorial-card-title">{product.name}</strong>
+                    </div>
+                  </Link>
+                ))}
+          </div>
+        </section>
+      )}
 
       <section className="home-service-strip">
         <div className="home-service-grid">
