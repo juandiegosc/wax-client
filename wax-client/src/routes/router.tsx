@@ -14,6 +14,7 @@ import { RouteErrorPage } from '@/pages/RouteErrorPage';
 import { RequiredAuth } from '@/routes/RequiredAuth';
 import { ServerErrorPage } from '@/pages/ServerErrorPage';
 import { SupportPage } from '@/pages/SupportPage';
+import { SupportTicketPage } from '@/pages/SupportTicketPage';
 import { routePaths } from '@/routes/routePaths';
 import { LoginPage } from '../pages/LoginPage';
 
@@ -61,6 +62,10 @@ export const router = createBrowserRouter([
           {
             path: routePaths.support,
             Component: SupportPage,
+          },
+          {
+            path: routePaths.supportTicket,
+            Component: SupportTicketPage,
           },
           {
             path: routePaths.profile,
