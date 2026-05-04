@@ -15,10 +15,15 @@ const CATEGORY_OPTIONS: { value: TicketCategory; label: string }[] = [
   { value: TICKET_CATEGORY.Other, label: 'Otro' },
 ];
 
-const EMPTY_FORM = {
+const EMPTY_FORM: {
+  subject: string;
+  description: string;
+  category: TicketCategory;
+  orderId: string;
+} = {
   subject: '',
   description: '',
-  category: TICKET_CATEGORY.Other as TicketCategory,
+  category: TICKET_CATEGORY.Other,
   orderId: '',
 };
 
@@ -33,7 +38,7 @@ export const SupportPageContent = () => {
   const tickets = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
 
-  const handleChange = (field: keyof typeof form, value: string) => {
+  const handleChange = (field: 'subject' | 'description' | 'orderId', value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -101,7 +106,9 @@ export const SupportPageContent = () => {
                 id="support-category"
                 className="support-select"
                 value={form.category}
-                onChange={(e) => handleChange('category', e.target.value)}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, category: Number(e.target.value) as TicketCategory }))
+                }
               >
                 {CATEGORY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>

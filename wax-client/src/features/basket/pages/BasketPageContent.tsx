@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { routePaths } from '@/routes/routePaths';
@@ -7,6 +7,7 @@ import { BasketItem } from '@/features/basket/components/BasketItem';
 
 export const BasketPageContent = () => {
   const { data: basket, isLoading, isError } = useBasket();
+  const navigate = useNavigate();
   const items = basket?.items ?? [];
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
@@ -72,7 +73,10 @@ export const BasketPageContent = () => {
             El pago y envio se confirman en el siguiente paso.
           </p>
 
-          <button className="basket-checkout-btn" disabled>
+          <button
+            className="basket-checkout-btn"
+            onClick={() => navigate(routePaths.checkout)}
+          >
             Continuar al pago
           </button>
         </aside>
