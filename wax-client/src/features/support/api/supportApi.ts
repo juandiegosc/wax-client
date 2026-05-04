@@ -20,8 +20,13 @@ export const supportApi = {
 
     // El endpoint puede devolver array+header (como /product) o body paginado (como OpenAPI spec)
     if (Array.isArray(response.data)) {
-      const raw = response.headers['pagination'] as string | undefined;
-      const header: PaginationHeader | null = raw ? JSON.parse(raw) : null;
+      let header: PaginationHeader | null = null;
+      try {
+        const raw = response.headers['pagination'] as string | undefined;
+        if (raw) header = JSON.parse(raw);
+      } catch (e) {
+        console.warn('Failed to parse pagination header', e);
+      }
       return {
         items: response.data as SupportTicket[],
         currentPage: header?.CurrentPage ?? 1,
@@ -31,7 +36,14 @@ export const supportApi = {
       };
     }
 
-    return response.data as PagedList<SupportTicket>;
+    const data = response.data as Partial<PagedList<SupportTicket>> & { pageNumber?: number };
+    return {
+      items: data.items ?? [],
+      currentPage: data.currentPage ?? data.pageNumber ?? 1,
+      totalPages: data.totalPages ?? 1,
+      pageSize: data.pageSize ?? data.items?.length ?? 0,
+      totalCount: data.totalCount ?? data.items?.length ?? 0,
+    };
   },
 
   getTicket: async (id: string) => {

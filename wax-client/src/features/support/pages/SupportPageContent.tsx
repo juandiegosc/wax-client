@@ -15,7 +15,12 @@ const CATEGORY_OPTIONS: { value: TicketCategory; label: string }[] = [
   { value: TICKET_CATEGORY.Other, label: 'Otro' },
 ];
 
-const EMPTY_FORM = {
+const EMPTY_FORM: {
+  subject: string;
+  description: string;
+  category: TicketCategory;
+  orderId: string;
+} = {
   subject: '',
   description: '',
   category: TICKET_CATEGORY.Other,
