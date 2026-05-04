@@ -2,6 +2,8 @@ import { createBrowserRouter } from 'react-router';
 import { AtelierPage } from '@/pages/AtelierPage';
 import { CatalogPage } from '@/pages/CatalogPage';
 import { BasketPage } from '@/pages/BasketPage';
+import { CheckoutPage } from '@/pages/CheckoutPage';
+import { CheckoutSuccessPage } from '@/pages/CheckoutSuccessPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
@@ -12,6 +14,7 @@ import { RouteErrorPage } from '@/pages/RouteErrorPage';
 import { RequiredAuth } from '@/routes/RequiredAuth';
 import { ServerErrorPage } from '@/pages/ServerErrorPage';
 import { SupportPage } from '@/pages/SupportPage';
+import { SupportTicketPage } from '@/pages/SupportTicketPage';
 import { routePaths } from '@/routes/routePaths';
 import { LoginPage } from '../pages/LoginPage';
 
@@ -49,8 +52,20 @@ export const router = createBrowserRouter([
             Component: BasketPage,
           },
           {
+            path: routePaths.checkout,
+            Component: CheckoutPage,
+          },
+          {
+            path: routePaths.checkoutSuccess,
+            Component: CheckoutSuccessPage,
+          },
+          {
             path: routePaths.support,
             Component: SupportPage,
+          },
+          {
+            path: routePaths.supportTicket,
+            Component: SupportTicketPage,
           },
           {
             path: routePaths.profile,

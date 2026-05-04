@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
+import Cookies from "js-cookie";
 import { mutationKeys, queryKeys } from "../queryKeys";
 import type { Basket } from "../types/basket";
 
@@ -124,6 +125,34 @@ export const useRemoveFromBasket = () => {
         queryClient.setQueryData(queryKeys.basket.all, context.prevBasket);
       }
       console.error("Failed to remove item from basket:", _error);
+    },
+  });
+};
+
+/**
+ * Hook for clearing the basket
+ */
+export const useClearBasket = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: mutationKeys.basket.clearBasket,
+    mutationFn: async () => {
+      return { data: undefined };
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.basket.all });
+    },
+    onSuccess: () => {
+      queryClient.setQueryData<Basket | null>(queryKeys.basket.all, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          items: [],
+          basketId: "",
+        };
+      });
+      Cookies.remove("basketId");
     },
   });
 };
@@ -257,10 +286,35 @@ export const useBasket = () => {
     },
   });
 
+  const clearBasket = useMutation({
+    mutationKey: mutationKeys.basket.clearBasket,
+    mutationFn: async () => {
+      // In a real application, you might want to optionally call an endpoint here
+      // return await agent.delete("/basket"); 
+      return { data: undefined };
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.basket.all });
+    },
+    onSuccess: () => {
+      queryClient.setQueryData<Basket | null>(queryKeys.basket.all, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          items: [],
+          basketId: "",
+        };
+      });
+      // Optionally remove cookie logic depending on how auth/cookies are maintained
+      Cookies.remove("basketId");
+    },
+  });
+
   return {
     basket,
     isLoadingBasket,
     addItem,
     removeItem,
+    clearBasket,
   };
 };
