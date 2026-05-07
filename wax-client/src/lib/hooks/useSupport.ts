@@ -15,7 +15,7 @@ export const useTickets = (params: SupportTicketParams = {}) => {
   return useQuery({
     queryKey: queryKeys.tickets.list(params),
     queryFn: async () => {
-      const response = await agent.get<PagedList<SupportTicket>>("/support", { params });
+      const response = await agent.get<PagedList<SupportTicket>>("/support/my", { params });
       return response.data;
     },
     placeholderData: keepPreviousData,
@@ -67,7 +67,7 @@ export const useSupport = (id?: string, params?: SupportTicketParams) => {
   const { data: ticketsData, isLoading: isLoadingTickets } = useQuery({
     queryKey: queryKeys.tickets.list(params ?? {}),
     queryFn: async () => {
-      const response = await agent.get<PagedList<SupportTicket>>("/support", { params });
+      const response = await agent.get<PagedList<SupportTicket>>("/support/my", { params });
       return response.data;
     },
     placeholderData: keepPreviousData,
