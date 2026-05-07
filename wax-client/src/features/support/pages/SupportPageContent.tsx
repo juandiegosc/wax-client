@@ -5,6 +5,8 @@ import { useCreateTicket } from '@/features/support/hooks/useCreateTicket';
 import { TicketCard } from '@/features/support/components/TicketCard';
 import { TICKET_CATEGORY, TICKET_STATUS } from '@/features/support/types/support.types';
 import type { TicketCategory } from '@/features/support/types/support.types';
+import { useOrders } from '@/lib/hooks/useOrders';
+import { formatCurrency } from '@/utils/currency';
 
 const PAGE_SIZE = 8;
 
@@ -34,9 +36,11 @@ export const SupportPageContent = () => {
 
   const { data, isLoading: isLoadingTickets } = useTickets({ pageNumber, pageSize: PAGE_SIZE });
   const { mutate: createTicket, isPending: isCreating } = useCreateTicket();
+  const { ordersData, isLoadingOrders } = useOrders();
 
   const tickets = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
+  const userOrders = ordersData?.pages.flatMap((p) => p.items) ?? [];
 
   const handleChange = (field: 'subject' | 'description' | 'orderId', value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -44,7 +48,7 @@ export const SupportPageContent = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.subject.trim() || !form.description.trim()) return;
+    if (!form.subject.trim() || !form.description.trim() || !form.orderId.trim()) return;
     createTicket(
       {
         subject: form.subject.trim(),
@@ -131,23 +135,35 @@ export const SupportPageContent = () => {
 
             <div className="support-field">
               <label className="support-label" htmlFor="support-order">
-                ID de pedido <span className="support-optional">(opcional)</span>
+                ID de pedido
               </label>
-              <input
+              <select
                 id="support-order"
-                className="support-input"
-                type="text"
-                placeholder="Déjalo en blanco si no aplica"
+                className="support-select"
                 value={form.orderId}
                 onChange={(e) => handleChange('orderId', e.target.value)}
-              />
+                required
+                disabled={isLoadingOrders}
+              >
+                <option value="" disabled>
+                  {isLoadingOrders ? 'Cargando pedidos...' : 'Selecciona un pedido...'}
+                </option>
+                {userOrders.map((order) => {
+                  const productNames = order.orderItems?.map(item => item.name).join(', ') || `Pedido ${order.id}`;
+                  return (
+                    <option key={order.id} value={order.id}>
+                      {productNames} - {formatCurrency(order.total / 100)} ({new Date(order.createAt).toLocaleDateString()})
+                    </option>
+                  );
+                })}
+              </select>
             </div>
 
             <div className="support-form-actions">
               <button
                 type="submit"
                 className="support-submit-btn"
-                disabled={isCreating || !form.subject.trim() || !form.description.trim()}
+                disabled={isCreating || !form.subject.trim() || !form.description.trim() || !form.orderId.trim()}
               >
                 {isCreating ? 'Enviando...' : 'Enviar ticket'}
               </button>

@@ -16,7 +16,7 @@ type PaginationHeader = {
 
 export const supportApi = {
   getTickets: async (params: SupportTicketParams = {}): Promise<PagedList<SupportTicket>> => {
-    const response = await httpClient.get('/support', { params });
+    const response = await httpClient.get('/support/my', { params });
 
     // El endpoint puede devolver array+header (como /product) o body paginado (como OpenAPI spec)
     if (Array.isArray(response.data)) {

@@ -18,14 +18,17 @@ export const useOrdersInfinite = (params: OrderParams = {}) => {
   return useInfiniteQuery<InfinityPagedList<Order, string | null>>({
     queryKey: queryKeys.orders.list(params),
     queryFn: async ({ pageParam }) => {
-      const response = await agent.get<InfinityPagedList<Order, string | null>>("/order", {
+      const response = await agent.get("/order/my", {
         params: {
           cursor: pageParam,
           filter,
           startDate,
         },
       });
-      return response.data;
+      if (Array.isArray(response.data)) {
+        return { items: response.data, nextCursor: null };
+      }
+      return response.data as InfinityPagedList<Order, string | null>;
     },
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -84,14 +87,17 @@ export const useOrders = (id?: string, params?: OrderParams) => {
   } = useInfiniteQuery<InfinityPagedList<Order, string | null>>({
     queryKey: queryKeys.orders.list(params ?? {}),
     queryFn: async ({ pageParam }) => {
-      const response = await agent.get<InfinityPagedList<Order, string | null>>("/order", {
+      const response = await agent.get("/order/my", {
         params: {
           cursor: pageParam,
           filter,
           startDate,
         },
       });
-      return response.data;
+      if (Array.isArray(response.data)) {
+        return { items: response.data, nextCursor: null } as InfinityPagedList<Order, string | null>;
+      }
+      return response.data as InfinityPagedList<Order, string | null>;
     },
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
