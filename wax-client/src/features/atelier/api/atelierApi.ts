@@ -84,11 +84,7 @@ export const atelierApi = {
       design: sanitizeDesign(design),
     };
 
-    try {
-      await silentApi.post('/CustomProduct', payload);
-    } catch (err: unknown) {
-      throw err;
-    }
+    await silentApi.post('/CustomProduct', payload);
   },
 
   analyzeImage: async (imageDataUrl: string): Promise<DesignFields> => {
@@ -103,11 +99,7 @@ export const atelierApi = {
       rawDescription: req.rawDescription.slice(0, 990),
       design: sanitizeDesign(req.design),
     };
-    try {
-      await silentApi.post('/CustomProduct', payload);
-    } catch (err: unknown) {
-      throw err;
-    }
+    await silentApi.post('/CustomProduct', payload);
   },
 
   refineFromPreview: async (req: RefineRequest): Promise<GenerateResponse> => {

@@ -4,9 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 const counterOfferSchema = z.object({
-  amountMxn: z.coerce
-    .number({ message: 'Ingresa un monto' })
-    .positive('El monto debe ser mayor a 0'),
+  amountMxn: z.number({ message: 'Ingresa un monto' }).positive('El monto debe ser mayor a 0'),
   comment: z.string().trim().max(490).optional(),
 });
 
@@ -68,7 +66,7 @@ export const CounterOfferModal = ({ currentPrice, isSubmitting, onConfirm, onClo
               step="1"
               min="1"
               placeholder="Ej. 3500"
-              {...register('amountMxn')}
+              {...register('amountMxn', { valueAsNumber: true })}
               disabled={isSubmitting}
             />
             {errors.amountMxn && <em>{errors.amountMxn.message}</em>}
