@@ -110,7 +110,13 @@ describe('atelierApi', () => {
 
   describe('submitCotizacion', () => {
     it('llama a /meshy-cotizar con los tres campos requeridos', async () => {
-      mockPost.mockResolvedValue({ data: {} });
+      const n8nPayload = {
+        taskId: 'task-001',
+        glbUrl: 'https://assets.meshy.ai/model.glb',
+        rawDescription: 'Clutch negro en cuero, 25x15cm',
+        design: { type: 'clutch', material: 'cuero', color: 'negro', shape: 'rectangular', dimensions: '25x15cm', details: '' },
+      };
+      mockPost.mockResolvedValue({ data: n8nPayload });
 
       await atelierApi.submitCotizacion({
         glbUrl: 'https://assets.meshy.ai/model.glb',
@@ -123,6 +129,67 @@ describe('atelierApi', () => {
         taskId: 'task-001',
         description: 'Clutch negro en cuero, 25x15cm',
       });
+    });
+  });
+
+  describe('analyzeImage', () => {
+    it('llama a /meshy-analyze-image y devuelve el campo design', async () => {
+      const fakeDesign = { type: 'bolsa', material: 'cuero', color: 'negro', shape: 'rectangular', dimensions: '30x20cm', details: '' };
+      mockPost.mockResolvedValue({ data: { received: true, design: fakeDesign } });
+
+      const result = await atelierApi.analyzeImage('data:image/png;base64,abc123');
+
+      expect(mockPost).toHaveBeenCalledWith('/meshy-analyze-image', { imageDataUrl: 'data:image/png;base64,abc123' });
+      expect(result).toEqual(fakeDesign);
+    });
+  });
+
+  describe('submitCotizacionDirect', () => {
+    it('sanitiza y envía el payload al backend', async () => {
+      mockPost.mockResolvedValue({ data: {} });
+
+      await atelierApi.submitCotizacionDirect({
+        taskId: 'task-img-001',
+        glbUrl: 'https://assets.meshy.ai/model.glb',
+        rawDescription: 'Bolsa de cuero negro',
+        design: { type: 'bolsa', material: 'cuero', color: 'negro', shape: 'rectangular', dimensions: '30x20cm', details: 'con herrajes' },
+      });
+
+      expect(mockPost).toHaveBeenCalledWith('/CustomProduct', expect.objectContaining({
+        taskId: 'task-img-001',
+        glbUrl: 'https://assets.meshy.ai/model.glb',
+        rawDescription: 'Bolsa de cuero negro',
+        design: expect.objectContaining({ type: 'bolsa', material: 'cuero' }),
+      }));
+    });
+
+    it('convierte × a x en dimensiones', async () => {
+      mockPost.mockResolvedValue({ data: {} });
+
+      await atelierApi.submitCotizacionDirect({
+        taskId: 'task-002',
+        glbUrl: 'https://cdn.meshy.ai/m.glb',
+        rawDescription: 'desc',
+        design: { type: 'anillo', material: 'plata', color: 'gris', shape: 'circular', dimensions: '2×2cm', details: '' },
+      });
+
+      const call = mockPost.mock.calls[0];
+      expect(call[1].design.dimensions).toBe('2x2cm');
+    });
+
+    it('trunca rawDescription a 990 caracteres', async () => {
+      mockPost.mockResolvedValue({ data: {} });
+      const longDesc = 'a'.repeat(1100);
+
+      await atelierApi.submitCotizacionDirect({
+        taskId: 'task-003',
+        glbUrl: 'https://cdn.meshy.ai/m.glb',
+        rawDescription: longDesc,
+        design: { type: 't', material: 'm', color: 'c', shape: 's', dimensions: '1x1cm', details: '' },
+      });
+
+      const call = mockPost.mock.calls[0];
+      expect(call[1].rawDescription.length).toBe(990);
     });
   });
 });

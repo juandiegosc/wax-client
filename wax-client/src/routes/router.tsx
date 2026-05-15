@@ -1,6 +1,8 @@
 import { createBrowserRouter } from 'react-router';
 import { AtelierPage } from '@/pages/AtelierPage';
 import { CatalogPage } from '@/pages/CatalogPage';
+import { MyCustomProductsPage } from '@/pages/MyCustomProductsPage';
+import { CustomProductDetailPage } from '@/pages/CustomProductDetailPage';
 import { BasketPage } from '@/pages/BasketPage';
 import { CheckoutPage } from '@/pages/CheckoutPage';
 import { CheckoutSuccessPage } from '@/pages/CheckoutSuccessPage';
@@ -46,6 +48,14 @@ export const router = createBrowserRouter([
           {
             path: routePaths.atelier,
             Component: AtelierPage,
+          },
+          {
+            path: routePaths.myCustomProducts,
+            Component: MyCustomProductsPage,
+          },
+          {
+            path: routePaths.customProductDetailPattern,
+            Component: CustomProductDetailPage,
           },
           {
             path: routePaths.basket,

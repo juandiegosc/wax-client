@@ -1,5 +1,11 @@
 import axios from 'axios';
 import { env } from '@/config/env';
+
+// Instancia sin interceptor de navegación — para calls fire-and-forget donde un 500 no debe redirigir al usuario
+const silentApi = axios.create({
+  baseURL: env.apiUrl,
+  withCredentials: true,
+});
 import type {
   ChatRequest,
   ChatResponse,
@@ -12,7 +18,37 @@ import type {
 
 export type RefineRequest = { previewTaskId: string; artStyle?: ArtStyle };
 
+export type DesignFields = {
+  type: string;
+  material: string;
+  color: string;
+  shape: string;
+  dimensions: string;
+  details?: string;
+};
+
+export type AnalyzeImageResponse = {
+  received: boolean;
+  design: DesignFields;
+};
+
+export type SubmitCotizacionDirectRequest = {
+  taskId: string;
+  glbUrl: string;
+  rawDescription: string;
+  design: DesignFields;
+};
+
 const n8n = axios.create({ baseURL: env.n8nUrl });
+
+const sanitizeDesign = (design: DesignFields | null | undefined): DesignFields => ({
+  type: (design?.type ?? '').slice(0, 100),
+  material: (design?.material ?? '').slice(0, 100),
+  color: (design?.color ?? '').slice(0, 50),
+  shape: (design?.shape ?? '').slice(0, 50),
+  dimensions: (design?.dimensions ?? '').replaceAll('×', 'x').slice(0, 50),
+  details: (design?.details ?? '').slice(0, 490),
+});
 
 export const atelierApi = {
   chat: async (req: ChatRequest): Promise<ChatResponse> => {
@@ -31,7 +67,47 @@ export const atelierApi = {
   },
 
   submitCotizacion: async (req: { glbUrl: string; taskId: string; description: string }): Promise<void> => {
-    await n8n.post('/meshy-cotizar', req);
+    type N8nCotizarResponse = {
+      taskId: string;
+      glbUrl: string;
+      rawDescription: string;
+      design: DesignFields;
+    };
+
+    const n8nRes = await n8n.post<N8nCotizarResponse>('/meshy-cotizar', req);
+    const { taskId, glbUrl, rawDescription, design } = n8nRes.data;
+
+    const payload = {
+      taskId,
+      glbUrl,
+      rawDescription: rawDescription.slice(0, 990),
+      design: sanitizeDesign(design),
+    };
+
+    try {
+      await silentApi.post('/CustomProduct', payload);
+    } catch (err: unknown) {
+      throw err;
+    }
+  },
+
+  analyzeImage: async (imageDataUrl: string): Promise<DesignFields> => {
+    const res = await n8n.post<AnalyzeImageResponse>('/meshy-analyze-image', { imageDataUrl });
+    return res.data.design;
+  },
+
+  submitCotizacionDirect: async (req: SubmitCotizacionDirectRequest): Promise<void> => {
+    const payload = {
+      taskId: req.taskId,
+      glbUrl: req.glbUrl,
+      rawDescription: req.rawDescription.slice(0, 990),
+      design: sanitizeDesign(req.design),
+    };
+    try {
+      await silentApi.post('/CustomProduct', payload);
+    } catch (err: unknown) {
+      throw err;
+    }
   },
 
   refineFromPreview: async (req: RefineRequest): Promise<GenerateResponse> => {
