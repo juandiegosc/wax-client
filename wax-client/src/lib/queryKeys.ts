@@ -52,6 +52,15 @@ export const queryKeys = {
     current: () => [...queryKeys.user.all, "current"] as const,
     address: () => [...queryKeys.user.all, "address"] as const,
   },
+
+  // Custom Products (cotizaciones)
+  customProducts: {
+    all: ["customProducts"] as const,
+    lists: () => [...queryKeys.customProducts.all, "list"] as const,
+    list: () => [...queryKeys.customProducts.lists(), "mine"] as const,
+    details: () => [...queryKeys.customProducts.all, "detail"] as const,
+    detail: (id: string) => [...queryKeys.customProducts.details(), id] as const,
+  },
 } as const;
 
 /**
@@ -87,5 +96,9 @@ export const mutationKeys = {
   },
   checkout: {
     createPaymentIntent: ["checkout", "paymentIntent"] as const,
+  },
+  customProducts: {
+    counterOffer: ["customProducts", "counterOffer"] as const,
+    approve: ["customProducts", "approve"] as const,
   },
 } as const;

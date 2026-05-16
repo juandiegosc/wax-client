@@ -21,6 +21,15 @@ const isBillingAddressFalseNegative = (requestUrl: string | undefined, status: n
         && data === 'Failed to save billing address';
 };
 
+const isSilentPassiveCheck = (requestUrl: string | undefined, requestMethod: string | undefined, status: number, data: unknown): boolean => {
+    if (status === 401 && requestUrl?.includes('/account/user-info')) return true;
+    if (requestUrl?.includes('/account/billing-address') && (status === 400 || status === 404)) return true;
+    if (isBillingAddressFalseNegative(requestUrl, status, data)) return true;
+    // GET /basket can legitimately return 400/404 when the user has no basket yet
+    if (requestUrl?.includes('/basket') && requestMethod === 'get' && (status === 400 || status === 404)) return true;
+    return false;
+};
+
 
 agent.interceptors.response.use(
    async response => {
@@ -37,12 +46,10 @@ agent.interceptors.response.use(
 
         const {status, data} = error.response;
         const requestUrl = error.config?.url as string | undefined;
-        const isPassiveUserCheck = status === 401 && requestUrl?.includes('/account/user-info');
-        const isBillingAddressCheck = requestUrl?.includes('/account/billing-address') && (status === 400 || status === 404);
-        const isBillingAddressFalseNegativeError = isBillingAddressFalseNegative(requestUrl, status, data);
+        const requestMethod = error.config?.method?.toLowerCase();
 
         // Let React Query handle these silently - not actual errors for passive checks
-        if (isPassiveUserCheck || isBillingAddressCheck || isBillingAddressFalseNegativeError) {
+        if (isSilentPassiveCheck(requestUrl, requestMethod, status, data)) {
             throw error;
         }
 

@@ -1,12 +1,13 @@
 import '@google/model-viewer';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { atelierApi } from '@/features/atelier/api/atelierApi';
+import { atelierApi, type DesignFields } from '@/features/atelier/api/atelierApi';
 import { useChat } from '@/features/atelier/hooks/useChat';
 import { useGenerateFromText, useGenerateFromImage, useRefineFromPreview } from '@/features/atelier/hooks/useGenerate';
 import { useTaskStatus } from '@/features/atelier/hooks/useTaskStatus';
 import { isAffirmative, extractMeshyPrompt, stripHiddenPrompt, getProgressMessage, meshyUrl } from '@/features/atelier/utils/atelierHelpers';
 import type { ArtStyle, TaskStatus } from '@/features/atelier/types/atelier.types';
+import { CotizarFormModal, type CotizarFormValues } from '@/features/atelier/components/CotizarFormModal';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type ChatMsg = {
@@ -21,6 +22,7 @@ type GenResult = {
   thumbnailUrl?: string;
   modelUrls?: Record<string, string>;
   error?: string;
+  refineTaskId?: string;
 };
 
 type GenMsg = {
@@ -167,7 +169,7 @@ const GenCard = ({
         </div>
 
         <div className="atelier-gen-actions">
-          <button className="atelier-gen-cta" onClick={() => onCotizar(glbUrl ?? '', msg.taskId)}>
+          <button className="atelier-gen-cta" onClick={() => onCotizar(glbUrl ?? '', msg.result?.refineTaskId ?? msg.taskId)}>
             Enviar a cotizar
           </button>
           <a href={glbUrl} download className="atelier-gen-download">
@@ -185,7 +187,7 @@ const GenCard = ({
           <img src={thumbUrl} alt="Modelo generado" className="atelier-task-thumbnail" />
         )}
         <div className="atelier-gen-actions">
-          <button className="atelier-gen-cta" onClick={() => onCotizar(glbUrl ?? '', msg.taskId)}>
+          <button className="atelier-gen-cta" onClick={() => onCotizar(glbUrl ?? '', msg.result?.refineTaskId ?? msg.taskId)}>
             Enviar a cotizar
           </button>
         </div>
@@ -238,6 +240,13 @@ export const AtelierChat = () => {
   // Popup
   const [popupGlbUrl, setPopupGlbUrl]       = useState<string | null>(null);
   const [popupThumbUrl, setPopupThumbUrl]   = useState<string | undefined>(undefined);
+  // Image flow: remember the original uploaded data URL to feed vision analysis later
+  const [generatedFromImageDataUrl, setGeneratedFromImageDataUrl] = useState<string | null>(null);
+  // Cotizar modal (image flow only)
+  const [cotizarModal, setCotizarModal] = useState<{ glbUrl: string; taskId: string } | null>(null);
+  const [cotizarSuggestions, setCotizarSuggestions] = useState<DesignFields | null>(null);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [isSubmittingCotizacion, setIsSubmittingCotizacion] = useState(false);
 
   const bottomRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLTextAreaElement>(null);
@@ -290,7 +299,12 @@ export const AtelierChat = () => {
 
     const result: GenResult =
       taskStatus.status === 'SUCCEEDED'
-        ? { status: 'done', thumbnailUrl: taskStatus.thumbnail_url, modelUrls: taskStatus.model_urls }
+        ? {
+            status: 'done',
+            thumbnailUrl: taskStatus.thumbnail_url,
+            modelUrls: taskStatus.model_urls,
+            refineTaskId: activeGen.taskType === 'refine' ? activeGen.taskId : undefined,
+          }
         : { status: 'failed', error: taskStatus.error };
 
     setMessages(prev =>
@@ -310,22 +324,66 @@ export const AtelierChat = () => {
     setInputImgPreview(null);
     setActiveGen(null);
     setHasGeneratedModel(false);
+    setGeneratedFromImageDataUrl(null);
+    setCotizarModal(null);
+    setCotizarSuggestions(null);
+    setIsLoadingSuggestions(false);
+    setIsSubmittingCotizacion(false);
     refineStarted.current.clear();
     if (imgInputRef.current) imgInputRef.current.value = '';
   };
 
   const handleCotizar = (glbUrl: string, taskId: string) => {
-    // Extract the design description — find the AI's Phase 2 summary (contains ✨)
-    const summaryMsg = [...messages]
-      .reverse()
-      .find(m => m.kind === 'chat' && m.role === 'assistant' && m.content.includes('✨'));
-    const description = summaryMsg?.kind === 'chat'
-      ? summaryMsg.content
-      : messages.filter(m => m.kind === 'chat' && m.role === 'assistant').map(m => m.kind === 'chat' ? m.content : '').join('\n\n');
+    // Image flow: no conversation to parse → open form modal pre-filled with vision suggestions
+    if (generatedFromImageDataUrl) {
+      setCotizarModal({ glbUrl, taskId });
+      setCotizarSuggestions(null);
+      setIsLoadingSuggestions(true);
+      atelierApi.analyzeImage(generatedFromImageDataUrl)
+        .then((design) => { setCotizarSuggestions(design); })
+        .catch(() => {
+          setCotizarSuggestions({ type: '', material: '', color: '', shape: '', dimensions: '', details: '' });
+        })
+        .finally(() => setIsLoadingSuggestions(false));
+      return;
+    }
 
-    atelierApi.submitCotizacion({ glbUrl, taskId, description }).catch(() => {/* fire-and-forget */});
-    toast.success('¡Listo! Tu solicitud fue enviada a WAX. En breve te contactamos.');
+    // Text flow: send full conversation so the parser can extract fields
+    const description = messages
+      .filter(m => m.kind === 'chat')
+      .map(m => m.kind === 'chat' ? `${m.role === 'user' ? 'Usuario' : 'WAX Studio'}: ${m.content}` : '')
+      .join('\n\n');
+
+    atelierApi.submitCotizacion({ glbUrl, taskId, description }).catch(() => {});
+    toast.success('¡Listo! Tu solicitud fue enviada a WAX. Revisa el estado en Mis cotizaciones.');
     handleReset();
+  };
+
+  const handleCotizarFormSubmit = (values: CotizarFormValues) => {
+    if (!cotizarModal) return;
+    setIsSubmittingCotizacion(true);
+    const rawDescription = `Imagen analizada por IA. ${values.type} de ${values.material} ${values.color}, forma ${values.shape}, dimensiones ${values.dimensions}.${values.details ? ` Detalles: ${values.details}` : ''}`;
+    atelierApi.submitCotizacionDirect({
+      taskId: cotizarModal.taskId,
+      glbUrl: cotizarModal.glbUrl,
+      rawDescription,
+      design: {
+        type: values.type,
+        material: values.material,
+        color: values.color,
+        shape: values.shape,
+        dimensions: values.dimensions,
+        details: values.details ?? '',
+      },
+    })
+      .then(() => {
+        toast.success('¡Listo! Tu solicitud fue enviada a WAX. Revisa el estado en Mis cotizaciones.');
+        handleReset();
+      })
+      .catch(() => {
+        toast.error('No se pudo enviar la cotización. Intenta de nuevo.');
+        setIsSubmittingCotizacion(false);
+      });
   };
 
   const handleExpand = useCallback((glbUrl: string, thumbUrl?: string) => {
@@ -396,6 +454,8 @@ export const AtelierChat = () => {
   const handleGenerateFromImg = async () => {
     if (!inputImg || hasGeneratedModel) return;
     const dataUrl = await fileToDataUrl(inputImg);
+    // Keep the data URL so we can feed it to vision analysis when the user clicks "Enviar a cotizar"
+    setGeneratedFromImageDataUrl(dataUrl);
     // Clear preview immediately so the UI responds at once
     setInputImg(null);
     setInputImgPreview(null);
@@ -409,7 +469,10 @@ export const AtelierChat = () => {
           addMsg({ id: msgId, kind: 'gen', taskId: data.taskId, taskType: 'image' });
           setActiveGen({ msgId, taskId: data.taskId, taskType: 'image' });
         },
-        onError: () => setHasGeneratedModel(false),
+        onError: () => {
+          setHasGeneratedModel(false);
+          setGeneratedFromImageDataUrl(null);
+        },
       },
     );
   };
@@ -453,8 +516,8 @@ export const AtelierChat = () => {
                   <li>Solo se puede generar <strong>un modelo por conversación</strong> — si quieres otro diseño, inicia una nueva</li>
                 </ul>
                 <p className="atelier-advisement-note">
-                  <strong>Texto</strong> permite personalizar y ajustar el diseño conversando, pero el resultado 3D es aproximado.{' '}
-                  <strong>Imagen</strong> genera un modelo más fiel a la referencia visual, pero no admite correcciones posteriores.
+                  <strong>Texto</strong> permite personalizar y ajustar el diseño conversando, pero el resultado 3D es aproximado — tiempo estimado 3 a 5 min.{' '}
+                  <strong>Imagen</strong> genera un modelo más fiel a la referencia visual, pero no admite correcciones posteriores — tiempo estimado 3 a 8 min.
                 </p>
               </div>
               <div className="atelier-chat-chips">
@@ -622,6 +685,22 @@ export const AtelierChat = () => {
           glbUrl={popupGlbUrl}
           thumbnailUrl={popupThumbUrl}
           onClose={() => setPopupGlbUrl(null)}
+        />
+      )}
+
+      {/* ── Cotizar form modal (image flow) ── */}
+      {cotizarModal && (
+        <CotizarFormModal
+          initialValues={cotizarSuggestions}
+          isLoadingSuggestions={isLoadingSuggestions}
+          isSubmitting={isSubmittingCotizacion}
+          onConfirm={handleCotizarFormSubmit}
+          onClose={() => {
+            if (isSubmittingCotizacion) return;
+            setCotizarModal(null);
+            setCotizarSuggestions(null);
+            setIsLoadingSuggestions(false);
+          }}
         />
       )}
     </>

@@ -8,10 +8,14 @@ type Props = {
   item: BasketItemType;
 };
 
+// Custom (Atelier) pieces store the GLB model URL as pictureUrl — not a real image.
+const isCustom3dModel = (url: string | undefined) => /\.glb(\?|$)/i.test(url ?? '');
+
 export const BasketItem = ({ item }: Props) => {
   const { mutate: addItem, isPending: isAdding } = useAddToBasket();
   const { mutate: removeItem, isPending: isRemoving } = useRemoveFromBasket();
   const isBusy = isAdding || isRemoving;
+  const is3dModel = isCustom3dModel(item.pictureUrl);
 
   return (
     <article className="basket-item">
@@ -19,7 +23,18 @@ export const BasketItem = ({ item }: Props) => {
         className="basket-item-visual"
         style={{ background: `linear-gradient(135deg, ${waxBrand.color.stone}, ${waxBrand.color.porcelain})` }}
       >
-        <img src={item.pictureUrl} alt={item.productName} className="basket-item-image" />
+        {is3dModel ? (
+          <div className="basket-item-3d-placeholder" aria-label={item.productName}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+            <span>Pieza 3D</span>
+          </div>
+        ) : (
+          <img src={item.pictureUrl} alt={item.productName} className="basket-item-image" />
+        )}
       </div>
 
       <div className="basket-item-body">

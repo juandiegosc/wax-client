@@ -2836,6 +2836,135 @@ select {
   letter-spacing: 0.03em;
 }
 
+/* ─── Cotizar form modal ─────────────────────────────────────────── */
+
+.atelier-cotizar-modal {
+  max-width: 32rem;
+  width: 100%;
+  background: #1c1c1e;
+  color: var(--wax-color-snow, #f6f5f1);
+  padding: 1.5rem 1.5rem 1.25rem;
+}
+
+.atelier-cotizar-header {
+  margin-bottom: 1.25rem;
+}
+
+.atelier-cotizar-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--wax-font-display, serif);
+  font-size: 1.35rem;
+  letter-spacing: 0.01em;
+}
+
+.atelier-cotizar-subtitle {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--wax-color-smoke);
+  letter-spacing: 0.02em;
+}
+
+.atelier-cotizar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.atelier-cotizar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1rem;
+}
+
+.atelier-cotizar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wax-color-smoke);
+}
+
+.atelier-cotizar-field--full {
+  grid-column: 1 / -1;
+}
+
+.atelier-cotizar-field input,
+.atelier-cotizar-field textarea {
+  font-family: inherit;
+  font-size: 0.92rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--wax-color-snow, #f6f5f1);
+  background: #2a2a2c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.4rem;
+  padding: 0.55rem 0.7rem;
+  outline: none;
+  transition: border-color 120ms ease;
+}
+
+.atelier-cotizar-field input:focus,
+.atelier-cotizar-field textarea:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.atelier-cotizar-field input:disabled,
+.atelier-cotizar-field textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.atelier-cotizar-field textarea {
+  resize: vertical;
+  min-height: 2.5rem;
+}
+
+.atelier-cotizar-field em {
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.74rem;
+  color: #ff8a80;
+}
+
+.atelier-cotizar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.atelier-cotizar-cancel {
+  background: transparent;
+  color: var(--wax-color-smoke);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.55rem 1rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.atelier-cotizar-cancel:hover:not(:disabled) {
+  color: var(--wax-color-snow, #f6f5f1);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.atelier-cotizar-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 36rem) {
+  .atelier-cotizar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ─── Responsive: chat fills right column on large screens ──────── */
 
 @media (min-width: 49rem) {
@@ -3346,6 +3475,24 @@ select {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.basket-item-3d-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  color: var(--wax-color-smoke);
+  background: var(--wax-color-bone);
+}
+
+.basket-item-3d-placeholder span {
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .basket-item-body {
@@ -4464,4 +4611,472 @@ select {
 
 .search-overlay-input::-webkit-search-cancel-button {
   display: none;
+}
+
+/* ─── Mis cotizaciones (CustomProducts) ──────────────────────────── */
+
+.quote-page,
+.quote-detail-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.quote-kicker {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--wax-color-smoke);
+  margin-bottom: 0.5rem;
+}
+
+.quote-header {
+  margin-bottom: 2rem;
+}
+
+.quote-title {
+  font-family: var(--wax-font-display);
+  font-size: 2.1rem;
+  color: var(--wax-color-ink);
+  margin: 0 0 0.5rem;
+}
+
+.quote-lead {
+  color: var(--wax-color-smoke);
+  font-size: 0.92rem;
+  margin: 0;
+  max-width: 36rem;
+}
+
+.quote-empty {
+  color: var(--wax-color-smoke);
+  font-size: 0.92rem;
+}
+
+.quote-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+.quote-banner {
+  background: var(--wax-color-amber);
+  color: var(--wax-color-porcelain);
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--wax-radius-soft);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.quote-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.quote-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+.quote-card {
+  border: 1px solid rgba(15, 15, 16, 0.1);
+  border-radius: var(--wax-radius-strong);
+  background: var(--wax-color-porcelain);
+  padding: 1.1rem 1.25rem;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+
+.quote-card:hover {
+  border-color: rgba(15, 15, 16, 0.28);
+  transform: translateY(-1px);
+}
+
+.quote-card--alert {
+  border-color: var(--wax-color-amber);
+  border-left-width: 3px;
+}
+
+.quote-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.quote-card-type {
+  font-family: var(--wax-font-display);
+  font-size: 1.1rem;
+  color: var(--wax-color-ink);
+  text-transform: capitalize;
+}
+
+.quote-card-desc {
+  color: var(--wax-color-smoke);
+  font-size: 0.84rem;
+  margin: 0 0 0.75rem;
+  text-transform: capitalize;
+}
+
+.quote-card-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.quote-card-price {
+  font-size: 1rem;
+  color: var(--wax-color-ink);
+  font-weight: 600;
+}
+
+.quote-card-date {
+  font-size: 0.76rem;
+  color: var(--wax-color-smoke);
+}
+
+/* Status badges */
+.quote-status {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.6rem;
+  border-radius: var(--wax-radius-pill);
+  white-space: nowrap;
+  background: var(--wax-color-stone);
+  color: var(--wax-color-graphite);
+}
+
+.quote-status--awaitingcustomerreview {
+  background: var(--wax-color-amber);
+  color: var(--wax-color-porcelain);
+}
+
+.quote-status--awaitingadminreview {
+  background: var(--wax-color-stone);
+  color: var(--wax-color-graphite);
+}
+
+.quote-status--approved,
+.quote-status--addedtobasket {
+  background: var(--wax-color-olive);
+  color: var(--wax-color-porcelain);
+}
+
+.quote-status--rejected {
+  background: var(--wax-color-oxblood);
+  color: var(--wax-color-porcelain);
+}
+
+.quote-status--pendingquotation {
+  background: var(--wax-color-stone);
+  color: var(--wax-color-smoke);
+}
+
+/* Detail page */
+.quote-back {
+  display: inline-block;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--wax-color-smoke);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+}
+
+.quote-back:hover {
+  color: var(--wax-color-ink);
+}
+
+.quote-detail-header {
+  margin-bottom: 1.5rem;
+}
+
+.quote-detail-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.quote-detail-title {
+  font-family: var(--wax-font-display);
+  font-size: 1.8rem;
+  color: var(--wax-color-ink);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.quote-detail-date {
+  font-size: 0.78rem;
+  color: var(--wax-color-smoke);
+}
+
+.quote-detail-model {
+  border-radius: var(--wax-radius-strong);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.quote-detail-design,
+.quote-detail-proposals,
+.quote-detail-actions {
+  border: 1px solid rgba(15, 15, 16, 0.1);
+  border-radius: var(--wax-radius-strong);
+  background: var(--wax-color-porcelain);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.quote-design-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1.5rem;
+  margin: 0.75rem 0 0;
+}
+
+.quote-design-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.quote-design-grid-full {
+  grid-column: 1 / -1;
+}
+
+.quote-design-grid dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wax-color-smoke);
+}
+
+.quote-design-grid dd {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--wax-color-ink);
+  text-transform: capitalize;
+}
+
+.quote-proposal-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.quote-proposal {
+  border: 1px solid rgba(15, 15, 16, 0.08);
+  border-radius: var(--wax-radius-soft);
+  padding: 0.75rem 0.9rem;
+  background: var(--wax-color-bone);
+}
+
+.quote-proposal--customer {
+  border-left: 3px solid var(--wax-color-amber);
+}
+
+.quote-proposal--admin {
+  border-left: 3px solid var(--wax-color-ink);
+}
+
+.quote-proposal--system {
+  border-left: 3px solid var(--wax-color-stone);
+}
+
+.quote-proposal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.quote-proposal-source {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wax-color-smoke);
+}
+
+.quote-proposal-amount {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--wax-color-ink);
+}
+
+.quote-proposal-comment {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--wax-color-graphite);
+}
+
+.quote-proposal-date {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--wax-color-smoke);
+}
+
+.quote-actions-hint {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: var(--wax-color-graphite);
+}
+
+.quote-actions-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.quote-btn {
+  font-family: var(--wax-font-body);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--wax-radius-soft);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: opacity 120ms ease, background 120ms ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.quote-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quote-btn--primary {
+  background: var(--wax-color-ink);
+  color: var(--wax-color-porcelain);
+}
+
+.quote-btn--primary:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.quote-btn--ghost {
+  background: transparent;
+  color: var(--wax-color-ink);
+  border-color: rgba(15, 15, 16, 0.25);
+}
+
+.quote-btn--ghost:hover:not(:disabled) {
+  border-color: var(--wax-color-ink);
+}
+
+/* Counter-offer modal */
+.quote-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 16, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 100;
+}
+
+.quote-modal {
+  position: relative;
+  background: var(--wax-color-porcelain);
+  border-radius: var(--wax-radius-strong);
+  padding: 1.75rem;
+  max-width: 26rem;
+  width: 100%;
+}
+
+.quote-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.9rem;
+  background: transparent;
+  border: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--wax-color-smoke);
+  cursor: pointer;
+}
+
+.quote-modal-title {
+  font-family: var(--wax-font-display);
+  font-size: 1.3rem;
+  margin: 0 0 0.35rem;
+  color: var(--wax-color-ink);
+}
+
+.quote-modal-sub {
+  font-size: 0.85rem;
+  color: var(--wax-color-smoke);
+  margin: 0 0 1.25rem;
+}
+
+.quote-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.quote-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wax-color-smoke);
+}
+
+.quote-modal-field input,
+.quote-modal-field textarea {
+  font-family: var(--wax-font-body);
+  font-size: 0.92rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--wax-color-ink);
+  background: var(--wax-color-bone);
+  border: 1px solid rgba(15, 15, 16, 0.15);
+  border-radius: var(--wax-radius-soft);
+  padding: 0.55rem 0.7rem;
+  outline: none;
+}
+
+.quote-modal-field input:focus,
+.quote-modal-field textarea:focus {
+  border-color: var(--wax-color-ink);
+}
+
+.quote-modal-field textarea {
+  resize: vertical;
+}
+
+.quote-modal-field em {
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.74rem;
+  color: var(--wax-color-oxblood);
+}
+
+.quote-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+@media (max-width: 36rem) {
+  .quote-design-grid {
+    grid-template-columns: 1fr;
+  }
 }
