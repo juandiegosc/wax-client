@@ -10,6 +10,7 @@ import { waxBrand } from '@/config/brand';
 import { waxMenuFooterLinks, waxMenuSections } from '@/config/menu';
 import { useCurrentUser, useLogout, useUserAddress } from '@/lib/hooks/useAccount';
 import { useBasket } from '@/features/basket/hooks/useBasket';
+import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustomProducts';
 import { MenuToggle } from '@/layouts/MenuToggle';
 import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
@@ -280,6 +281,7 @@ type SiteHeaderProps = {
   headerBarPadding: string;
   isAuthenticated: boolean;
   basketCount: number;
+  pendingQuotationsCount: number;
   onLogout: () => void;
   isLoggingOut: boolean;
   onSearchOpen: () => void;
@@ -300,6 +302,7 @@ const SiteHeader = ({
   headerBarPadding,
   isAuthenticated,
   basketCount,
+  pendingQuotationsCount,
   onLogout,
   isLoggingOut,
   onSearchOpen,
@@ -438,7 +441,20 @@ const SiteHeader = ({
               aria-label="Mi perfil"
               sx={utilityButtonStyle}
             >
-              <PersonOutlineOutlinedIcon fontSize="small" />
+              <Badge
+                badgeContent={pendingQuotationsCount || null}
+                sx={{
+                  '& .MuiBadge-badge': {
+                    backgroundColor: waxBrand.color.ink,
+                    color: waxBrand.color.porcelain,
+                    fontSize: '0.65rem',
+                    minWidth: 16,
+                    height: 16,
+                  },
+                }}
+              >
+                <PersonOutlineOutlinedIcon fontSize="small" />
+              </Badge>
             </IconButton>
 
             {profileMenuOpen && (
@@ -463,6 +479,20 @@ const SiteHeader = ({
                   }}
                 >
                   Ver perfil
+                </Link>
+                <Link
+                  to={routePaths.myCustomProducts}
+                  style={{
+                    display: 'block',
+                    padding: '0.72rem 1.1rem',
+                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
+                    fontSize: '0.78rem',
+                    letterSpacing: '0.06em',
+                    color: waxBrand.color.ink,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Mis cotizaciones
                 </Link>
                 <button
                   type="button"
@@ -541,6 +571,9 @@ export const MainLayout = () => {
 
   const { data: basket } = useBasket(isAuthenticated);
   const basketCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+
+  const { data: myQuotations } = useMyCustomProducts();
+  const pendingQuotationsCount = myQuotations?.filter(q => q.status === 'AwaitingCustomerReview').length ?? 0;
 
   const isHomePage = location.pathname === routePaths.home;
   const isFloatingHeader = isHomePage && !hasScrolled && !isMenuOpen;
@@ -662,6 +695,7 @@ export const MainLayout = () => {
         headerBarPadding={headerBarPadding}
         isAuthenticated={isAuthenticated}
         basketCount={basketCount}
+        pendingQuotationsCount={pendingQuotationsCount}
         onLogout={handleLogout}
         isLoggingOut={logoutMutation.isPending}
         onSearchOpen={openSearch}
