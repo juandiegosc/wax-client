@@ -572,7 +572,7 @@ export const MainLayout = () => {
   const { data: basket } = useBasket(isAuthenticated);
   const basketCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
-  const { data: myQuotations } = useMyCustomProducts();
+  const { data: myQuotations } = useMyCustomProducts(isAuthenticated);
   const pendingQuotationsCount = myQuotations?.filter(q => q.status === 'AwaitingCustomerReview').length ?? 0;
 
   const isHomePage = location.pathname === routePaths.home;
