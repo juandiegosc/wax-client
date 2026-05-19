@@ -4128,7 +4128,7 @@ select {
 }
 
 .product-details-lead {
-  margin: 0;
+  margin: 1.25rem 0 0;
   color: var(--wax-color-graphite);
   line-height: 1.8;
 }
