@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { formatCurrency } from '@/utils/currency';
 
 describe('formatCurrency', () => {
-  it('formats a whole number as MXN currency', () => {
+  it('formats a whole number as USD currency', () => {
     expect(formatCurrency(42000)).toBe('$42,000');
   });
 

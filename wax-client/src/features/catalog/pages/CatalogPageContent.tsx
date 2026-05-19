@@ -31,7 +31,6 @@ export const CatalogPageContent = () => {
   const { data, isLoading, isError } = useProducts({ pageNumber, pageSize: PAGE_SIZE, searchTerm, orderBy });
   const products = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
-  const totalCount = data?.totalCount ?? 0;
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -56,9 +55,7 @@ export const CatalogPageContent = () => {
       <header className="catalog-page-header">
         <div className="catalog-page-header-left">
           <span className="catalog-kicker">Colección</span>
-          <h1 className="catalog-page-title">
-            {totalCount > 0 ? `${totalCount} piezas` : 'Catálogo'}
-          </h1>
+          <h1 className="catalog-page-title">Catálogo</h1>
         </div>
 
         <div className="catalog-page-header-right">

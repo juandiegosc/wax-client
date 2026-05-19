@@ -62,9 +62,9 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
     }
   };
 
-  const handleCounterOffer = (amountMxn: number, comment?: string) => {
+  const handleCounterOffer = (amountUsd: number, comment?: string) => {
     counterOffer(
-      { id: product.id, amount: Math.round(amountMxn * 100), comment },
+      { id: product.id, amount: Math.round(amountUsd * 100), comment },
       { onSuccess: () => setShowCounterModal(false) },
     );
   };
@@ -181,7 +181,7 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
         <CounterOfferModal
           currentPrice={product.price}
           isSubmitting={isCountering}
-          onConfirm={(values) => handleCounterOffer(values.amountMxn, values.comment)}
+          onConfirm={(values) => handleCounterOffer(values.amountUsd, values.comment)}
           onClose={() => !isCountering && setShowCounterModal(false)}
         />
       )}
