@@ -2,19 +2,19 @@ import { describe, it, expect } from 'vitest';
 import { formatCurrency } from '@/utils/currency';
 
 describe('formatCurrency', () => {
-  it('formats a whole number as USD currency', () => {
-    expect(formatCurrency(42000)).toBe('$42,000');
+  it('formats cents as USD currency with two decimals', () => {
+    expect(formatCurrency(2000)).toBe('$20.00');
   });
 
   it('formats zero correctly', () => {
-    expect(formatCurrency(0)).toBe('$0');
+    expect(formatCurrency(0)).toBe('$0.00');
   });
 
-  it('rounds decimals since maximumFractionDigits is 0', () => {
-    expect(formatCurrency(1500.99)).toBe('$1,501');
+  it('handles larger amounts with thousand separators', () => {
+    expect(formatCurrency(150099)).toBe('$1,500.99');
   });
 
-  it('formats large amounts with thousand separators', () => {
-    expect(formatCurrency(1000000)).toBe('$1,000,000');
+  it('formats one million cents as $10,000.00', () => {
+    expect(formatCurrency(1000000)).toBe('$10,000.00');
   });
 });

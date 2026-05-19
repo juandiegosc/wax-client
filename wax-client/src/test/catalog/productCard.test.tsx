@@ -60,7 +60,7 @@ describe('ProductCard', () => {
     renderCard(makeProduct());
 
     expect(screen.getByText('Bolso Cloud Blanc')).toBeInTheDocument();
-    expect(screen.getByText('$42,000')).toBeInTheDocument();
+    expect(screen.getByText('$420.00')).toBeInTheDocument();
     expect(screen.getByText('Bolso')).toBeInTheDocument();
     expect(screen.getByText('WAX')).toBeInTheDocument();
   });

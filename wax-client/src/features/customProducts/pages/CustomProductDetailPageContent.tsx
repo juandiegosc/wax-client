@@ -123,7 +123,7 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
               <div className="quote-proposal-head">
                 <span className="quote-proposal-source">{SOURCE_LABELS[proposal.source]}</span>
                 <span className="quote-proposal-amount">
-                  {formatCurrency(proposal.amount / 100)}
+                  {formatCurrency(proposal.amount)}
                 </span>
               </div>
               {proposal.comment && (
@@ -154,7 +154,7 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
               onClick={handleApprove}
               disabled={isApproving || isCountering}
             >
-              {isApproving ? 'Aceptando…' : `Aceptar ${formatCurrency(product.price / 100)}`}
+              {isApproving ? 'Aceptando…' : `Aceptar ${formatCurrency(product.price)}`}
             </button>
             <button
               className="quote-btn quote-btn--ghost"
