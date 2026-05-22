@@ -1827,6 +1827,56 @@ select {
 
 /* ─── Chat container ─────────────────────────────────────────────── */
 
+.atelier-resume-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid rgba(15, 15, 16, 0.12);
+  border-radius: 0.75rem;
+  background: var(--wax-color-bone);
+}
+
+.atelier-resume-text {
+  font-size: 0.88rem;
+  color: var(--wax-color-graphite);
+}
+
+.atelier-resume-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.atelier-resume-btn {
+  padding: 0.5rem 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+
+.atelier-resume-btn:hover {
+  opacity: 0.85;
+}
+
+.atelier-resume-btn--primary {
+  border: 1px solid var(--wax-color-ink);
+  background: var(--wax-color-ink);
+  color: var(--wax-color-porcelain);
+}
+
+.atelier-resume-btn--ghost {
+  border: 1px solid rgba(15, 15, 16, 0.25);
+  background: transparent;
+  color: var(--wax-color-ink);
+}
+
 .atelier-chat {
   display: flex;
   flex-direction: column;
