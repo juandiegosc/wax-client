@@ -35,8 +35,6 @@ export const CheckoutOrderSummary = ({ basket }: Props) => {
         <span>Total</span>
         <strong>{formatCurrency(subtotal)}</strong>
       </div>
-
-      <p className="basket-summary-note">Precio en pesos mexicanos, impuestos incluidos.</p>
     </aside>
   );
 };

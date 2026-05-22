@@ -34,7 +34,7 @@ export const CustomProductCard = ({ product }: Props) => {
         </p>
 
         <div className="quote-card-footer">
-          <span className="quote-card-price">{formatCurrency(product.price / 100)}</span>
+          <span className="quote-card-price">{formatCurrency(product.price)}</span>
           <span className="quote-card-date">{date}</span>
         </div>
       </article>

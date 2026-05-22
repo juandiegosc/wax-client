@@ -35,6 +35,32 @@ type GenMsg = {
 
 type AnyMsg = ChatMsg | GenMsg;
 
+type ActiveGen = { msgId: string; taskId: string; taskType: 'text' | 'refine' | 'image' };
+
+// ── Persistencia de la conversación (localStorage) ──────────────────────────────
+// Conserva el chat y la generación en curso al navegar, dar atrás o recargar.
+// Se limpia solo cuando el usuario hace "Empezar de nuevo".
+const ATELIER_STORAGE_KEY = 'wax-atelier-session';
+
+type PersistedAtelier = {
+  sessionId: string;
+  messages: AnyMsg[];
+  lastGenPrompt: string;
+  artStyle: ArtStyle;
+  activeGen: ActiveGen | null;
+  hasGeneratedModel: boolean;
+  generatedFromImageDataUrl: string | null;
+};
+
+const loadPersistedAtelier = (): Partial<PersistedAtelier> => {
+  try {
+    const raw = localStorage.getItem(ATELIER_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as Partial<PersistedAtelier>) : {};
+  } catch {
+    return {};
+  }
+};
+
 // ── Constants ─────────────────────────────────────────────────────────────────
 const SUGGESTIONS = [
   'Diseña una bolsa minimalista en cuero blanco',
@@ -226,27 +252,31 @@ const GenCard = ({
 
 // ── Main component ────────────────────────────────────────────────────────────
 export const AtelierChat = () => {
-  const [sessionId, setSessionId]           = useState(() => crypto.randomUUID());
-  const [messages, setMessages]             = useState<AnyMsg[]>([]);
+  const persisted = useRef(loadPersistedAtelier()).current;
+
+  const [sessionId, setSessionId]           = useState(() => persisted.sessionId ?? crypto.randomUUID());
+  const [messages, setMessages]             = useState<AnyMsg[]>(() => persisted.messages ?? []);
   const [input, setInput]                   = useState('');
-  const [lastGenPrompt, setLastGenPrompt]   = useState('');
-  const [artStyle, setArtStyle]             = useState<ArtStyle>('realistic');
+  const [lastGenPrompt, setLastGenPrompt]   = useState(() => persisted.lastGenPrompt ?? '');
+  const [artStyle, setArtStyle]             = useState<ArtStyle>(() => persisted.artStyle ?? 'realistic');
   const [inputImg, setInputImg]             = useState<File | null>(null);
   const [inputImgPreview, setInputImgPreview] = useState<string | null>(null);
-  const [activeGen, setActiveGen]           = useState<{ msgId: string; taskId: string; taskType: 'text' | 'refine' | 'image' } | null>(null);
+  const [activeGen, setActiveGen]           = useState<ActiveGen | null>(() => persisted.activeGen ?? null);
   const refineStarted = useRef<Set<string>>(new Set());
   // One model per conversation
-  const [hasGeneratedModel, setHasGeneratedModel] = useState(false);
+  const [hasGeneratedModel, setHasGeneratedModel] = useState(() => persisted.hasGeneratedModel ?? false);
   // Popup
   const [popupGlbUrl, setPopupGlbUrl]       = useState<string | null>(null);
   const [popupThumbUrl, setPopupThumbUrl]   = useState<string | undefined>(undefined);
   // Image flow: remember the original uploaded data URL to feed vision analysis later
-  const [generatedFromImageDataUrl, setGeneratedFromImageDataUrl] = useState<string | null>(null);
+  const [generatedFromImageDataUrl, setGeneratedFromImageDataUrl] = useState<string | null>(() => persisted.generatedFromImageDataUrl ?? null);
   // Cotizar modal (image flow only)
   const [cotizarModal, setCotizarModal] = useState<{ glbUrl: string; taskId: string } | null>(null);
   const [cotizarSuggestions, setCotizarSuggestions] = useState<DesignFields | null>(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isSubmittingCotizacion, setIsSubmittingCotizacion] = useState(false);
+  // Aviso de retomar: solo si al montar había una conversación guardada
+  const [showResumePrompt, setShowResumePrompt] = useState(() => (persisted.messages?.length ?? 0) > 0);
 
   const bottomRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLTextAreaElement>(null);
@@ -264,6 +294,24 @@ export const AtelierChat = () => {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isChatPending]);
+
+  // Persistir la conversación para no perderla al navegar / recargar
+  useEffect(() => {
+    const data: PersistedAtelier = {
+      sessionId,
+      messages,
+      lastGenPrompt,
+      artStyle,
+      activeGen,
+      hasGeneratedModel,
+      generatedFromImageDataUrl,
+    };
+    try {
+      localStorage.setItem(ATELIER_STORAGE_KEY, JSON.stringify(data));
+    } catch {
+      // Cuota de storage excedida (ej. imagen muy grande) — se ignora
+    }
+  }, [sessionId, messages, lastGenPrompt, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
 
   // Resolve generation result when task finishes; auto-start refine after preview
   useEffect(() => {
@@ -329,8 +377,14 @@ export const AtelierChat = () => {
     setCotizarSuggestions(null);
     setIsLoadingSuggestions(false);
     setIsSubmittingCotizacion(false);
+    setShowResumePrompt(false);
     refineStarted.current.clear();
     if (imgInputRef.current) imgInputRef.current.value = '';
+    try {
+      localStorage.removeItem(ATELIER_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
   };
 
   const handleCotizar = (glbUrl: string, taskId: string) => {
@@ -502,6 +556,28 @@ export const AtelierChat = () => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <>
+      {showResumePrompt && (
+        <div className="atelier-resume-banner" role="status">
+          <span className="atelier-resume-text">Tienes un diseño en progreso.</span>
+          <div className="atelier-resume-actions">
+            <button
+              type="button"
+              className="atelier-resume-btn atelier-resume-btn--primary"
+              onClick={() => setShowResumePrompt(false)}
+            >
+              Continuar
+            </button>
+            <button
+              type="button"
+              className="atelier-resume-btn atelier-resume-btn--ghost"
+              onClick={handleReset}
+            >
+              Empezar de nuevo
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="atelier-chat">
 
         {/* ── Messages area ── */}

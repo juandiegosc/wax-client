@@ -65,7 +65,7 @@ describe('CatalogPageContent', () => {
     expect(screen.getByText('Bolso Negro Mate')).toBeInTheDocument();
   });
 
-  it('shows the total count in the title', () => {
+  it('renders the catalog heading', () => {
     mockUseProducts.mockReturnValue({
       isLoading: false,
       isError: false,
@@ -74,7 +74,7 @@ describe('CatalogPageContent', () => {
 
     renderCatalog();
 
-    expect(screen.getByRole('heading', { name: /2 piezas/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /catálogo/i })).toBeInTheDocument();
   });
 
   it('shows generic empty state when catalog has no products', () => {

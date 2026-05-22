@@ -39,7 +39,8 @@ export const stripHiddenPrompt = (text: string): string =>
 export const getProgressMessage = (progress: number) =>
   ([...PROGRESS_MESSAGES].reverse().find(m => progress >= m.threshold) ?? PROGRESS_MESSAGES[0]).label;
 
+// Siempre pasamos por el proxy /meshy-cdn para evitar CORS:
+// - local: lo resuelve el proxy de Vite (vite.config.ts)
+// - producción: lo resuelve la Rewrite Rule de Render (/meshy-cdn/* -> https://assets.meshy.ai/*)
 export const meshyUrl = (url: string) =>
-  import.meta.env.DEV
-    ? url.replace('https://assets.meshy.ai', '/meshy-cdn')
-    : url;
+  url.replace('https://assets.meshy.ai', '/meshy-cdn');

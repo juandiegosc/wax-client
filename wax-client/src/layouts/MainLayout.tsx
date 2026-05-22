@@ -50,15 +50,11 @@ const renderMenuItem = (item: MenuItem, closeMenu: () => void) => {
 
   const itemStyle = { display: 'block', padding: '0.75rem 0' };
 
-  if ('to' in item) {
-    return (
-      <Link key={item.label} to={item.to} onClick={closeMenu} style={itemStyle}>
-        {content}
-      </Link>
-    );
-  }
-
-  return <div key={item.label} style={itemStyle}>{content}</div>;
+  return (
+    <Link key={item.label} to={item.to} onClick={closeMenu} style={itemStyle}>
+      {content}
+    </Link>
+  );
 };
 
 const renderMenuSection = (section: MenuSection, closeMenu: () => void) => (
