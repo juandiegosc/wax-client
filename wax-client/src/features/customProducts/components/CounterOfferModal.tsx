@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 const counterOfferSchema = z.object({
-  amountMxn: z.number({ message: 'Ingresa un monto' }).positive('El monto debe ser mayor a 0'),
+  amountUsd: z.number({ message: 'Ingresa un monto' }).positive('El monto debe ser mayor a 0'),
   comment: z.string().trim().max(490).optional(),
 });
 
@@ -25,7 +25,7 @@ export const CounterOfferModal = ({ currentPrice, isSubmitting, onConfirm, onClo
   } = useForm<CounterOfferValues>({
     mode: 'onTouched',
     resolver: zodResolver(counterOfferSchema),
-    defaultValues: { amountMxn: undefined, comment: '' },
+    defaultValues: { amountUsd: undefined, comment: '' },
   });
 
   useEffect(() => {
@@ -50,9 +50,9 @@ export const CounterOfferModal = ({ currentPrice, isSubmitting, onConfirm, onClo
         <p className="quote-modal-sub">
           Precio actual propuesto por WAX:{' '}
           <strong>
-            {new Intl.NumberFormat('es-MX', {
+            {new Intl.NumberFormat('en-US', {
               style: 'currency',
-              currency: 'MXN',
+              currency: 'USD',
               maximumFractionDigits: 0,
             }).format(currentPrice / 100)}
           </strong>
@@ -60,16 +60,16 @@ export const CounterOfferModal = ({ currentPrice, isSubmitting, onConfirm, onClo
 
         <form className="quote-modal-form" onSubmit={handleSubmit(onConfirm)}>
           <label className="quote-modal-field">
-            <span>Tu oferta (MXN)</span>
+            <span>Tu oferta (USD)</span>
             <input
               type="number"
               step="1"
               min="1"
               placeholder="Ej. 3500"
-              {...register('amountMxn', { valueAsNumber: true })}
+              {...register('amountUsd', { valueAsNumber: true })}
               disabled={isSubmitting}
             />
-            {errors.amountMxn && <em>{errors.amountMxn.message}</em>}
+            {errors.amountUsd && <em>{errors.amountUsd.message}</em>}
           </label>
 
           <label className="quote-modal-field">

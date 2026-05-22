@@ -1,6 +1,5 @@
-export const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat('es-MX', {
+export const formatCurrency = (cents: number) =>
+  new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'MXN',
-    maximumFractionDigits: 0,
-  }).format(amount);
+    currency: 'USD',
+  }).format(cents / 100);

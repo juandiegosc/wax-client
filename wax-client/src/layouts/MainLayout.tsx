@@ -50,15 +50,11 @@ const renderMenuItem = (item: MenuItem, closeMenu: () => void) => {
 
   const itemStyle = { display: 'block', padding: '0.75rem 0' };
 
-  if ('to' in item) {
-    return (
-      <Link key={item.label} to={item.to} onClick={closeMenu} style={itemStyle}>
-        {content}
-      </Link>
-    );
-  }
-
-  return <div key={item.label} style={itemStyle}>{content}</div>;
+  return (
+    <Link key={item.label} to={item.to} onClick={closeMenu} style={itemStyle}>
+      {content}
+    </Link>
+  );
 };
 
 const renderMenuSection = (section: MenuSection, closeMenu: () => void) => (
@@ -572,7 +568,7 @@ export const MainLayout = () => {
   const { data: basket } = useBasket(isAuthenticated);
   const basketCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
-  const { data: myQuotations } = useMyCustomProducts();
+  const { data: myQuotations } = useMyCustomProducts(isAuthenticated);
   const pendingQuotationsCount = myQuotations?.filter(q => q.status === 'AwaitingCustomerReview').length ?? 0;
 
   const isHomePage = location.pathname === routePaths.home;

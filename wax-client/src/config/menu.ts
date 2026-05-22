@@ -4,8 +4,7 @@ export const waxMenuSections = [
   {
     title: 'Principal',
     items: [
-      { label: 'Novedades', to: routePaths.catalog, description: 'Piezas recientes y lanzamientos destacados' },
-      { label: 'Colecciones', description: 'Selecciones curadas, firmas y ediciones con narrativa' },
+      { label: 'Colección', to: routePaths.catalog, description: 'Selecciones curadas, firmas y ediciones con narrativa' },
     ],
   },
   {

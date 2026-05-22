@@ -62,9 +62,9 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
     }
   };
 
-  const handleCounterOffer = (amountMxn: number, comment?: string) => {
+  const handleCounterOffer = (amountUsd: number, comment?: string) => {
     counterOffer(
-      { id: product.id, amount: Math.round(amountMxn * 100), comment },
+      { id: product.id, amount: Math.round(amountUsd * 100), comment },
       { onSuccess: () => setShowCounterModal(false) },
     );
   };
@@ -123,7 +123,7 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
               <div className="quote-proposal-head">
                 <span className="quote-proposal-source">{SOURCE_LABELS[proposal.source]}</span>
                 <span className="quote-proposal-amount">
-                  {formatCurrency(proposal.amount / 100)}
+                  {formatCurrency(proposal.amount)}
                 </span>
               </div>
               {proposal.comment && (
@@ -154,7 +154,7 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
               onClick={handleApprove}
               disabled={isApproving || isCountering}
             >
-              {isApproving ? 'Aceptando…' : `Aceptar ${formatCurrency(product.price / 100)}`}
+              {isApproving ? 'Aceptando…' : `Aceptar ${formatCurrency(product.price)}`}
             </button>
             <button
               className="quote-btn quote-btn--ghost"
@@ -181,7 +181,7 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
         <CounterOfferModal
           currentPrice={product.price}
           isSubmitting={isCountering}
-          onConfirm={(values) => handleCounterOffer(values.amountMxn, values.comment)}
+          onConfirm={(values) => handleCounterOffer(values.amountUsd, values.comment)}
           onClose={() => !isCountering && setShowCounterModal(false)}
         />
       )}
