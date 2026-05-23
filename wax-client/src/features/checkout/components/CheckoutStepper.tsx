@@ -11,7 +11,7 @@ import { useCreateOrder } from '../hooks/useCheckout';
 import { useUserAddress } from '@/lib/hooks/useAccount';
 import { queryKeys } from '@/lib/queryKeys';
 import { routePaths } from '@/routes/routePaths';
-import { formatCurrency } from '@/utils/currency';
+import { calculateDeliveryFee, formatCurrency } from '@/utils/currency';
 import type { Basket } from '@/features/basket/types/basket.types';
 import type { PaymentSummaryInput } from '@/lib/types/order';
 
@@ -108,6 +108,8 @@ export const CheckoutStepper = ({ basket }: Props) => {
   };
 
   const subtotal = basket.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const deliveryFee = calculateDeliveryFee(subtotal);
+  const total = subtotal + deliveryFee;
   const isNextDisabled =
     (activeStep === 0 && !addressComplete) ||
     (activeStep === 1 && !paymentComplete) ||
@@ -158,7 +160,7 @@ export const CheckoutStepper = ({ basket }: Props) => {
           {activeStep === 2
             ? isSubmitting
               ? 'Procesando...'
-              : `Pagar ${formatCurrency(subtotal)}`
+              : `Pagar ${formatCurrency(total)}`
             : 'Continuar'}
         </button>
       </div>

@@ -1,5 +1,5 @@
 import type { Basket } from '@/features/basket/types/basket.types';
-import { formatCurrency } from '@/utils/currency';
+import { calculateDeliveryFee, formatCurrency } from '@/utils/currency';
 
 interface Props {
   basket: Basket;
@@ -7,6 +7,8 @@ interface Props {
 
 export const CheckoutOrderSummary = ({ basket }: Props) => {
   const subtotal = basket.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const deliveryFee = calculateDeliveryFee(subtotal);
+  const total = subtotal + deliveryFee;
 
   return (
     <aside className="checkout-summary" style={{ borderLeft: '1px solid rgba(15, 15, 16, 0.08)' }}>
@@ -31,9 +33,19 @@ export const CheckoutOrderSummary = ({ basket }: Props) => {
         ))}
       </ul>
 
+      <div className="basket-summary-row">
+        <span>Subtotal</span>
+        <strong>{formatCurrency(subtotal)}</strong>
+      </div>
+
+      <div className="basket-summary-row">
+        <span>Envío</span>
+        <strong>{deliveryFee === 0 ? 'Gratis' : formatCurrency(deliveryFee)}</strong>
+      </div>
+
       <div className="basket-summary-row basket-summary-row--total">
         <span>Total</span>
-        <strong>{formatCurrency(subtotal)}</strong>
+        <strong>{formatCurrency(total)}</strong>
       </div>
     </aside>
   );
