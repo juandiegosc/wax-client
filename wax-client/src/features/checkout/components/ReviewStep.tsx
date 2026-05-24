@@ -1,6 +1,6 @@
 import type { ConfirmationToken } from '@stripe/stripe-js';
 import type { Basket } from '@/features/basket/types/basket.types';
-import { formatCurrency } from '@/utils/currency';
+import { calculateDeliveryFee, formatCurrency } from '@/utils/currency';
 
 interface Props {
   confirmationToken: ConfirmationToken | null;
@@ -25,6 +25,8 @@ export const ReviewStep = ({ confirmationToken, basket }: Props) => {
   };
 
   const subtotal = basket.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const deliveryFee = calculateDeliveryFee(subtotal);
+  const total = subtotal + deliveryFee;
 
   return (
     <div className="checkout-review">
@@ -55,9 +57,19 @@ export const ReviewStep = ({ confirmationToken, basket }: Props) => {
         ))}
       </div>
 
+      <div className="checkout-review-total checkout-review-total--row">
+        <span>Subtotal</span>
+        <strong>{formatCurrency(subtotal)}</strong>
+      </div>
+
+      <div className="checkout-review-total checkout-review-total--row">
+        <span>Envío</span>
+        <strong>{deliveryFee === 0 ? 'Gratis' : formatCurrency(deliveryFee)}</strong>
+      </div>
+
       <div className="checkout-review-total">
         <span>Total</span>
-        <strong>{formatCurrency(subtotal)}</strong>
+        <strong>{formatCurrency(total)}</strong>
       </div>
     </div>
   );

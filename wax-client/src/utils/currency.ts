@@ -3,3 +3,7 @@ export const formatCurrency = (cents: number) =>
     style: 'currency',
     currency: 'USD',
   }).format(cents / 100);
+
+// Mirrors backend: Application.Orders.Commands.CreateOrderCommandHandler.CalculateDeliveryFee
+export const calculateDeliveryFee = (subtotalCents: number): number =>
+  subtotalCents > 10000 ? 0 : 500;
