@@ -10,6 +10,7 @@ export const routePaths = {
   myCustomProducts: '/mis-cotizaciones',
   customProductDetailPattern: '/mis-cotizaciones/:id',
   customProductDetail: (id: string) => `/mis-cotizaciones/${id}`,
+  myOrders: '/mis-pedidos',
   basket: '/basket',
   support: '/support',
   supportTicket: '/support/:id',

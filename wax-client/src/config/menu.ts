@@ -19,6 +19,7 @@ export const waxMenuSections = [
     title: 'Cuenta',
     items: [
       { label: 'Mi perfil', to: routePaths.profile, description: 'Consulta tu informacion personal y tu direccion guardada' },
+      { label: 'Mis pedidos', to: routePaths.myOrders, description: 'Historial y estado de tus compras' },
       { label: 'Mis cotizaciones', to: routePaths.myCustomProducts, description: 'Revisa el estado de tus encargos y propuestas' },
     ],
   },

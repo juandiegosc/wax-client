@@ -18,12 +18,17 @@ export const useSupportHub = (ticketId: string) => {
 
     connectionRef.current = connection;
 
+    // El backend puede devolver los comentarios agrupados por autor en vez de
+    // cronológicamente; los ordenamos por fecha de creación para reflejar la conversación real.
+    const byCreatedAt = (a: CommentDto, b: CommentDto) =>
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+
     connection.on('LoadComments', (initial: CommentDto[]) => {
-      setComments(initial);
+      setComments([...initial].sort(byCreatedAt));
     });
 
     connection.on('CommentAdded', (comment: CommentDto) => {
-      setComments((prev) => [...prev, comment]);
+      setComments((prev) => [...prev, comment].sort(byCreatedAt));
     });
 
     connection.onreconnected(() => setIsConnected(true));

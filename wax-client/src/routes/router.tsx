@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router';
 import { AtelierPage } from '@/pages/AtelierPage';
 import { CatalogPage } from '@/pages/CatalogPage';
 import { MyCustomProductsPage } from '@/pages/MyCustomProductsPage';
+import { MyOrdersPage } from '@/pages/MyOrdersPage';
 import { CustomProductDetailPage } from '@/pages/CustomProductDetailPage';
 import { BasketPage } from '@/pages/BasketPage';
 import { CheckoutPage } from '@/pages/CheckoutPage';
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
           {
             path: routePaths.customProductDetailPattern,
             Component: CustomProductDetailPage,
+          },
+          {
+            path: routePaths.myOrders,
+            Component: MyOrdersPage,
           },
           {
             path: routePaths.basket,
