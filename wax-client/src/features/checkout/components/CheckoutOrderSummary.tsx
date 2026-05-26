@@ -39,8 +39,8 @@ export const CheckoutOrderSummary = ({ basket }: Props) => {
       </div>
 
       <div className="basket-summary-row">
-        <span>Envío</span>
-        <strong>{deliveryFee === 0 ? 'Gratis' : formatCurrency(deliveryFee)}</strong>
+        <span>IVA (15%)</span>
+        <strong>{formatCurrency(deliveryFee)}</strong>
       </div>
 
       <div className="basket-summary-row basket-summary-row--total">
