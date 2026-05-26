@@ -4,6 +4,8 @@ export const formatCurrency = (cents: number) =>
     currency: 'USD',
   }).format(cents / 100);
 
-// Mirrors backend: Application.Orders.Commands.CreateOrderCommandHandler.CalculateDeliveryFee
+// IVA del 15% sobre el subtotal. Refleja el backend: PaymentService computa
+// (long)(subtotal * 0.15m), que trunca; usamos Math.trunc para que el total
+// mostrado coincida exactamente con el monto cobrado en Stripe.
 export const calculateDeliveryFee = (subtotalCents: number): number =>
-  subtotalCents > 10000 ? 0 : 500;
+  Math.trunc(subtotalCents * 0.15);
