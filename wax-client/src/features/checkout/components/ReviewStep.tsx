@@ -63,8 +63,8 @@ export const ReviewStep = ({ confirmationToken, basket }: Props) => {
       </div>
 
       <div className="checkout-review-total checkout-review-total--row">
-        <span>Envío</span>
-        <strong>{deliveryFee === 0 ? 'Gratis' : formatCurrency(deliveryFee)}</strong>
+        <span>IVA (15%)</span>
+        <strong>{formatCurrency(deliveryFee)}</strong>
       </div>
 
       <div className="checkout-review-total">
