@@ -53,7 +53,7 @@ export const CheckoutSuccessPageContent = () => {
         <Link to={routePaths.catalog} className="basket-cta">
           Seguir comprando
         </Link>
-        <Link to={routePaths.profile} className="checkout-btn-back" style={{ padding: '0.95rem 0' }}>
+        <Link to={routePaths.myOrders} className="checkout-btn-back" style={{ padding: '0.95rem 0' }}>
           Ver mis pedidos
         </Link>
       </div>

@@ -4804,6 +4804,107 @@ select {
   color: var(--wax-color-graphite);
 }
 
+/* ── Order card (Mis pedidos) ──────────────────────────────────────────────── */
+.order-card {
+  border: 1px solid rgba(15, 15, 16, 0.1);
+  border-radius: var(--wax-radius-strong);
+  background: var(--wax-color-porcelain);
+  padding: 1.1rem 1.25rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.order-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.order-card-ref {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--wax-color-ink);
+}
+
+.order-status {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.6rem;
+  border-radius: var(--wax-radius-pill);
+  white-space: nowrap;
+  background: var(--wax-color-stone);
+  color: var(--wax-color-graphite);
+}
+
+.order-status--delivered,
+.order-status--paymentreceived {
+  background: var(--wax-color-olive);
+  color: var(--wax-color-porcelain);
+}
+
+.order-status--paymentfailed,
+.order-status--cancelled {
+  background: var(--wax-color-oxblood);
+  color: var(--wax-color-porcelain);
+}
+
+.order-card-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.order-card-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--wax-color-graphite);
+}
+
+.order-card-item-name em {
+  font-style: normal;
+  color: var(--wax-color-smoke);
+}
+
+.order-card-item-price {
+  white-space: nowrap;
+  color: var(--wax-color-ink);
+}
+
+.order-card-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(15, 15, 16, 0.08);
+}
+
+.order-card-date {
+  font-size: 0.78rem;
+  color: var(--wax-color-smoke);
+}
+
+.order-card-meta {
+  font-size: 0.78rem;
+  color: var(--wax-color-smoke);
+  margin-left: auto;
+  margin-right: 0.75rem;
+}
+
+.order-card-total {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--wax-color-ink);
+}
+
 .quote-status--awaitingcustomerreview {
   background: var(--wax-color-amber);
   color: var(--wax-color-porcelain);

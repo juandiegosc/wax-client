@@ -477,6 +477,20 @@ const SiteHeader = ({
                   Ver perfil
                 </Link>
                 <Link
+                  to={routePaths.myOrders}
+                  style={{
+                    display: 'block',
+                    padding: '0.72rem 1.1rem',
+                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
+                    fontSize: '0.78rem',
+                    letterSpacing: '0.06em',
+                    color: waxBrand.color.ink,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Mis pedidos
+                </Link>
+                <Link
                   to={routePaths.myCustomProducts}
                   style={{
                     display: 'block',
