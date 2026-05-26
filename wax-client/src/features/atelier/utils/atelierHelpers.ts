@@ -23,14 +23,10 @@ export const extractMeshyPrompt = (text: string): { prompt: string; artStyle?: A
   if (!match) return null;
   const content = match[1].trim();
   const pipeIdx = content.indexOf('|');
-  if (pipeIdx === -1) return { prompt: content };
-  const styleRaw = content.slice(0, pipeIdx).trim().toLowerCase();
-  const prompt   = content.slice(pipeIdx + 1).trim();
-  const artStyle: ArtStyle | undefined =
-    styleRaw === 'realistic' || styleRaw === 'sculpture' || styleRaw === 'pbr'
-      ? (styleRaw as ArtStyle)
-      : undefined;
-  return { prompt, artStyle };
+  // WAX solo genera en realista: ignoramos cualquier estilo que sugiera la IA
+  // y dejamos que el valor por defecto ('realistic') se aplique aguas abajo.
+  const prompt = pipeIdx === -1 ? content : content.slice(pipeIdx + 1).trim();
+  return { prompt };
 };
 
 export const stripHiddenPrompt = (text: string): string =>
