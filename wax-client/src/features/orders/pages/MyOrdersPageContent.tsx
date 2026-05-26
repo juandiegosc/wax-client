@@ -14,7 +14,7 @@ export const MyOrdersPageContent = () => {
         <span className="quote-kicker">Cuenta</span>
         <h1 className="quote-title">Mis pedidos</h1>
         <p className="quote-lead">
-          Revisá el historial y el estado de tus compras en WAX.
+          Revisa el historial y el estado de tus compras en WAX.
         </p>
       </header>
 
@@ -22,7 +22,7 @@ export const MyOrdersPageContent = () => {
         <p className="quote-empty">Cargando tus pedidos…</p>
       ) : !orders.length ? (
         <div className="quote-empty-state">
-          <p className="quote-empty">Todavía no tenés pedidos.</p>
+          <p className="quote-empty">Todavía no tienes pedidos.</p>
           <Link to={routePaths.catalog} className="quote-btn quote-btn--primary">
             Ver colección
           </Link>

@@ -15,7 +15,7 @@ export const MyCustomProductsPageContent = () => {
         <span className="quote-kicker">Atelier</span>
         <h1 className="quote-title">Mis cotizaciones</h1>
         <p className="quote-lead">
-          Seguí el estado de las piezas que diseñaste y respondé a las propuestas de WAX.
+          Sigue el estado de las piezas que diseñaste y responde a las propuestas de WAX.
         </p>
       </header>
 
@@ -32,7 +32,7 @@ export const MyCustomProductsPageContent = () => {
         <>
           {needingResponse > 0 && (
             <div className="quote-banner">
-              Tenés {needingResponse} {needingResponse === 1 ? 'propuesta' : 'propuestas'} esperando tu respuesta.
+              Tienes {needingResponse} {needingResponse === 1 ? 'propuesta' : 'propuestas'} esperando tu respuesta.
             </div>
           )}
           <ul className="quote-list">
