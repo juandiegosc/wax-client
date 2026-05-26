@@ -39,9 +39,8 @@ export type TaskStatus = {
   error?: string;
 };
 
+// WAX solo genera en estilo realista — no se ofrecen otros estilos.
 export const ART_STYLES = [
   { value: 'realistic', label: 'Realista' },
-  { value: 'sculpture', label: 'Escultura' },
-  { value: 'pbr', label: 'PBR' },
 ] as const;
 export type ArtStyle = (typeof ART_STYLES)[number]['value'];

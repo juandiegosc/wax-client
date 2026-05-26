@@ -49,34 +49,32 @@ describe('extractMeshyPrompt', () => {
     expect(result).toEqual({ prompt: 'a leather handbag', artStyle: undefined });
   });
 
-  it('extrae prompt con art style realistic', () => {
+  it('ignora el estilo y devuelve solo el prompt (realistic)', () => {
     const result = extractMeshyPrompt('<!--PROMPT:realistic|a black leather clutch bag-->');
-    expect(result).toEqual({ prompt: 'a black leather clutch bag', artStyle: 'realistic' });
+    expect(result).toEqual({ prompt: 'a black leather clutch bag' });
+    expect(result?.artStyle).toBeUndefined();
   });
 
-  it('extrae prompt con art style sculpture', () => {
+  it('descarta cualquier estilo sugerido por la IA (sculpture)', () => {
     const result = extractMeshyPrompt('<!--PROMPT:sculpture|minimalist marble vase-->');
-    expect(result).toEqual({ prompt: 'minimalist marble vase', artStyle: 'sculpture' });
+    expect(result).toEqual({ prompt: 'minimalist marble vase' });
+    expect(result?.artStyle).toBeUndefined();
   });
 
-  it('extrae prompt con art style pbr', () => {
+  it('descarta cualquier estilo sugerido por la IA (pbr)', () => {
     const result = extractMeshyPrompt('<!--PROMPT:pbr|silver ring with gems-->');
-    expect(result).toEqual({ prompt: 'silver ring with gems', artStyle: 'pbr' });
-  });
-
-  it('ignora art style desconocido y lo deja como undefined', () => {
-    const result = extractMeshyPrompt('<!--PROMPT:watercolor|a bag-->');
-    expect(result).toEqual({ prompt: 'a bag', artStyle: undefined });
+    expect(result).toEqual({ prompt: 'silver ring with gems' });
+    expect(result?.artStyle).toBeUndefined();
   });
 
   it('devuelve null si no hay marcador', () => {
     expect(extractMeshyPrompt('Texto normal sin marcador')).toBeNull();
   });
 
-  it('es case-insensitive en el tag', () => {
+  it('es case-insensitive en el tag y nunca devuelve estilo', () => {
     const result = extractMeshyPrompt('<!--prompt:realistic|a belt-->');
     expect(result?.prompt).toBe('a belt');
-    expect(result?.artStyle).toBe('realistic');
+    expect(result?.artStyle).toBeUndefined();
   });
 
   it('funciona con marcador en medio del texto', () => {
