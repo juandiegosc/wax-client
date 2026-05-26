@@ -57,7 +57,7 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
   });
 
   const handleApprove = () => {
-    if (window.confirm('¿Aceptás esta propuesta? La pieza se añadirá a tu carrito.')) {
+    if (window.confirm('¿Aceptas esta propuesta? La pieza se añadirá a tu carrito.')) {
       approve(product.id);
     }
   };
@@ -145,7 +145,7 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
       {canRespond ? (
         <div className="quote-detail-actions">
           <p className="quote-actions-hint">
-            WAX te propuso un precio. Podés aceptarlo y la pieza pasa a tu carrito, o hacer una
+            WAX te propuso un precio. Puedes aceptarlo y la pieza pasa a tu carrito, o hacer una
             contraoferta.
           </p>
           <div className="quote-actions-buttons">
