@@ -4,7 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { DesignFields } from '@/features/atelier/api/atelierApi';
 
-const DIMENSIONS_REGEX = /^\s*\d+\s*x\s*\d+\s*(x\s*\d+)?\s*cm\s*$/i;
+// Regex acotada para evitar ReDoS: dígitos limitados a 4 y whitespace a 1.
+// Ya el campo está validado a max 50 chars antes, así no hay catastrophic backtracking.
+const DIMENSIONS_REGEX = /^\s?\d{1,4}\s?x\s?\d{1,4}(\s?x\s?\d{1,4})?\s?cm\s?$/i;
 
 const cotizarSchema = z.object({
   type: z.string().trim().min(1, 'Requerido').max(100),
