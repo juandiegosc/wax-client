@@ -136,6 +136,10 @@ jobs:
     needs: [build, sonarcloud]
     # Solo en push a main — evita deploys en feature/fix branches y PRs
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Este job no hace checkout, así que no aplica el default working-directory: wax-client
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
     steps:
       - name: Trigger Render deploy hook
         run: |
