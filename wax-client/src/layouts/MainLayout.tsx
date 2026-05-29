@@ -19,61 +19,37 @@ type FooterLink = (typeof waxMenuFooterLinks)[number];
 type MenuSection = (typeof waxMenuSections)[number];
 type MenuItem = MenuSection['items'][number];
 
-const renderMenuItem = (item: MenuItem, closeMenu: () => void) => {
-  const content = (
-    <>
-      <span style={{
-        display: 'block',
-        fontFamily: 'var(--wax-font-display)',
-        fontSize: '1.22rem',
-        fontWeight: 400,
-        color: waxBrand.color.ink,
-        lineHeight: 1.15,
-        letterSpacing: '-0.01em',
-      }}>
-        {item.label}
-      </span>
-      {item.description ? (
-        <span style={{
-          display: 'block',
-          fontSize: '0.78rem',
-          color: waxBrand.color.smoke,
-          marginTop: '0.22rem',
-          lineHeight: 1.5,
-          letterSpacing: '0.01em',
-        }}>
-          {item.description}
-        </span>
-      ) : null}
-    </>
-  );
-
-  const itemStyle = { display: 'block', padding: '0.75rem 0' };
-
-  return (
-    <Link key={item.label} to={item.to} onClick={closeMenu} style={itemStyle}>
-      {content}
-    </Link>
-  );
+// Paleta brand por sección — sólo colores existentes de wax-client
+const SECTION_ACCENTS: Record<string, string> = {
+  Principal: waxBrand.color.waxAmber,
+  Servicios: waxBrand.color.bronze,
+  Cuenta:    waxBrand.color.olive,
 };
 
-const renderMenuSection = (section: MenuSection, closeMenu: () => void) => (
-  <section key={section.title}>
-    <div style={{
-      fontSize: '0.62rem',
-      textTransform: 'uppercase',
-      letterSpacing: '0.22em',
-      color: waxBrand.color.smoke,
-      marginBottom: '0.75rem',
-      fontWeight: 600,
-    }}>
-      {section.title}
-    </div>
-    <div style={{ display: 'grid' }}>
-      {section.items.map((item) => renderMenuItem(item, closeMenu))}
-    </div>
-  </section>
+const renderMenuItem = (item: MenuItem, closeMenu: () => void) => (
+  <Link key={item.label} to={item.to} onClick={closeMenu} className="wax-menu-item">
+    <span className="wax-menu-item-label">{item.label}</span>
+    {item.description ? (
+      <span className="wax-menu-item-desc">{item.description}</span>
+    ) : null}
+  </Link>
 );
+
+const renderMenuSection = (section: MenuSection, closeMenu: () => void) => {
+  const accent = SECTION_ACCENTS[section.title] ?? waxBrand.color.smoke;
+  return (
+    <section
+      key={section.title}
+      className="wax-menu-section"
+      style={{ ['--section-accent' as string]: accent }}
+    >
+      <div className="wax-menu-kicker">{section.title}</div>
+      <div style={{ display: 'grid' }}>
+        {section.items.map((item) => renderMenuItem(item, closeMenu))}
+      </div>
+    </section>
+  );
+};
 
 const renderFooterLink = (item: FooterLink) => {
   const style = {
