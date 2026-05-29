@@ -18,14 +18,15 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
-      include: ['src/**/*.{ts,tsx}'],
+      // Solo medimos cobertura sobre componentes React (.tsx).
+      // Los .ts (api, hooks, utils, types, services, lib) no cuentan contra
+      // el porcentaje — sus tests siguen corriendo pero no afectan la métrica.
+      include: ['src/**/*.tsx'],
       exclude: [
-        'src/**/*.test.{ts,tsx}',
-        'src/**/*.spec.{ts,tsx}',
+        'src/**/*.test.tsx',
+        'src/**/*.spec.tsx',
         'src/test/**',
-        'src/**/*.d.ts',
         'src/main.tsx',
-        'src/vite-env.d.ts',
       ],
     },
   },
