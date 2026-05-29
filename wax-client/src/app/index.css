@@ -5231,3 +5231,67 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Menú lateral con acento de color por sección ──────────────────────────── */
+.wax-menu-section {
+  --section-accent: var(--wax-color-smoke, #71717a);
+}
+
+.wax-menu-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--section-accent);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.wax-menu-kicker::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--section-accent);
+  border-radius: 1px;
+}
+
+.wax-menu-item {
+  display: block;
+  padding: 0.75rem 0 0.75rem 0.75rem;
+  margin-left: -0.75rem;
+  border-left: 2px solid transparent;
+  transition: border-color 200ms ease, background 200ms ease, padding-left 200ms ease;
+}
+
+.wax-menu-item:hover {
+  border-left-color: var(--section-accent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--section-accent) 8%, transparent) 0%, transparent 80%);
+  padding-left: 1rem;
+}
+
+.wax-menu-item-label {
+  display: block;
+  font-family: var(--wax-font-display);
+  font-size: 1.22rem;
+  font-weight: 400;
+  color: var(--wax-color-ink, #0f0f10);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  transition: color 200ms ease;
+}
+
+.wax-menu-item:hover .wax-menu-item-label {
+  color: var(--section-accent);
+}
+
+.wax-menu-item-desc {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--wax-color-smoke, #71717a);
+  margin-top: 0.22rem;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
