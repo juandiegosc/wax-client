@@ -129,3 +129,21 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
+
+  deploy:
+    name: Trigger Render Deploy
+    runs-on: ubuntu-latest
+    needs: [build, sonarcloud]
+    # Solo en push a main — evita deploys en feature/fix branches y PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Trigger Render deploy hook
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::warning::RENDER_DEPLOY_HOOK_URL no configurado — saltando deploy"
+            exit 0
+          fi
+          curl -fsSL -X POST "$RENDER_DEPLOY_HOOK_URL"
+          echo "✓ Deploy disparado en Render"
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
