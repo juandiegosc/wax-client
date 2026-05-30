@@ -152,7 +152,7 @@ export const SupportPageContent = () => {
                   const productNames = order.orderItems?.map(item => item.name).join(', ') || `Pedido ${order.id}`;
                   return (
                     <option key={order.id} value={order.id}>
-                      {productNames} - {formatCurrency(order.total)} ({new Date(order.createAt).toLocaleDateString()})
+                      {productNames} - {formatCurrency(order.total)} ({new Date(order.createdAt).toLocaleDateString()})
                     </option>
                   );
                 })}
