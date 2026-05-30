@@ -42,7 +42,7 @@ export type Order = {
   total: number;
   orderStatus: string;
   orderItems: OrderItem[];
-  createAt: string;
+  createdAt: string;
   updatedAt: string | null;
 };
 

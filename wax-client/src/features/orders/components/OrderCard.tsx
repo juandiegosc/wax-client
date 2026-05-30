@@ -18,7 +18,7 @@ type Props = {
 
 export const OrderCard = ({ order }: Props) => {
   const statusLabel = ORDER_STATUS_LABELS[order.orderStatus] ?? order.orderStatus;
-  const date = new Date(order.createAt).toLocaleDateString('es-ES', {
+  const date = new Date(order.createdAt).toLocaleDateString('es-ES', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',

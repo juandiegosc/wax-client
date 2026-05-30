@@ -18,15 +18,25 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
-      // Solo medimos cobertura sobre componentes React (.tsx).
-      // Los .ts (api, hooks, utils, types, services, lib) no cuentan contra
-      // el porcentaje — sus tests siguen corriendo pero no afectan la métrica.
-      include: ['src/**/*.tsx'],
+      // Medimos cobertura sobre código con lógica (componentes, hooks, utils, api clients).
+      // Excluimos lo que NO es testeable unitariamente: tipos puros, configs estáticas,
+      // routing, entry point, archivos barrel (re-exports).
+      include: ['src/**/*.{ts,tsx}'],
       exclude: [
-        'src/**/*.test.tsx',
-        'src/**/*.spec.tsx',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.spec.{ts,tsx}',
         'src/test/**',
+        'src/**/*.d.ts',
         'src/main.tsx',
+        'src/types/**',
+        'src/config/**',
+        'src/routes/routePaths.ts',
+        'src/routes/router.tsx',
+        'src/services/queryClient.ts',
+        'src/lib/queryKeys.ts',
+        'src/lib/types/**',
+        'src/**/types/**',
+        'src/**/index.ts',
       ],
     },
   },
