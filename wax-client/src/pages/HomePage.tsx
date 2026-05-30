@@ -93,7 +93,7 @@ export const HomePage = () => {
 
           <div className="home-campaign-content">
             <div className="home-campaign-copy">
-              <span className="home-campaign-label">Coleccion Umbral</span>
+              <span className="home-campaign-label">STUDIO</span>
               <h1 className="home-campaign-title">
                 Diseñado para tu <em>identidad</em>
               </h1>
@@ -111,7 +111,7 @@ export const HomePage = () => {
       {showSection && (
         <section className="home-editorial-section">
           <div className="home-editorial-header">
-            <span className="home-editorial-kicker">Coleccion Umbral</span>
+            <span className="home-editorial-kicker">New Studio Collection</span>
             <h2 className="home-editorial-title">COLECCIÓN UMBRAL</h2>
           </div>
 
