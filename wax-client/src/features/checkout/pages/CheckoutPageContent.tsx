@@ -68,16 +68,14 @@ export const CheckoutPageContent = () => {
 
   useEffect(() => {
     let mounted = true;
+    // Siempre recreamos el PaymentIntent al entrar a checkout: el basket puede
+    // haber mutado por fuera (ej. consumer del approve de una cotización añade
+    // el item async) y un clientSecret viejo cobraría el monto previo.
     if (!created.current && basket && basket.items.length > 0) {
-      // If we already have the clientSecret, no need to create it again!
-      if (basket.clientSecret) {
-        return;
-      }
       created.current = true;
       setLocalCreating(true);
       createPaymentIntentAsync()
         .then((updatedBasket) => {
-          // If unmounted, this still updates the cache for other components!
           queryClient.setQueryData(queryKeys.basket.all, updatedBasket);
           if (mounted) setLocalCreating(false);
         })
