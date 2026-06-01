@@ -30,15 +30,23 @@ const findPromptBounds = (text: string): { start: number; end: number } | null =
   return { start, end };
 };
 
-export const extractMeshyPrompt = (text: string): { prompt: string; artStyle?: ArtStyle } | null => {
+export const extractMeshyPrompt = (
+  text: string,
+): { prompt: string; description?: string; artStyle?: ArtStyle } | null => {
   const bounds = findPromptBounds(text);
   if (!bounds) return null;
   const content = text.slice(bounds.start + PROMPT_OPEN.length, bounds.end).trim();
-  const pipeIdx = content.indexOf('|');
+  // Formato esperado: [style]|[english prompt]|[spanish description]
+  // Compatibilidad hacia atrás: si solo viene un pipe, lo segundo es el prompt y no hay descripción.
   // WAX solo genera en realista: ignoramos cualquier estilo que sugiera la IA
   // y dejamos que el valor por defecto ('realistic') se aplique aguas abajo.
-  const prompt = pipeIdx === -1 ? content : content.slice(pipeIdx + 1).trim();
-  return { prompt };
+  const parts = content.split('|').map((p) => p.trim());
+  if (parts.length === 1) {
+    return { prompt: parts[0] };
+  }
+  const prompt = parts[1];
+  const description = parts.length >= 3 ? parts[2] : undefined;
+  return { prompt, description };
 };
 
 export const stripHiddenPrompt = (text: string): string => {

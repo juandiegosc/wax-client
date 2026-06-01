@@ -33,7 +33,14 @@ type GenMsg = {
   result?: GenResult;
 };
 
-type AnyMsg = ChatMsg | GenMsg;
+type SketchMsg = {
+  id: string;
+  kind: 'sketch';
+  status: 'loading' | 'done' | 'failed';
+  imageUrl?: string;
+};
+
+type AnyMsg = ChatMsg | GenMsg | SketchMsg;
 
 type ActiveGen = { msgId: string; taskId: string; taskType: 'text' | 'refine' | 'image' };
 
@@ -46,6 +53,7 @@ type PersistedAtelier = {
   sessionId: string;
   messages: AnyMsg[];
   lastGenPrompt: string;
+  lastGenDescription: string;
   artStyle: ArtStyle;
   activeGen: ActiveGen | null;
   hasGeneratedModel: boolean;
@@ -258,6 +266,7 @@ export const AtelierChat = () => {
   const [messages, setMessages]             = useState<AnyMsg[]>(() => persisted.messages ?? []);
   const [input, setInput]                   = useState('');
   const [lastGenPrompt, setLastGenPrompt]   = useState(() => persisted.lastGenPrompt ?? '');
+  const [lastGenDescription, setLastGenDescription] = useState(() => persisted.lastGenDescription ?? '');
   const [artStyle, setArtStyle]             = useState<ArtStyle>(() => persisted.artStyle ?? 'realistic');
   const [inputImg, setInputImg]             = useState<File | null>(null);
   const [inputImgPreview, setInputImgPreview] = useState<string | null>(null);
@@ -301,6 +310,7 @@ export const AtelierChat = () => {
       sessionId,
       messages,
       lastGenPrompt,
+      lastGenDescription,
       artStyle,
       activeGen,
       hasGeneratedModel,
@@ -311,7 +321,7 @@ export const AtelierChat = () => {
     } catch {
       // Cuota de storage excedida (ej. imagen muy grande) — se ignora
     }
-  }, [sessionId, messages, lastGenPrompt, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
+  }, [sessionId, messages, lastGenPrompt, lastGenDescription, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
 
   // Resolve generation result when task finishes; auto-start refine after preview
   useEffect(() => {
@@ -368,6 +378,7 @@ export const AtelierChat = () => {
     setSessionId(crypto.randomUUID());
     setMessages([]);
     setLastGenPrompt('');
+    setLastGenDescription('');
     setInputImg(null);
     setInputImgPreview(null);
     setActiveGen(null);
@@ -402,11 +413,13 @@ export const AtelierChat = () => {
       return;
     }
 
-    // Text flow: send full conversation so the parser can extract fields
-    const description = messages
-      .filter(m => m.kind === 'chat')
-      .map(m => m.kind === 'chat' ? `${m.role === 'user' ? 'Usuario' : 'WAX Studio'}: ${m.content}` : '')
-      .join('\n\n');
+    // Text flow: la IA ya generó una ficha de producto limpia en el marcador <!--PROMPT:...|...|descripción-->
+    // Si por alguna razón no llegó (formato viejo o error), caemos al chat completo como respaldo.
+    const description = lastGenDescription
+      || messages
+        .filter(m => m.kind === 'chat')
+        .map(m => m.kind === 'chat' ? `${m.role === 'user' ? 'Usuario' : 'WAX Studio'}: ${m.content}` : '')
+        .join('\n\n');
 
     atelierApi.submitCotizacion({ glbUrl, taskId, description }).catch(() => {});
     toast.success('¡Listo! Tu solicitud fue enviada a WAX. Revisa el estado en Mis cotizaciones.');
@@ -487,9 +500,30 @@ export const AtelierChat = () => {
           addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'assistant', content: displayText });
           if (extracted) {
             setLastGenPrompt(extracted.prompt);
+            setLastGenDescription(extracted.description ?? '');
             if (extracted.artStyle) setArtStyle(extracted.artStyle);
+            // Auto-generamos un boceto 2D del prompt para que el usuario valide
+            // visualmente antes de pasar al 3D (que es más caro y más lento).
+            const sketchId = crypto.randomUUID();
+            addMsg({ id: sketchId, kind: 'sketch', status: 'loading' });
+            atelierApi.generateSketch(extracted.prompt)
+              .then((imageUrl) => {
+                setMessages((prev) => prev.map((m) =>
+                  m.id === sketchId && m.kind === 'sketch'
+                    ? { ...m, status: 'done', imageUrl }
+                    : m,
+                ));
+              })
+              .catch(() => {
+                setMessages((prev) => prev.map((m) =>
+                  m.id === sketchId && m.kind === 'sketch'
+                    ? { ...m, status: 'failed' }
+                    : m,
+                ));
+              });
           } else {
             setLastGenPrompt('');
+            setLastGenDescription('');
           }
         },
         onError: () => {
@@ -629,6 +663,26 @@ export const AtelierChat = () => {
                     <span className="atelier-msg-role">WAX Studio</span>
                   )}
                   <p className="atelier-msg-content">{renderContent(msg.content)}</p>
+                </div>
+              );
+            }
+            if (msg.kind === 'sketch') {
+              return (
+                <div key={msg.id} className="atelier-msg atelier-msg--assistant">
+                  <span className="atelier-msg-role">Boceto previo</span>
+                  {msg.status === 'loading' && (
+                    <p className="atelier-msg-content">Generando un boceto rápido para que valides…</p>
+                  )}
+                  {msg.status === 'done' && msg.imageUrl && (
+                    <img
+                      src={msg.imageUrl}
+                      alt="Boceto del diseño"
+                      style={{ maxWidth: '100%', borderRadius: '0.5rem', marginTop: '0.5rem' }}
+                    />
+                  )}
+                  {msg.status === 'failed' && (
+                    <p className="atelier-msg-content">No pude generar el boceto. Puedes continuar con el 3D igual.</p>
+                  )}
                 </div>
               );
             }

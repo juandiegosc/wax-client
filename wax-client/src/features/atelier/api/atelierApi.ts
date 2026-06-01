@@ -92,6 +92,11 @@ export const atelierApi = {
     return res.data.design;
   },
 
+  generateSketch: async (prompt: string): Promise<string> => {
+    const res = await n8n.post<{ success: boolean; imageUrl: string }>('/meshy-sketch', { prompt });
+    return res.data.imageUrl;
+  },
+
   submitCotizacionDirect: async (req: SubmitCotizacionDirectRequest): Promise<void> => {
     const payload = {
       taskId: req.taskId,
