@@ -38,7 +38,10 @@ type SketchMsg = {
   kind: 'sketch';
   status: 'loading' | 'done' | 'failed';
   imageUrl?: string;
+  attemptNumber: number;
 };
+
+const SKETCH_MAX_ATTEMPTS = 2;
 
 type AnyMsg = ChatMsg | GenMsg | SketchMsg;
 
@@ -54,6 +57,8 @@ type PersistedAtelier = {
   messages: AnyMsg[];
   lastGenPrompt: string;
   lastGenDescription: string;
+  lastSketchUrl: string;
+  sketchAttempts: number;
   artStyle: ArtStyle;
   activeGen: ActiveGen | null;
   hasGeneratedModel: boolean;
@@ -267,6 +272,8 @@ export const AtelierChat = () => {
   const [input, setInput]                   = useState('');
   const [lastGenPrompt, setLastGenPrompt]   = useState(() => persisted.lastGenPrompt ?? '');
   const [lastGenDescription, setLastGenDescription] = useState(() => persisted.lastGenDescription ?? '');
+  const [lastSketchUrl, setLastSketchUrl]   = useState(() => persisted.lastSketchUrl ?? '');
+  const [sketchAttempts, setSketchAttempts] = useState<number>(() => persisted.sketchAttempts ?? 0);
   const [artStyle, setArtStyle]             = useState<ArtStyle>(() => persisted.artStyle ?? 'realistic');
   const [inputImg, setInputImg]             = useState<File | null>(null);
   const [inputImgPreview, setInputImgPreview] = useState<string | null>(null);
@@ -311,6 +318,8 @@ export const AtelierChat = () => {
       messages,
       lastGenPrompt,
       lastGenDescription,
+      lastSketchUrl,
+      sketchAttempts,
       artStyle,
       activeGen,
       hasGeneratedModel,
@@ -321,7 +330,7 @@ export const AtelierChat = () => {
     } catch {
       // Cuota de storage excedida (ej. imagen muy grande) — se ignora
     }
-  }, [sessionId, messages, lastGenPrompt, lastGenDescription, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
+  }, [sessionId, messages, lastGenPrompt, lastGenDescription, lastSketchUrl, sketchAttempts, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
 
   // Resolve generation result when task finishes; auto-start refine after preview
   useEffect(() => {
@@ -379,6 +388,8 @@ export const AtelierChat = () => {
     setMessages([]);
     setLastGenPrompt('');
     setLastGenDescription('');
+    setLastSketchUrl('');
+    setSketchAttempts(0);
     setInputImg(null);
     setInputImgPreview(null);
     setActiveGen(null);
@@ -458,6 +469,38 @@ export const AtelierChat = () => {
     setPopupThumbUrl(thumbUrl);
   }, []);
 
+  // ── Sketch (boceto 2D) ────────────────────────────────────────────────────
+  // Lanza una generación de boceto y va actualizando el mensaje correspondiente
+  // (loading → done / failed). Marca el intento # actual para que la UI sepa si
+  // queda margen para refinar (max 2 por ciclo de prompt).
+  const launchSketch = (prompt: string, attemptNumber: number) => {
+    setSketchAttempts(attemptNumber);
+    setLastSketchUrl('');
+    const sketchId = crypto.randomUUID();
+    addMsg({ id: sketchId, kind: 'sketch', status: 'loading', attemptNumber });
+    atelierApi.generateSketch(prompt)
+      .then((imageUrl) => {
+        setLastSketchUrl(imageUrl);
+        setMessages((prev) => prev.map((m) =>
+          m.id === sketchId && m.kind === 'sketch'
+            ? { ...m, status: 'done', imageUrl }
+            : m,
+        ));
+      })
+      .catch(() => {
+        setMessages((prev) => prev.map((m) =>
+          m.id === sketchId && m.kind === 'sketch'
+            ? { ...m, status: 'failed' }
+            : m,
+        ));
+      });
+  };
+
+  const handleRefineSketch = () => {
+    if (!lastGenPrompt || sketchAttempts >= SKETCH_MAX_ATTEMPTS) return;
+    launchSketch(lastGenPrompt, sketchAttempts + 1);
+  };
+
   // ── Send chat message ─────────────────────────────────────────────────────
   const handleSend = () => {
     const text = input.trim();
@@ -466,28 +509,44 @@ export const AtelierChat = () => {
     addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'user', content: text });
     setInput('');
 
-    // Trigger generation only when Phase 3 marker was received and user confirms
+    // Trigger generation only when Phase 2 marker was received and user confirms
     if (lastGenPrompt && isAffirmative(text) && !hasGeneratedModel) {
       const msgId = crypto.randomUUID();
       setHasGeneratedModel(true);
-      generateText(
-        { prompt: lastGenPrompt, artStyle },
-        {
-          onSuccess: data => {
-            addMsg({ id: msgId, kind: 'gen', taskId: data.taskId, taskType: 'text' });
-            setActiveGen({ msgId, taskId: data.taskId, taskType: 'text' });
+      const onSuccessGen = (taskId: string, taskType: 'text' | 'image') => {
+        addMsg({ id: msgId, kind: 'gen', taskId, taskType });
+        setActiveGen({ msgId, taskId, taskType });
+      };
+      const onErrorGen = () => {
+        setHasGeneratedModel(false);
+        addMsg({
+          id: msgId,
+          kind: 'chat',
+          role: 'assistant',
+          content: 'No se pudo iniciar la generación. Intenta de nuevo.',
+        });
+      };
+
+      // Si tenemos un boceto valido, lo usamos como input para image-to-3d
+      // (mas fiel visualmente que text-to-3d). Si el boceto fallo o no esta
+      // listo, caemos a text-to-3d como respaldo.
+      if (lastSketchUrl) {
+        generateImage(
+          { imageDataUrl: lastSketchUrl },
+          {
+            onSuccess: data => onSuccessGen(data.taskId, 'image'),
+            onError: onErrorGen,
           },
-          onError: () => {
-            setHasGeneratedModel(false);
-            addMsg({
-              id: msgId,
-              kind: 'chat',
-              role: 'assistant',
-              content: 'No se pudo iniciar la generación. Intenta de nuevo.',
-            });
+        );
+      } else {
+        generateText(
+          { prompt: lastGenPrompt, artStyle },
+          {
+            onSuccess: data => onSuccessGen(data.taskId, 'text'),
+            onError: onErrorGen,
           },
-        },
-      );
+        );
+      }
       return;
     }
 
@@ -498,7 +557,7 @@ export const AtelierChat = () => {
           const extracted  = extractMeshyPrompt(data.output);
           const displayText = stripHiddenPrompt(data.output);
           addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'assistant', content: displayText });
-          // Solo actualizamos cuando el AI emite un marcador nuevo (FASE 3 o
+          // Solo actualizamos cuando el AI emite un marcador nuevo (FASE 2 o
           // re-emite por cambio de diseño). Si responde sin marcador (ej. chit-chat
           // entre el boceto y el "sí"), conservamos el prompt anterior para que
           // el usuario pueda confirmar despues sin perder el contexto.
@@ -506,25 +565,8 @@ export const AtelierChat = () => {
             setLastGenPrompt(extracted.prompt);
             setLastGenDescription(extracted.description ?? '');
             if (extracted.artStyle) setArtStyle(extracted.artStyle);
-            // Auto-generamos un boceto 2D del prompt para que el usuario valide
-            // visualmente antes de pasar al 3D (que es más caro y más lento).
-            const sketchId = crypto.randomUUID();
-            addMsg({ id: sketchId, kind: 'sketch', status: 'loading' });
-            atelierApi.generateSketch(extracted.prompt)
-              .then((imageUrl) => {
-                setMessages((prev) => prev.map((m) =>
-                  m.id === sketchId && m.kind === 'sketch'
-                    ? { ...m, status: 'done', imageUrl }
-                    : m,
-                ));
-              })
-              .catch(() => {
-                setMessages((prev) => prev.map((m) =>
-                  m.id === sketchId && m.kind === 'sketch'
-                    ? { ...m, status: 'failed' }
-                    : m,
-                ));
-              });
+            // Nuevo ciclo de boceto: el contador vuelve a 1
+            launchSketch(extracted.prompt, 1);
           }
         },
         onError: () => {
@@ -668,21 +710,51 @@ export const AtelierChat = () => {
               );
             }
             if (msg.kind === 'sketch') {
+              const isLatest = msg.attemptNumber === sketchAttempts;
+              const canRefine = isLatest && msg.status === 'done' && sketchAttempts < SKETCH_MAX_ATTEMPTS;
+              const reachedLimit = isLatest && msg.status === 'done' && sketchAttempts >= SKETCH_MAX_ATTEMPTS;
               return (
                 <div key={msg.id} className="atelier-msg atelier-msg--assistant">
-                  <span className="atelier-msg-role">Boceto previo</span>
+                  <span className="atelier-msg-role">
+                    Boceto previo {msg.attemptNumber > 1 ? `· refinamiento ${msg.attemptNumber}/${SKETCH_MAX_ATTEMPTS}` : `· 1/${SKETCH_MAX_ATTEMPTS}`}
+                  </span>
                   {msg.status === 'loading' && (
-                    <p className="atelier-msg-content">Generando un boceto rápido para que valides…</p>
+                    <div className="atelier-sketch-loading">
+                      <div className="atelier-spinner" aria-hidden="true" />
+                      <span>Generando boceto…</span>
+                    </div>
                   )}
                   {msg.status === 'done' && msg.imageUrl && (
-                    <img
-                      src={msg.imageUrl}
-                      alt="Boceto del diseño"
-                      style={{ maxWidth: '100%', borderRadius: '0.5rem', marginTop: '0.5rem' }}
-                    />
+                    <>
+                      <img
+                        src={msg.imageUrl}
+                        alt="Boceto del diseño"
+                        style={{ maxWidth: '100%', borderRadius: '0.5rem', marginTop: '0.5rem' }}
+                      />
+                      {canRefine && (
+                        <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                          <button
+                            type="button"
+                            className="atelier-gen-cta"
+                            onClick={handleRefineSketch}
+                            disabled={isChatPending}
+                          >
+                            Refinar boceto
+                          </button>
+                          <span className="atelier-msg-content" style={{ fontSize: '0.78rem', opacity: 0.7 }}>
+                            Puedes refinarlo 1 vez más. Si te gusta, di <strong>sí</strong>.
+                          </span>
+                        </div>
+                      )}
+                      {reachedLimit && (
+                        <p className="atelier-msg-content" style={{ marginTop: '0.5rem', fontSize: '0.82rem', opacity: 0.8 }}>
+                          Llegaste al límite de bocetos ({SKETCH_MAX_ATTEMPTS}). Di <strong>sí</strong> para crear el 3D o pide un cambio de diseño en el chat.
+                        </p>
+                      )}
+                    </>
                   )}
                   {msg.status === 'failed' && (
-                    <p className="atelier-msg-content">No pude generar el boceto. Puedes continuar con el 3D igual.</p>
+                    <p className="atelier-msg-content">No pude generar el boceto. Puedes continuar con el 3D igual diciendo <strong>sí</strong>.</p>
                   )}
                 </div>
               );
