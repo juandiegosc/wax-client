@@ -498,6 +498,10 @@ export const AtelierChat = () => {
           const extracted  = extractMeshyPrompt(data.output);
           const displayText = stripHiddenPrompt(data.output);
           addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'assistant', content: displayText });
+          // Solo actualizamos cuando el AI emite un marcador nuevo (FASE 3 o
+          // re-emite por cambio de diseño). Si responde sin marcador (ej. chit-chat
+          // entre el boceto y el "sí"), conservamos el prompt anterior para que
+          // el usuario pueda confirmar despues sin perder el contexto.
           if (extracted) {
             setLastGenPrompt(extracted.prompt);
             setLastGenDescription(extracted.description ?? '');
@@ -521,9 +525,6 @@ export const AtelierChat = () => {
                     : m,
                 ));
               });
-          } else {
-            setLastGenPrompt('');
-            setLastGenDescription('');
           }
         },
         onError: () => {
