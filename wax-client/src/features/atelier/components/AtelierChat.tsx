@@ -274,6 +274,7 @@ export const AtelierChat = () => {
   const [lastGenDescription, setLastGenDescription] = useState(() => persisted.lastGenDescription ?? '');
   const [lastSketchUrl, setLastSketchUrl]   = useState(() => persisted.lastSketchUrl ?? '');
   const [sketchAttempts, setSketchAttempts] = useState<number>(() => persisted.sketchAttempts ?? 0);
+  const [sketchRefineInput, setSketchRefineInput] = useState('');
   const [artStyle, setArtStyle]             = useState<ArtStyle>(() => persisted.artStyle ?? 'realistic');
   const [inputImg, setInputImg]             = useState<File | null>(null);
   const [inputImgPreview, setInputImgPreview] = useState<string | null>(null);
@@ -497,8 +498,13 @@ export const AtelierChat = () => {
   };
 
   const handleRefineSketch = () => {
-    if (!lastGenPrompt || sketchAttempts >= SKETCH_MAX_ATTEMPTS) return;
-    launchSketch(lastGenPrompt, sketchAttempts + 1);
+    const changes = sketchRefineInput.trim();
+    if (!changes || !lastGenPrompt || sketchAttempts >= SKETCH_MAX_ATTEMPTS) return;
+    // Concatenamos lo que el cliente quiere cambiar al final del prompt original.
+    // El generador de imagen reinterpreta todo y produce un boceto ajustado.
+    const refinedPrompt = `${lastGenPrompt}. Adjust the design with these refinements: ${changes}.`;
+    setSketchRefineInput('');
+    launchSketch(refinedPrompt, sketchAttempts + 1);
   };
 
   // ── Send chat message ─────────────────────────────────────────────────────
@@ -733,16 +739,29 @@ export const AtelierChat = () => {
                       />
                       {canRefine && (
                         <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                          <button
-                            type="button"
-                            className="atelier-gen-cta"
-                            onClick={handleRefineSketch}
-                            disabled={isChatPending}
-                          >
-                            Refinar boceto
-                          </button>
+                          <div style={{ display: 'flex', gap: '0.35rem' }}>
+                            <input
+                              type="text"
+                              className="atelier-chat-input"
+                              placeholder="¿Qué cambiarías? Ej: más oscuro, con flores, más pequeño…"
+                              value={sketchRefineInput}
+                              onChange={(e) => setSketchRefineInput(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleRefineSketch(); } }}
+                              maxLength={200}
+                              style={{ flex: 1 }}
+                              disabled={isChatPending}
+                            />
+                            <button
+                              type="button"
+                              className="atelier-gen-cta"
+                              onClick={handleRefineSketch}
+                              disabled={isChatPending || !sketchRefineInput.trim()}
+                            >
+                              Refinar
+                            </button>
+                          </div>
                           <span className="atelier-msg-content" style={{ fontSize: '0.78rem', opacity: 0.7 }}>
-                            Puedes refinarlo 1 vez más. Si te gusta, di <strong>sí</strong>.
+                            Puedes refinarlo 1 vez más. Si te gusta como está, di <strong>sí</strong>.
                           </span>
                         </div>
                       )}
