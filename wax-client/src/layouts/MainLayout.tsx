@@ -288,7 +288,7 @@ const SiteHeader = ({
 
   useEffect(() => {
     if (!profileMenuOpen) return;
-    const onClickOutside = (e: MouseEvent) => {
+    const onClickOutside = (e: Event) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
         setProfileMenuOpen(false);
       }

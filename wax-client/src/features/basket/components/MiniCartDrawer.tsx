@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { useBasket } from '@/features/basket/hooks/useBasket';
-import { useMiniCart } from '@/features/basket/context/miniCartContext';
+import { useMiniCart } from '@/features/basket/hooks/useMiniCart';
 import { isCustom3dModel } from '@/features/basket/utils/basketHelpers';
 import { routePaths } from '@/routes/routePaths';
 import { formatCurrency } from '@/utils/currency';

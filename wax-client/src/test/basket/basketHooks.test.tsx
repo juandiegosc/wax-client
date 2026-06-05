@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { useBasket } from '@/features/basket/hooks/useBasket';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 import { useRemoveFromBasket } from '@/features/basket/hooks/useRemoveFromBasket';
-import { MiniCartProvider } from '@/features/basket/context/miniCartContext';
+import { MiniCartProvider } from '@/features/basket/context/MiniCartProvider';
 
 const { mockGetBasket, mockAddItem, mockRemoveItem } = vi.hoisted(() => ({
   mockGetBasket: vi.fn(),

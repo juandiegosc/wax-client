@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { queryKeys, mutationKeys } from '@/lib/queryKeys';
 import { basketApi } from '@/features/basket/api/basketApi';
-import { useMiniCart } from '@/features/basket/context/miniCartContext';
+import { useMiniCart } from '@/features/basket/hooks/useMiniCart';
 
 export const useAddToBasket = () => {
   const queryClient = useQueryClient();

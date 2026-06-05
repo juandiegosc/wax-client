@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { MiniCartProvider, useMiniCart } from '@/features/basket/context/miniCartContext';
+import { MiniCartProvider } from '@/features/basket/context/MiniCartProvider';
+import { useMiniCart } from '@/features/basket/hooks/useMiniCart';
 
 const wrapper = ({ children }: { children: ReactNode }) => (
   <MiniCartProvider>{children}</MiniCartProvider>
