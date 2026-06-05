@@ -2,14 +2,12 @@ import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 import { useRemoveFromBasket } from '@/features/basket/hooks/useRemoveFromBasket';
+import { isCustom3dModel } from '@/features/basket/utils/basketHelpers';
 import type { BasketItem as BasketItemType } from '@/features/basket/types/basket.types';
 
 type Props = {
   item: BasketItemType;
 };
-
-// Custom (Atelier) pieces store the GLB model URL as pictureUrl — not a real image.
-const isCustom3dModel = (url: string | undefined) => /\.glb(\?|$)/i.test(url ?? '');
 
 export const BasketItem = ({ item }: Props) => {
   const { mutate: addItem, isPending: isAdding } = useAddToBasket();

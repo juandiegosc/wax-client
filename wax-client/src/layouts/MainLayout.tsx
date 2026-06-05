@@ -4,7 +4,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import { Badge, IconButton } from '@mui/material';
 import { toast } from 'react-toastify';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { waxMenuFooterLinks, waxMenuSections } from '@/config/menu';
@@ -283,6 +283,22 @@ const SiteHeader = ({
   onSearchOpen,
 }: SiteHeaderProps) => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!profileMenuOpen) return;
+    const onClickOutside = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onClickOutside);
+    document.addEventListener('touchstart', onClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', onClickOutside);
+      document.removeEventListener('touchstart', onClickOutside);
+    };
+  }, [profileMenuOpen]);
 
   return <header
     className="site-header"
@@ -407,14 +423,14 @@ const SiteHeader = ({
 
         {isAuthenticated ? (
           <div
+            ref={profileMenuRef}
             style={{ position: 'relative' }}
-            onMouseEnter={() => setProfileMenuOpen(true)}
-            onMouseLeave={() => setProfileMenuOpen(false)}
           >
             <IconButton
               className="site-utility-secondary site-account-button"
               aria-label="Mi perfil"
               sx={utilityButtonStyle}
+              onClick={() => setProfileMenuOpen((open) => !open)}
             >
               <Badge
                 badgeContent={pendingQuotationsCount || null}
@@ -444,6 +460,7 @@ const SiteHeader = ({
               }}>
                 <Link
                   to={routePaths.profile}
+                  onClick={() => setProfileMenuOpen(false)}
                   style={{
                     display: 'block',
                     padding: '0.72rem 1.1rem',
@@ -457,6 +474,7 @@ const SiteHeader = ({
                 </Link>
                 <Link
                   to={routePaths.myOrders}
+                  onClick={() => setProfileMenuOpen(false)}
                   style={{
                     display: 'block',
                     padding: '0.72rem 1.1rem',
@@ -471,6 +489,7 @@ const SiteHeader = ({
                 </Link>
                 <Link
                   to={routePaths.myCustomProducts}
+                  onClick={() => setProfileMenuOpen(false)}
                   style={{
                     display: 'block',
                     padding: '0.72rem 1.1rem',
