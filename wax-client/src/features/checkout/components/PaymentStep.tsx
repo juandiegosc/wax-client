@@ -15,7 +15,7 @@ export const PaymentStep = ({ onComplete }: Props) => {
       <h2 className="checkout-step-title">Información de pago</h2>
       <PaymentElement
         options={{
-          wallets: { applePay: 'never', googlePay: 'never', link: 'never' },
+          wallets: { applePay: 'never', googlePay: 'never' },
         }}
         onChange={handleChange}
       />
