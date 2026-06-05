@@ -12,6 +12,7 @@ import {
   type ProposalSource,
 } from '@/features/customProducts/types/customProduct.types';
 import { meshyUrl } from '@/features/atelier/utils/atelierHelpers';
+import { useUsdzFromGlb } from '@/features/atelier/hooks/useUsdzFromGlb';
 import { routePaths } from '@/routes/routePaths';
 import { formatCurrency } from '@/utils/currency';
 
@@ -30,6 +31,8 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
   const { mutate: approve, isPending: isApproving } = useApproveCustomProduct();
   const { mutate: counterOffer, isPending: isCountering } = useCounterOffer();
   const [showCounterModal, setShowCounterModal] = useState(false);
+  const proxiedGlb = product?.glbUrl ? meshyUrl(product.glbUrl) : null;
+  const { usdzUrl } = useUsdzFromGlb(proxiedGlb);
 
   if (isLoading) {
     return (
@@ -83,10 +86,11 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
         <span className="quote-detail-date">Enviada el {date}</span>
       </header>
 
-      {product.glbUrl && (
+      {product.glbUrl && proxiedGlb && (
         <div className="quote-detail-model">
           <model-viewer
-            src={meshyUrl(product.glbUrl)}
+            src={proxiedGlb}
+            ios-src={usdzUrl ?? undefined}
             camera-controls="true"
             auto-rotate="true"
             shadow-intensity="1"

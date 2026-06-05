@@ -6,6 +6,7 @@ import { useChat } from '@/features/atelier/hooks/useChat';
 import { useGenerateFromText, useGenerateFromImage, useRefineFromPreview } from '@/features/atelier/hooks/useGenerate';
 import { useTaskStatus } from '@/features/atelier/hooks/useTaskStatus';
 import { isAffirmative, extractAtelierMarker, stripHiddenMarkers, getProgressMessage, meshyUrl } from '@/features/atelier/utils/atelierHelpers';
+import { useUsdzFromGlb } from '@/features/atelier/hooks/useUsdzFromGlb';
 import type { ArtStyle, TaskStatus } from '@/features/atelier/types/atelier.types';
 import { CotizarFormModal, type CotizarFormValues } from '@/features/atelier/components/CotizarFormModal';
 
@@ -119,6 +120,11 @@ const ModelViewerPopup = ({
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  // Conversion GLB -> USDZ solo si el cliente esta en iOS (para AR Quick Look).
+  // En Android el hook no hace nada y model-viewer usa el GLB directo via ARCore.
+  const proxiedGlb = meshyUrl(glbUrl);
+  const { usdzUrl } = useUsdzFromGlb(proxiedGlb);
+
   return (
     <div className="atelier-popup-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="atelier-popup" onClick={e => e.stopPropagation()}>
@@ -131,7 +137,8 @@ const ModelViewerPopup = ({
 
         <div className="atelier-popup-viewer">
           <model-viewer
-            src={meshyUrl(glbUrl)}
+            src={proxiedGlb}
+            ios-src={usdzUrl ?? undefined}
             poster={thumbnailUrl ? meshyUrl(thumbnailUrl) : undefined}
             camera-controls="true"
             auto-rotate="true"
@@ -179,6 +186,8 @@ const GenCard = ({
   const thumbUrl = msg.result?.thumbnailUrl   ?? liveStatus?.thumbnail_url;
   const progress = liveStatus?.progress ?? 0;
   const activeStep = Math.min(Math.floor(progress / 25), 3);
+  const proxiedGlb = glbUrl ? meshyUrl(glbUrl) : null;
+  const { usdzUrl } = useUsdzFromGlb(proxiedGlb);
 
   if (isFailed) {
     return (
@@ -190,12 +199,13 @@ const GenCard = ({
     );
   }
 
-  if (isDone && glbUrl) {
+  if (isDone && glbUrl && proxiedGlb) {
     return (
       <div className="atelier-gen-card atelier-gen-card--done">
         <div className="atelier-model-wrapper">
           <model-viewer
-            src={meshyUrl(glbUrl)}
+            src={proxiedGlb}
+            ios-src={usdzUrl ?? undefined}
             poster={thumbUrl ? meshyUrl(thumbUrl) : undefined}
             camera-controls="true"
             auto-rotate="true"
@@ -932,9 +942,11 @@ export const AtelierChat = () => {
             )}
 
             <div className={`atelier-chat-input-row${isConversationEmpty ? '' : ' atelier-chat-input-row--no-img'}`}>
-              {/* Image upload + camera capture — only on empty conversation */}
+              {/* Image upload + camera capture — only on empty conversation
+                  Envueltos en un div para que el grid del input-row los trate
+                  como una sola columna (auto), conservando la grilla auto/1fr/auto */}
               {isConversationEmpty && (
-                <>
+                <div className="atelier-img-upload-group">
                   <button
                     type="button"
                     className="atelier-img-upload-btn"
@@ -962,7 +974,7 @@ export const AtelierChat = () => {
                       </svg>
                     </button>
                   )}
-                </>
+                </div>
               )}
 
               <textarea

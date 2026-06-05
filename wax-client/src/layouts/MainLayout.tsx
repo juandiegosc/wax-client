@@ -12,6 +12,7 @@ import { useCurrentUser, useLogout, useUserAddress } from '@/lib/hooks/useAccoun
 import { useBasket } from '@/features/basket/hooks/useBasket';
 import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustomProducts';
 import { MenuToggle } from '@/layouts/MenuToggle';
+import { PwaInstallButton } from '@/layouts/PwaInstallButton';
 import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
 
@@ -221,6 +222,10 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
           Iniciar sesión
         </Link>
       )}
+
+      {/* Boton "Instalar app" — solo aparece si la PWA no esta instalada y el
+          dispositivo lo soporta (Android con prompt nativo o iOS via instrucciones). */}
+      <PwaInstallButton onClick={closeMenu} />
 
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
         {waxMenuFooterLinks.map((item) => renderFooterLink(item))}
