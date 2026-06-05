@@ -571,10 +571,16 @@ export const AtelierChat = () => {
     setInput('');
     setClientMessageCount((n) => n + 1);
 
-    // Red de seguridad (fallback): si el AI no emitió CONFIRM por alguna razón
-    // pero el cliente claramente dice "sí" y ya hay un boceto válido, disparamos
-    // la generación igual. El flujo normal es por el marcador CONFIRM del AI.
-    if (lastSketchUrl && isAffirmative(text) && !hasGeneratedModel) {
+    // Atajo SOLO despues de agotar los 3 sketches: si el AI no logra emitir
+    // CONFIRM y el cliente dice "si", disparamos el 3D directamente.
+    // Antes del limite, "si" es puro texto que va al AI (puede estar confirmando
+    // un refinamiento, "Vas a anadir X. Lo confirmas?" -> "si").
+    if (
+      sketchAttempts >= SKETCH_MAX_ATTEMPTS
+      && lastSketchUrl
+      && isAffirmative(text)
+      && !hasGeneratedModel
+    ) {
       triggerGeneration();
       return;
     }
@@ -687,6 +693,20 @@ export const AtelierChat = () => {
       )}
 
       <div className="atelier-chat">
+
+        {/* Disclaimer persistente sobre la naturaleza aproximada de los resultados IA */}
+        <div
+          style={{
+            padding: '0.5rem 1rem',
+            fontSize: '0.75rem',
+            color: 'var(--wax-color-graphite, #555)',
+            background: 'rgba(15, 15, 16, 0.03)',
+            borderBottom: '1px solid rgba(15, 15, 16, 0.06)',
+            lineHeight: 1.4,
+          }}
+        >
+          ⓘ Los bocetos y modelos 3D son generados por IA — pueden no ser idénticos al resultado final. Úsalos como referencia visual del concepto.
+        </div>
 
         {/* ── Messages area ── */}
         <div className="atelier-chat-messages">
@@ -914,6 +934,10 @@ export const AtelierChat = () => {
                 placeholder={
                   hasGeneratedModel
                     ? 'Inicia una nueva conversación para continuar…'
+                    : isSketchLoading
+                    ? 'Generando boceto, espera un momento…'
+                    : sketchAttempts >= SKETCH_MAX_ATTEMPTS
+                    ? 'Llegaste al límite de bocetos. Elige una opción arriba para continuar.'
                     : isConversationEmpty
                     ? 'Escribe tu idea o sube una imagen… (Enter para enviar)'
                     : 'Escribe tu mensaje… (Enter para enviar)'
@@ -922,13 +946,28 @@ export const AtelierChat = () => {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                disabled={isChatPending || !!activeGen || isGenerating || hasGeneratedModel}
+                disabled={
+                  isChatPending
+                  || !!activeGen
+                  || isGenerating
+                  || hasGeneratedModel
+                  || isSketchLoading
+                  || sketchAttempts >= SKETCH_MAX_ATTEMPTS
+                }
               />
 
               <button
                 className="atelier-chat-send"
                 onClick={handleSend}
-                disabled={isChatPending || !!activeGen || isGenerating || hasGeneratedModel || !input.trim()}
+                disabled={
+                  isChatPending
+                  || !!activeGen
+                  || isGenerating
+                  || hasGeneratedModel
+                  || isSketchLoading
+                  || sketchAttempts >= SKETCH_MAX_ATTEMPTS
+                  || !input.trim()
+                }
                 aria-label="Enviar"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
