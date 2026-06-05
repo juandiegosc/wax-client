@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { loadStripe, type Appearance } from '@stripe/stripe-js';
+import { loadStripe, type Appearance, type Stripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { Link } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
@@ -11,7 +11,13 @@ import { useCreatePaymentIntent } from '../hooks/useCheckout';
 import { env } from '@/config/env';
 import { routePaths } from '@/routes/routePaths';
 
-const stripePromise = loadStripe(env.stripePk);
+// Cargado lazy en useEffect para que Stripe (y su widget flotante de Link)
+// solo aparezca cuando el usuario entra al checkout, no en cualquier pagina.
+let stripePromise: Promise<Stripe | null> | null = null;
+const getStripe = () => {
+  stripePromise ??= loadStripe(env.stripePk);
+  return stripePromise;
+};
 
 const appearance: Appearance = {
   theme: 'stripe',
@@ -163,7 +169,7 @@ export const CheckoutPageContent = () => {
       </header>
 
       <div className="checkout-layout">
-        <Elements stripe={stripePromise} options={options}>
+        <Elements stripe={getStripe()} options={options}>
           <CheckoutStepper basket={basket} />
         </Elements>
         <CheckoutOrderSummary basket={basket} />
