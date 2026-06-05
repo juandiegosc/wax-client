@@ -223,8 +223,6 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
         </Link>
       )}
 
-      {/* Boton "Instalar app" — solo aparece si la PWA no esta instalada y el
-          dispositivo lo soporta (Android con prompt nativo o iOS via instrucciones). */}
       <PwaInstallButton onClick={closeMenu} />
 
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>

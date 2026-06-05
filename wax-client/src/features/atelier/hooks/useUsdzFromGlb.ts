@@ -1,22 +1,15 @@
 import { useEffect, useState } from 'react';
 
-// iOS solo soporta AR Quick Look y requiere formato USDZ. Como Meshy nos da GLB,
-// hacemos la conversion en el browser usando Three.js USDZExporter — solo
-// cuando detectamos un dispositivo Apple. En Android este hook no hace nada
-// (Android usa el GLB directamente via Scene Viewer / ARCore).
-//
-// La conversion es ephemera: el USDZ vive como Blob URL en memoria del browser
-// y se libera al desmontar. Backend no se entera, sigue almacenando solo el GLB.
-
 const isAppleDevice = (): boolean => {
   if (typeof navigator === 'undefined') return false;
-  // iPad moderno reporta MacIntel con maxTouchPoints>1; iPhone/iPod son rectos.
   const ua = navigator.userAgent;
   if (/iPhone|iPod|iPad/.test(ua)) return true;
   if (ua.includes('Mac') && navigator.maxTouchPoints > 1) return true;
   return false;
 };
 
+// iOS AR Quick Look solo acepta USDZ. Convertimos en el browser para evitar
+// tocar el backend.
 export const useUsdzFromGlb = (glbUrl: string | undefined | null): {
   usdzUrl: string | null;
   isConverting: boolean;
@@ -27,7 +20,6 @@ export const useUsdzFromGlb = (glbUrl: string | undefined | null): {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Solo convertimos cuando el dispositivo es Apple — Android usa el GLB directo.
     if (!glbUrl || !isAppleDevice()) {
       setUsdzUrl(null);
       return;
@@ -41,7 +33,6 @@ export const useUsdzFromGlb = (glbUrl: string | undefined | null): {
 
     (async () => {
       try {
-        // Lazy-load: solo cargamos three.js si el dispositivo es Apple.
         const [{ GLTFLoader }, { USDZExporter }] = await Promise.all([
           import('three/examples/jsm/loaders/GLTFLoader.js'),
           import('three/examples/jsm/exporters/USDZExporter.js'),

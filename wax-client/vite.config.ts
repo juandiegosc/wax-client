@@ -25,21 +25,15 @@ export default defineConfig({
             src: '/LogoWax.svg',
             sizes: 'any',
             type: 'image/svg+xml',
-            purpose: 'any maskable',
+            purpose: 'any',
           },
         ],
       },
       workbox: {
-        // Permitimos archivos grandes (modelos 3D, bocetos base64) en el caché
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        navigateFallbackDenylist: [
-          // No interceptar las rutas de la API ni de n8n/Meshy
-          /^\/api/,
-          /^\/meshy-cdn/,
-        ],
+        navigateFallbackDenylist: [/^\/api/, /^\/meshy-cdn/],
       },
       devOptions: {
-        // Permite probar la PWA en local con `npm run dev`
         enabled: true,
         type: 'module',
       },

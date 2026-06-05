@@ -42,10 +42,7 @@ type SketchMsg = {
   attemptNumber: number;
 };
 
-// 1 boceto inicial + 2 refinamientos = 3 sketches en total por conversación.
 const SKETCH_MAX_ATTEMPTS = 3;
-// Después de N mensajes del cliente sin generar el 3D, mostramos un banner
-// para evitar abuso / costos descontrolados de OpenAI.
 const CLIENT_MESSAGE_SOFT_LIMIT = 30;
 
 type AnyMsg = ChatMsg | GenMsg | SketchMsg;
@@ -120,8 +117,6 @@ const ModelViewerPopup = ({
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  // Conversion GLB -> USDZ solo si el cliente esta en iOS (para AR Quick Look).
-  // En Android el hook no hace nada y model-viewer usa el GLB directo via ARCore.
   const proxiedGlb = meshyUrl(glbUrl);
   const { usdzUrl } = useUsdzFromGlb(proxiedGlb);
 
@@ -325,9 +320,6 @@ export const AtelierChat = () => {
   const inputRef   = useRef<HTMLTextAreaElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  // En dispositivos tactiles (movil/tablet) mostramos un boton extra para tomar
-  // foto con la camara. Detectamos via pointer: coarse para evitar mostrarlo en
-  // desktop con mouse donde no tiene sentido.
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
@@ -468,8 +460,7 @@ export const AtelierChat = () => {
       return;
     }
 
-    // Text flow: la IA ya generó una ficha de producto limpia en el marcador <!--PROMPT:...|...|descripción-->
-    // Si por alguna razón no llegó (formato viejo o error), caemos al chat completo como respaldo.
+    // Fallback al chat completo si el AI no emitió la descripción en el marcador.
     const description = lastGenDescription
       || messages
         .filter(m => m.kind === 'chat')
@@ -514,18 +505,11 @@ export const AtelierChat = () => {
   }, []);
 
   // ── Sketch (boceto 2D) ────────────────────────────────────────────────────
-  // Lanza una generación de boceto y actualiza el mensaje (loading → done/failed).
-  // Cada SKETCH marker emitido por el AI dispara una llamada aquí. El AI es quien
-  // valida que el cliente confirmó cada refinamiento ("¿estás seguro?") antes de
-  // emitir el marcador, asi que aqui solo defendemos el limite duro.
-  // NO limpia lastSketchUrl: lo conserva como respaldo si el cliente confirma 3D
-  // mientras un refinamiento esta en vuelo.
+  // No limpia lastSketchUrl: lo conserva como respaldo si el cliente confirma
+  // el 3D mientras un refinamiento esta en vuelo.
   const launchSketch = (prompt: string) => {
     const nextAttempt = sketchAttempts + 1;
-    if (nextAttempt > SKETCH_MAX_ATTEMPTS) {
-      // Defensa: el AI no debería haber emitido este SKETCH. Ignoramos en silencio.
-      return;
-    }
+    if (nextAttempt > SKETCH_MAX_ATTEMPTS) return;
     setSketchAttempts(nextAttempt);
     setIsSketchLoading(true);
     const sketchId = crypto.randomUUID();
@@ -549,8 +533,6 @@ export const AtelierChat = () => {
       .finally(() => setIsSketchLoading(false));
   };
 
-  // Dispara la generación 3D. Reusada por (1) el "sí" en el chat y (2) el
-  // botón "Sí, crear el 3D" del aviso de límite.
   const triggerGeneration = () => {
     if (!lastGenPrompt || hasGeneratedModel) return;
     const msgId = crypto.randomUUID();
@@ -569,8 +551,7 @@ export const AtelierChat = () => {
       });
     };
 
-    // Si tenemos un boceto valido, lo usamos como input para image-to-3d (mas
-    // fiel visualmente que text-to-3d). Si fallo, caemos a text-to-3d.
+    // Preferimos image-to-3d con el boceto (mas fiel), fallback a text-to-3d.
     if (lastSketchUrl) {
       generateImage(
         { imageDataUrl: lastSketchUrl },
@@ -584,9 +565,6 @@ export const AtelierChat = () => {
     }
   };
 
-  // Click del boton "Si, crear el 3D" cuando el cliente llego al limite de
-  // bocetos. Simulamos el "si" en el chat para que la conversacion quede
-  // coherente y disparamos la generacion.
   const handleConfirmFromLimit = () => {
     if (!lastGenPrompt || hasGeneratedModel) return;
     addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'user', content: 'sí' });
@@ -602,10 +580,7 @@ export const AtelierChat = () => {
     setInput('');
     setClientMessageCount((n) => n + 1);
 
-    // Atajo SOLO despues de agotar los 3 sketches: si el AI no logra emitir
-    // CONFIRM y el cliente dice "si", disparamos el 3D directamente.
-    // Antes del limite, "si" es puro texto que va al AI (puede estar confirmando
-    // un refinamiento, "Vas a anadir X. Lo confirmas?" -> "si").
+    // Fallback al limite: si el AI no logra emitir CONFIRM, "si" dispara el 3D.
     if (
       sketchAttempts >= SKETCH_MAX_ATTEMPTS
       && lastSketchUrl
@@ -624,10 +599,6 @@ export const AtelierChat = () => {
           const displayText = stripHiddenMarkers(data.output);
           addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'assistant', content: displayText });
 
-          // El AI conduce el flujo. Reaccionamos al tipo de marcador emitido:
-          //  - SKETCH → genera boceto (inicial o refinamiento; contador en launchSketch)
-          //  - CONFIRM → dispara generación 3D (image-to-3d con el último boceto)
-          //  - sin marcador → solo conversa, mantenemos estado intacto
           if (marker?.kind === 'sketch') {
             setLastGenPrompt(marker.prompt);
             setLastGenDescription(marker.description ?? '');
@@ -813,8 +784,6 @@ export const AtelierChat = () => {
                         alt="Boceto del diseño"
                         style={{ maxWidth: '100%', borderRadius: '0.5rem', marginTop: '0.5rem' }}
                       />
-                      {/* Red de seguridad: si llegamos al limite de 3 sketches,
-                          mostramos botones por si el AI no logra cerrar el flujo. */}
                       {reachedLimit && !hasGeneratedModel && (
                         <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -900,9 +869,6 @@ export const AtelierChat = () => {
         {!inputImgPreview && (
           <div className="atelier-chat-bottom">
 
-            {/* Banner anti-desvio: aparece a los 30 mensajes del cliente sin haber
-                generado el 3D. Es soft (dismissible) — el cliente puede continuar
-                o reiniciar. Una sola vez por sesion. */}
             {clientMessageCount >= CLIENT_MESSAGE_SOFT_LIMIT
               && !limitBannerDismissed
               && !hasGeneratedModel && (
@@ -942,9 +908,7 @@ export const AtelierChat = () => {
             )}
 
             <div className={`atelier-chat-input-row${isConversationEmpty ? '' : ' atelier-chat-input-row--no-img'}`}>
-              {/* Image upload + camera capture — only on empty conversation
-                  Envueltos en un div para que el grid del input-row los trate
-                  como una sola columna (auto), conservando la grilla auto/1fr/auto */}
+              {/* Imagen + camara solo al inicio. Envueltos para no romper la grilla. */}
               {isConversationEmpty && (
                 <div className="atelier-img-upload-group">
                   <button

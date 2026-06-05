@@ -1,19 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { waxBrand } from '@/config/brand';
 import { usePwaInstall } from '@/lib/hooks/usePwaInstall';
 
-// Boton para instalar la PWA en la pantalla de inicio del dispositivo.
-// Comportamiento por plataforma:
-//   - Ya instalada (display-mode standalone) → no se renderiza nada
-//   - Chrome/Android con prompt nativo disponible → dispara el prompt
-//   - iOS Safari → abre un modal con las instrucciones manuales (Compartir → Agregar a inicio)
-//   - Desktop / sin soporte → no se renderiza
 export const PwaInstallButton = ({ onClick }: { onClick?: () => void } = {}) => {
   const { isInstalled, canInstall, isIOS, install } = usePwaInstall();
   const [showIosHelp, setShowIosHelp] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  // No hay nada para mostrar si ya esta instalada o si no hay forma de instalar
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (showIosHelp && !dialog.open) dialog.showModal();
+    if (!showIosHelp && dialog.open) dialog.close();
+  }, [showIosHelp]);
+
   if (isInstalled) return null;
   if (!canInstall && !isIOS) return null;
 
@@ -60,63 +61,54 @@ export const PwaInstallButton = ({ onClick }: { onClick?: () => void } = {}) => 
         Instalar app
       </button>
 
-      {showIosHelp && (
+      <dialog
+        ref={dialogRef}
+        onClose={() => setShowIosHelp(false)}
+        style={{
+          padding: 0,
+          border: 'none',
+          borderRadius: '0.75rem',
+          background: 'transparent',
+          maxWidth: '20rem',
+        }}
+      >
         <div
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setShowIosHelp(false)}
           style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15, 15, 16, 0.55)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            padding: '1rem',
+            background: waxBrand.color.porcelain,
+            borderRadius: '0.75rem',
+            padding: '1.5rem',
+            boxShadow: waxBrand.shadow.elevated,
+            display: 'grid',
+            gap: '0.85rem',
           }}
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
+          <h3 style={{ margin: 0, fontSize: '1rem', color: waxBrand.color.ink, fontFamily: 'var(--wax-font-display)' }}>
+            Instala WAX en tu iPhone
+          </h3>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: waxBrand.color.graphite, lineHeight: 1.5 }}>
+            En Safari toca el botón de <strong>Compartir</strong> (⬆️ abajo) y luego selecciona <strong>"Agregar a pantalla de inicio"</strong>. Encontrarás el ícono WAX como cualquier otra app.
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowIosHelp(false)}
             style={{
-              background: waxBrand.color.porcelain,
-              borderRadius: '0.75rem',
-              padding: '1.5rem',
-              maxWidth: '20rem',
-              boxShadow: waxBrand.shadow.elevated,
-              display: 'grid',
-              gap: '0.85rem',
+              padding: '0.5rem 0.85rem',
+              border: `1px solid ${waxBrand.color.ink}`,
+              borderRadius: '0.4rem',
+              background: waxBrand.color.ink,
+              color: waxBrand.color.porcelain,
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              justifySelf: 'end',
             }}
           >
-            <h3 style={{ margin: 0, fontSize: '1rem', color: waxBrand.color.ink, fontFamily: 'var(--wax-font-display)' }}>
-              Instala WAX en tu iPhone
-            </h3>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: waxBrand.color.graphite, lineHeight: 1.5 }}>
-              En Safari toca el botón de <strong>Compartir</strong> (⬆️ abajo) y luego selecciona
-              <strong> "Agregar a pantalla de inicio"</strong>. Encontrarás el ícono WAX como cualquier otra app.
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowIosHelp(false)}
-              style={{
-                padding: '0.5rem 0.85rem',
-                border: `1px solid ${waxBrand.color.ink}`,
-                borderRadius: '0.4rem',
-                background: waxBrand.color.ink,
-                color: waxBrand.color.porcelain,
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                justifySelf: 'end',
-              }}
-            >
-              Entendido
-            </button>
-          </div>
+            Entendido
+          </button>
         </div>
-      )}
+      </dialog>
     </>
   );
 };

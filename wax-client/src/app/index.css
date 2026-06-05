@@ -3064,13 +3064,10 @@ select {
 @media (max-width: 48rem) {
   .atelier-page {
     grid-template-columns: 1fr;
-    /* La grilla apila brand (auto) + chat-shell (1fr) y la pagina llena el
-       viewport entero. El chat ocupa todo el espacio que sobre, sin dejar
-       un hueco muerto debajo del input. */
     grid-template-rows: auto 1fr;
-    margin: -2.5rem -0.75rem 0;
+    margin: -2.5rem -0.75rem -4rem;
     width: calc(100% + 1.5rem);
-    min-height: 100svh;
+    min-height: calc(100svh + 4rem);
   }
 
   .atelier-brand-panel {
@@ -3093,20 +3090,17 @@ select {
     position: static;
     height: auto;
     overflow: visible;
-    /* Sin padding-bottom grande: el chat ya tiene su propio padding interno */
-    padding: 0.75rem 0.75rem 0.75rem;
+    padding: 0.5rem 0.5rem 0;
     display: flex;
     flex-direction: column;
     min-height: 0;
   }
 
   .atelier-chat {
-    /* El chat llena todo el shell. min-height: 0 permite que el flex respete
-       el espacio asignado en vez de empujar todo hacia abajo. */
     flex: 1;
     height: auto;
-    min-height: 24rem;
-    border-radius: 0.75rem;
+    min-height: 22rem;
+    border-radius: 0.75rem 0.75rem 0 0;
   }
 
   .atelier-chat-messages {

@@ -18,7 +18,7 @@ const PROGRESS_MESSAGES = [
 export const isAffirmative = (text: string) =>
   AFFIRMATIVES.has(text.toLowerCase().trim().replaceAll(/[!¡.¿?]/g, ''));
 
-// Parseo string-based (sin regex) — O(n) garantizado, evita ReDoS.
+// Parseo sin regex (evita ReDoS).
 const SKETCH_OPEN = '<!--sketch:';
 const CONFIRM_TAG = '<!--confirm-->';
 const MARKER_CLOSE = '-->';
@@ -37,9 +37,7 @@ export type AtelierMarker =
   | { kind: 'sketch'; prompt: string; description?: string; artStyle?: ArtStyle }
   | { kind: 'confirm' };
 
-// Extrae el primer marcador relevante del mensaje del agente. Hay 2 tipos:
-//   <!--SKETCH:[english prompt]|[spanish description]-->  → generar/refinar boceto
-//   <!--CONFIRM-->                                         → disparar generación 3D
+// Marcadores que emite el agente: SKETCH (genera boceto) o CONFIRM (dispara 3D).
 export const extractAtelierMarker = (text: string): AtelierMarker | null => {
   const sketchBounds = findSketchBounds(text);
   if (sketchBounds) {
@@ -57,10 +55,8 @@ export const extractAtelierMarker = (text: string): AtelierMarker | null => {
   return null;
 };
 
-// Quita TODOS los marcadores (SKETCH y CONFIRM) del texto visible al cliente.
 export const stripHiddenMarkers = (text: string): string => {
   let result = text;
-  // Loop seguro: cada iteración consume al menos los caracteres del marcador
   while (true) {
     const sketchBounds = findSketchBounds(result);
     if (sketchBounds) {
@@ -84,8 +80,6 @@ export const stripHiddenMarkers = (text: string): string => {
 export const getProgressMessage = (progress: number) =>
   ([...PROGRESS_MESSAGES].reverse().find(m => progress >= m.threshold) ?? PROGRESS_MESSAGES[0]).label;
 
-// Siempre pasamos por el proxy /meshy-cdn para evitar CORS:
-// - local: lo resuelve el proxy de Vite (vite.config.ts)
-// - producción: lo resuelve la Rewrite Rule de Render (/meshy-cdn/* -> https://assets.meshy.ai/*)
+// Proxy para evitar CORS de Meshy (Vite en dev, Render rewrite en prod).
 export const meshyUrl = (url: string) =>
   url.replace('https://assets.meshy.ai', '/meshy-cdn');
