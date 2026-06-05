@@ -13,6 +13,7 @@ import { useBasket } from '@/features/basket/hooks/useBasket';
 import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustomProducts';
 import { MenuToggle } from '@/layouts/MenuToggle';
 import { PwaInstallButton } from '@/layouts/PwaInstallButton';
+import { MiniCartDrawer } from '@/features/basket/components/MiniCartDrawer';
 import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
 
@@ -687,6 +688,8 @@ export const MainLayout = () => {
         onLogout={handleLogout}
         isLoggingOut={logoutMutation.isPending}
       />
+
+      <MiniCartDrawer />
 
       <SiteHeader
         isHomePage={isHomePage}
