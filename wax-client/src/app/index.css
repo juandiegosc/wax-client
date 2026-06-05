@@ -42,6 +42,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: transparent;
+  overflow-x: hidden;
 }
 
 a {
@@ -3149,6 +3150,27 @@ select {
     font-size: 0.7rem !important;
     padding: 0.4rem 0.85rem !important;
   }
+
+  /* Preview de imagen con wrap para que el boton "Generar" no force ancho */
+  .atelier-img-preview-area {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .atelier-img-preview-label {
+    min-width: 0;
+    flex: 1 1 8rem;
+  }
+
+  .atelier-img-preview-actions {
+    flex-wrap: wrap;
+  }
+
+  .atelier-img-preview-actions .atelier-gen-cta {
+    width: auto;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.78rem;
+  }
 }
 
 /* ─── Shared typography ──────────────────────────────────────────── */
@@ -4508,7 +4530,7 @@ select {
 @media (max-width: 560px) {
   .home-page {
     gap: 2.25rem;
-    padding-top: 0.5rem;
+    padding-top: 0;
   }
 
   .home-campaign {
