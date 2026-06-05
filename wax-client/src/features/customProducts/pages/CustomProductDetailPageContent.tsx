@@ -91,6 +91,10 @@ export const CustomProductDetailPageContent = ({ customProductId }: Props) => {
             auto-rotate="true"
             shadow-intensity="1"
             environment-image="neutral"
+            ar="true"
+            ar-modes="scene-viewer webxr quick-look"
+            ar-scale="auto"
+            ar-placement="floor"
             style={{ width: '100%', height: '20rem', background: '#1c1c1e' }}
           />
         </div>

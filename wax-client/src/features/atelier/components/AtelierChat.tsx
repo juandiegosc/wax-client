@@ -140,12 +140,16 @@ const ModelViewerPopup = ({
             loading="eager"
             reveal="auto"
             environment-image="neutral"
+            ar="true"
+            ar-modes="scene-viewer webxr quick-look"
+            ar-scale="auto"
+            ar-placement="floor"
             style={{ width: '100%', height: '100%', background: '#1c1c1e' }}
           />
         </div>
 
         <div className="atelier-popup-footer">
-          <p className="atelier-popup-hint">Arrastra para rotar · Pellizca para hacer zoom</p>
+          <p className="atelier-popup-hint">Arrastra para rotar · Pellizca para hacer zoom · En móvil toca el ícono AR para verlo en tu espacio</p>
           <a href={glbUrl} download className="atelier-gen-download">
             Descargar GLB
           </a>
@@ -199,6 +203,10 @@ const GenCard = ({
             loading="eager"
             reveal="auto"
             environment-image="neutral"
+            ar="true"
+            ar-modes="scene-viewer webxr quick-look"
+            ar-scale="auto"
+            ar-placement="floor"
             style={{ width: '100%', height: '16rem', background: '#1c1c1e' }}
           />
           <button
@@ -306,6 +314,19 @@ export const AtelierChat = () => {
   const bottomRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLTextAreaElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  // En dispositivos tactiles (movil/tablet) mostramos un boton extra para tomar
+  // foto con la camara. Detectamos via pointer: coarse para evitar mostrarlo en
+  // desktop con mouse donde no tiene sentido.
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(pointer: coarse)');
+    setIsTouchDevice(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsTouchDevice(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const { mutate: sendMessage,     isPending: isChatPending }     = useChat();
   const { mutate: generateText,    isPending: isGeneratingText }  = useGenerateFromText();
@@ -911,21 +932,37 @@ export const AtelierChat = () => {
             )}
 
             <div className={`atelier-chat-input-row${isConversationEmpty ? '' : ' atelier-chat-input-row--no-img'}`}>
-              {/* Image upload — only on empty conversation */}
+              {/* Image upload + camera capture — only on empty conversation */}
               {isConversationEmpty && (
-                <button
-                  type="button"
-                  className="atelier-img-upload-btn"
-                  onClick={() => imgInputRef.current?.click()}
-                  aria-label="Subir imagen de referencia (solo al inicio)"
-                  title="Sube una imagen para generar directamente en 3D"
-                >
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                    <circle cx="8.5" cy="8.5" r="1.5" />
-                    <polyline points="21 15 16 10 5 21" />
-                  </svg>
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="atelier-img-upload-btn"
+                    onClick={() => imgInputRef.current?.click()}
+                    aria-label="Subir imagen de referencia"
+                    title="Subir imagen desde tu dispositivo"
+                  >
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                  </button>
+                  {isTouchDevice && (
+                    <button
+                      type="button"
+                      className="atelier-img-upload-btn"
+                      onClick={() => cameraInputRef.current?.click()}
+                      aria-label="Tomar foto con la cámara"
+                      title="Tomar foto con la cámara"
+                    >
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                    </button>
+                  )}
+                </>
               )}
 
               <textarea
@@ -983,6 +1020,14 @@ export const AtelierChat = () => {
           ref={imgInputRef}
           type="file"
           accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleImgChange}
+        />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
           style={{ display: 'none' }}
           onChange={handleImgChange}
         />

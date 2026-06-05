@@ -1,10 +1,50 @@
 import { defineConfig } from 'vitest/config'
 import path from 'node:path'
 import react from '@vitejs/plugin-react-swc'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['LogoWax.svg', 'favicon.ico'],
+      manifest: {
+        name: 'WAX Studio',
+        short_name: 'WAX',
+        description: 'Maison 3D a medida — diseña tu accesorio con IA y vélo en realidad aumentada',
+        theme_color: '#0f0f10',
+        background_color: '#faf9f6',
+        display: 'standalone',
+        orientation: 'portrait',
+        start_url: '/',
+        scope: '/',
+        icons: [
+          {
+            src: '/LogoWax.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+        ],
+      },
+      workbox: {
+        // Permitimos archivos grandes (modelos 3D, bocetos base64) en el caché
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        navigateFallbackDenylist: [
+          // No interceptar las rutas de la API ni de n8n/Meshy
+          /^\/api/,
+          /^\/meshy-cdn/,
+        ],
+      },
+      devOptions: {
+        // Permite probar la PWA en local con `npm run dev`
+        enabled: true,
+        type: 'module',
+      },
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
