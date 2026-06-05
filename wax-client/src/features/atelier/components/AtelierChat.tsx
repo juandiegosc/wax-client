@@ -343,7 +343,6 @@ export const AtelierChat = () => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isChatPending]);
 
-  // Persistir la conversación para no perderla al navegar / recargar
   useEffect(() => {
     const data: PersistedAtelier = {
       sessionId,
@@ -366,7 +365,6 @@ export const AtelierChat = () => {
     }
   }, [sessionId, messages, lastGenPrompt, lastGenDescription, lastSketchUrl, sketchAttempts, clientMessageCount, limitBannerDismissed, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
 
-  // Resolve generation result when task finishes; auto-start refine after preview
   useEffect(() => {
     if (!activeGen || !taskStatus) return;
     const done = taskStatus.status === 'SUCCEEDED' || taskStatus.status === 'FAILED';

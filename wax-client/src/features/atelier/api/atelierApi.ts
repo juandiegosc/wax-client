@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { env } from '@/config/env';
 
-// Instancia sin interceptor de navegación — para calls fire-and-forget donde un 500 no debe redirigir al usuario
+// Sin interceptor de navegación: un 500 no debe redirigir al usuario.
 const silentApi = axios.create({
   baseURL: env.apiUrl,
   withCredentials: true,

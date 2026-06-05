@@ -63,13 +63,10 @@ const homeFooterColumns: HomeFooterColumn[] = [
 ] as const;
 
 export const HomePage = () => {
-  // Paso 1 — saber cuántos productos hay en total
   const { data: meta } = useProducts({ pageSize: 1 });
   const totalCount = meta?.totalCount ?? 0;
 
-  // Paso 2 — pedir la última página de 4 (los más recientes al final de la lista)
-  // Math.max(1, totalCount - 3) calcula el primer item del bloque final,
-  // y Math.ceil lo convierte a número de página con pageSize=4.
+  // Última página de 4 para traer los más recientes (los nuevos van al final).
   const lastPage = totalCount > 0 ? Math.ceil(Math.max(1, totalCount - 3) / 4) : 1;
   const { data, isLoading, isError } = useProducts(
     { pageSize: 4, pageNumber: lastPage },
