@@ -5,7 +5,7 @@ import { atelierApi, type DesignFields } from '@/features/atelier/api/atelierApi
 import { useChat } from '@/features/atelier/hooks/useChat';
 import { useGenerateFromText, useGenerateFromImage, useRefineFromPreview } from '@/features/atelier/hooks/useGenerate';
 import { useTaskStatus } from '@/features/atelier/hooks/useTaskStatus';
-import { isAffirmative, extractMeshyPrompt, stripHiddenPrompt, getProgressMessage, meshyUrl } from '@/features/atelier/utils/atelierHelpers';
+import { isAffirmative, extractAtelierMarker, stripHiddenMarkers, getProgressMessage, meshyUrl } from '@/features/atelier/utils/atelierHelpers';
 import type { ArtStyle, TaskStatus } from '@/features/atelier/types/atelier.types';
 import { CotizarFormModal, type CotizarFormValues } from '@/features/atelier/components/CotizarFormModal';
 
@@ -41,7 +41,11 @@ type SketchMsg = {
   attemptNumber: number;
 };
 
-const SKETCH_MAX_ATTEMPTS = 2;
+// 1 boceto inicial + 2 refinamientos = 3 sketches en total por conversación.
+const SKETCH_MAX_ATTEMPTS = 3;
+// Después de N mensajes del cliente sin generar el 3D, mostramos un banner
+// para evitar abuso / costos descontrolados de OpenAI.
+const CLIENT_MESSAGE_SOFT_LIMIT = 30;
 
 type AnyMsg = ChatMsg | GenMsg | SketchMsg;
 
@@ -59,6 +63,8 @@ type PersistedAtelier = {
   lastGenDescription: string;
   lastSketchUrl: string;
   sketchAttempts: number;
+  clientMessageCount: number;
+  limitBannerDismissed: boolean;
   artStyle: ArtStyle;
   activeGen: ActiveGen | null;
   hasGeneratedModel: boolean;
@@ -274,7 +280,9 @@ export const AtelierChat = () => {
   const [lastGenDescription, setLastGenDescription] = useState(() => persisted.lastGenDescription ?? '');
   const [lastSketchUrl, setLastSketchUrl]   = useState(() => persisted.lastSketchUrl ?? '');
   const [sketchAttempts, setSketchAttempts] = useState<number>(() => persisted.sketchAttempts ?? 0);
-  const [sketchRefineInput, setSketchRefineInput] = useState('');
+  const [isSketchLoading, setIsSketchLoading] = useState(false);
+  const [clientMessageCount, setClientMessageCount] = useState<number>(() => persisted.clientMessageCount ?? 0);
+  const [limitBannerDismissed, setLimitBannerDismissed] = useState<boolean>(() => persisted.limitBannerDismissed ?? false);
   const [artStyle, setArtStyle]             = useState<ArtStyle>(() => persisted.artStyle ?? 'realistic');
   const [inputImg, setInputImg]             = useState<File | null>(null);
   const [inputImgPreview, setInputImgPreview] = useState<string | null>(null);
@@ -321,6 +329,8 @@ export const AtelierChat = () => {
       lastGenDescription,
       lastSketchUrl,
       sketchAttempts,
+      clientMessageCount,
+      limitBannerDismissed,
       artStyle,
       activeGen,
       hasGeneratedModel,
@@ -331,7 +341,7 @@ export const AtelierChat = () => {
     } catch {
       // Cuota de storage excedida (ej. imagen muy grande) — se ignora
     }
-  }, [sessionId, messages, lastGenPrompt, lastGenDescription, lastSketchUrl, sketchAttempts, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
+  }, [sessionId, messages, lastGenPrompt, lastGenDescription, lastSketchUrl, sketchAttempts, clientMessageCount, limitBannerDismissed, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
 
   // Resolve generation result when task finishes; auto-start refine after preview
   useEffect(() => {
@@ -391,6 +401,8 @@ export const AtelierChat = () => {
     setLastGenDescription('');
     setLastSketchUrl('');
     setSketchAttempts(0);
+    setClientMessageCount(0);
+    setLimitBannerDismissed(false);
     setInputImg(null);
     setInputImgPreview(null);
     setActiveGen(null);
@@ -471,14 +483,22 @@ export const AtelierChat = () => {
   }, []);
 
   // ── Sketch (boceto 2D) ────────────────────────────────────────────────────
-  // Lanza una generación de boceto y va actualizando el mensaje correspondiente
-  // (loading → done / failed). Marca el intento # actual para que la UI sepa si
-  // queda margen para refinar (max 2 por ciclo de prompt).
-  const launchSketch = (prompt: string, attemptNumber: number) => {
-    setSketchAttempts(attemptNumber);
-    setLastSketchUrl('');
+  // Lanza una generación de boceto y actualiza el mensaje (loading → done/failed).
+  // Cada SKETCH marker emitido por el AI dispara una llamada aquí. El AI es quien
+  // valida que el cliente confirmó cada refinamiento ("¿estás seguro?") antes de
+  // emitir el marcador, asi que aqui solo defendemos el limite duro.
+  // NO limpia lastSketchUrl: lo conserva como respaldo si el cliente confirma 3D
+  // mientras un refinamiento esta en vuelo.
+  const launchSketch = (prompt: string) => {
+    const nextAttempt = sketchAttempts + 1;
+    if (nextAttempt > SKETCH_MAX_ATTEMPTS) {
+      // Defensa: el AI no debería haber emitido este SKETCH. Ignoramos en silencio.
+      return;
+    }
+    setSketchAttempts(nextAttempt);
+    setIsSketchLoading(true);
     const sketchId = crypto.randomUUID();
-    addMsg({ id: sketchId, kind: 'sketch', status: 'loading', attemptNumber });
+    addMsg({ id: sketchId, kind: 'sketch', status: 'loading', attemptNumber: nextAttempt });
     atelierApi.generateSketch(prompt)
       .then((imageUrl) => {
         setLastSketchUrl(imageUrl);
@@ -494,17 +514,52 @@ export const AtelierChat = () => {
             ? { ...m, status: 'failed' }
             : m,
         ));
-      });
+      })
+      .finally(() => setIsSketchLoading(false));
   };
 
-  const handleRefineSketch = () => {
-    const changes = sketchRefineInput.trim();
-    if (!changes || !lastGenPrompt || sketchAttempts >= SKETCH_MAX_ATTEMPTS) return;
-    // Concatenamos lo que el cliente quiere cambiar al final del prompt original.
-    // El generador de imagen reinterpreta todo y produce un boceto ajustado.
-    const refinedPrompt = `${lastGenPrompt}. Adjust the design with these refinements: ${changes}.`;
-    setSketchRefineInput('');
-    launchSketch(refinedPrompt, sketchAttempts + 1);
+  // Dispara la generación 3D. Reusada por (1) el "sí" en el chat y (2) el
+  // botón "Sí, crear el 3D" del aviso de límite.
+  const triggerGeneration = () => {
+    if (!lastGenPrompt || hasGeneratedModel) return;
+    const msgId = crypto.randomUUID();
+    setHasGeneratedModel(true);
+    const onSuccessGen = (taskId: string, taskType: 'text' | 'image') => {
+      addMsg({ id: msgId, kind: 'gen', taskId, taskType });
+      setActiveGen({ msgId, taskId, taskType });
+    };
+    const onErrorGen = () => {
+      setHasGeneratedModel(false);
+      addMsg({
+        id: msgId,
+        kind: 'chat',
+        role: 'assistant',
+        content: 'No se pudo iniciar la generación. Intenta de nuevo.',
+      });
+    };
+
+    // Si tenemos un boceto valido, lo usamos como input para image-to-3d (mas
+    // fiel visualmente que text-to-3d). Si fallo, caemos a text-to-3d.
+    if (lastSketchUrl) {
+      generateImage(
+        { imageDataUrl: lastSketchUrl },
+        { onSuccess: (d) => onSuccessGen(d.taskId, 'image'), onError: onErrorGen },
+      );
+    } else {
+      generateText(
+        { prompt: lastGenPrompt, artStyle },
+        { onSuccess: (d) => onSuccessGen(d.taskId, 'text'), onError: onErrorGen },
+      );
+    }
+  };
+
+  // Click del boton "Si, crear el 3D" cuando el cliente llego al limite de
+  // bocetos. Simulamos el "si" en el chat para que la conversacion quede
+  // coherente y disparamos la generacion.
+  const handleConfirmFromLimit = () => {
+    if (!lastGenPrompt || hasGeneratedModel) return;
+    addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'user', content: 'sí' });
+    triggerGeneration();
   };
 
   // ── Send chat message ─────────────────────────────────────────────────────
@@ -514,45 +569,13 @@ export const AtelierChat = () => {
 
     addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'user', content: text });
     setInput('');
+    setClientMessageCount((n) => n + 1);
 
-    // Trigger generation only when Phase 2 marker was received and user confirms
-    if (lastGenPrompt && isAffirmative(text) && !hasGeneratedModel) {
-      const msgId = crypto.randomUUID();
-      setHasGeneratedModel(true);
-      const onSuccessGen = (taskId: string, taskType: 'text' | 'image') => {
-        addMsg({ id: msgId, kind: 'gen', taskId, taskType });
-        setActiveGen({ msgId, taskId, taskType });
-      };
-      const onErrorGen = () => {
-        setHasGeneratedModel(false);
-        addMsg({
-          id: msgId,
-          kind: 'chat',
-          role: 'assistant',
-          content: 'No se pudo iniciar la generación. Intenta de nuevo.',
-        });
-      };
-
-      // Si tenemos un boceto valido, lo usamos como input para image-to-3d
-      // (mas fiel visualmente que text-to-3d). Si el boceto fallo o no esta
-      // listo, caemos a text-to-3d como respaldo.
-      if (lastSketchUrl) {
-        generateImage(
-          { imageDataUrl: lastSketchUrl },
-          {
-            onSuccess: data => onSuccessGen(data.taskId, 'image'),
-            onError: onErrorGen,
-          },
-        );
-      } else {
-        generateText(
-          { prompt: lastGenPrompt, artStyle },
-          {
-            onSuccess: data => onSuccessGen(data.taskId, 'text'),
-            onError: onErrorGen,
-          },
-        );
-      }
+    // Red de seguridad (fallback): si el AI no emitió CONFIRM por alguna razón
+    // pero el cliente claramente dice "sí" y ya hay un boceto válido, disparamos
+    // la generación igual. El flujo normal es por el marcador CONFIRM del AI.
+    if (lastSketchUrl && isAffirmative(text) && !hasGeneratedModel) {
+      triggerGeneration();
       return;
     }
 
@@ -560,19 +583,21 @@ export const AtelierChat = () => {
       { message: text, sessionId },
       {
         onSuccess: data => {
-          const extracted  = extractMeshyPrompt(data.output);
-          const displayText = stripHiddenPrompt(data.output);
+          const marker = extractAtelierMarker(data.output);
+          const displayText = stripHiddenMarkers(data.output);
           addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'assistant', content: displayText });
-          // Solo actualizamos cuando el AI emite un marcador nuevo (FASE 2 o
-          // re-emite por cambio de diseño). Si responde sin marcador (ej. chit-chat
-          // entre el boceto y el "sí"), conservamos el prompt anterior para que
-          // el usuario pueda confirmar despues sin perder el contexto.
-          if (extracted) {
-            setLastGenPrompt(extracted.prompt);
-            setLastGenDescription(extracted.description ?? '');
-            if (extracted.artStyle) setArtStyle(extracted.artStyle);
-            // Nuevo ciclo de boceto: el contador vuelve a 1
-            launchSketch(extracted.prompt, 1);
+
+          // El AI conduce el flujo. Reaccionamos al tipo de marcador emitido:
+          //  - SKETCH → genera boceto (inicial o refinamiento; contador en launchSketch)
+          //  - CONFIRM → dispara generación 3D (image-to-3d con el último boceto)
+          //  - sin marcador → solo conversa, mantenemos estado intacto
+          if (marker?.kind === 'sketch') {
+            setLastGenPrompt(marker.prompt);
+            setLastGenDescription(marker.description ?? '');
+            if (marker.artStyle) setArtStyle(marker.artStyle);
+            launchSketch(marker.prompt);
+          } else if (marker?.kind === 'confirm') {
+            triggerGeneration();
           }
         },
         onError: () => {
@@ -717,13 +742,13 @@ export const AtelierChat = () => {
             }
             if (msg.kind === 'sketch') {
               const isLatest = msg.attemptNumber === sketchAttempts;
-              const canRefine = isLatest && msg.status === 'done' && sketchAttempts < SKETCH_MAX_ATTEMPTS;
               const reachedLimit = isLatest && msg.status === 'done' && sketchAttempts >= SKETCH_MAX_ATTEMPTS;
+              const label = msg.attemptNumber === 1
+                ? 'Boceto · 1/3'
+                : `Boceto · refinamiento ${msg.attemptNumber - 1}/2`;
               return (
                 <div key={msg.id} className="atelier-msg atelier-msg--assistant">
-                  <span className="atelier-msg-role">
-                    Boceto previo {msg.attemptNumber > 1 ? `· refinamiento ${msg.attemptNumber}/${SKETCH_MAX_ATTEMPTS}` : `· 1/${SKETCH_MAX_ATTEMPTS}`}
-                  </span>
+                  <span className="atelier-msg-role">{label}</span>
                   {msg.status === 'loading' && (
                     <div className="atelier-sketch-loading">
                       <div className="atelier-spinner" aria-hidden="true" />
@@ -737,38 +762,32 @@ export const AtelierChat = () => {
                         alt="Boceto del diseño"
                         style={{ maxWidth: '100%', borderRadius: '0.5rem', marginTop: '0.5rem' }}
                       />
-                      {canRefine && (
-                        <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                          <div style={{ display: 'flex', gap: '0.35rem' }}>
-                            <input
-                              type="text"
-                              className="atelier-chat-input"
-                              placeholder="¿Qué cambiarías? Ej: más oscuro, con flores, más pequeño…"
-                              value={sketchRefineInput}
-                              onChange={(e) => setSketchRefineInput(e.target.value)}
-                              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleRefineSketch(); } }}
-                              maxLength={200}
-                              style={{ flex: 1 }}
-                              disabled={isChatPending}
-                            />
+                      {/* Red de seguridad: si llegamos al limite de 3 sketches,
+                          mostramos botones por si el AI no logra cerrar el flujo. */}
+                      {reachedLimit && !hasGeneratedModel && (
+                        <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                             <button
                               type="button"
                               className="atelier-gen-cta"
-                              onClick={handleRefineSketch}
-                              disabled={isChatPending || !sketchRefineInput.trim()}
+                              onClick={handleConfirmFromLimit}
+                              disabled={isChatPending || isGenerating || isSketchLoading}
                             >
-                              Refinar
+                              Sí, crear el 3D
+                            </button>
+                            <button
+                              type="button"
+                              className="atelier-reset-link"
+                              onClick={handleReset}
+                              disabled={isGenerating || isSketchLoading}
+                            >
+                              Empezar de nuevo
                             </button>
                           </div>
-                          <span className="atelier-msg-content" style={{ fontSize: '0.78rem', opacity: 0.7 }}>
-                            Puedes refinarlo 1 vez más. Si te gusta como está, di <strong>sí</strong>.
+                          <span className="atelier-msg-content" style={{ fontSize: '0.78rem', opacity: 0.65 }}>
+                            Llegaste al límite de bocetos. Estos botones son un respaldo — también puedes responderle al chat.
                           </span>
                         </div>
-                      )}
-                      {reachedLimit && (
-                        <p className="atelier-msg-content" style={{ marginTop: '0.5rem', fontSize: '0.82rem', opacity: 0.8 }}>
-                          Llegaste al límite de bocetos ({SKETCH_MAX_ATTEMPTS}). Di <strong>sí</strong> para crear el 3D o pide un cambio de diseño en el chat.
-                        </p>
                       )}
                     </>
                   )}
@@ -829,6 +848,35 @@ export const AtelierChat = () => {
         {/* ── Bottom input area ── */}
         {!inputImgPreview && (
           <div className="atelier-chat-bottom">
+
+            {/* Banner anti-desvio: aparece a los 30 mensajes del cliente sin haber
+                generado el 3D. Es soft (dismissible) — el cliente puede continuar
+                o reiniciar. Una sola vez por sesion. */}
+            {clientMessageCount >= CLIENT_MESSAGE_SOFT_LIMIT
+              && !limitBannerDismissed
+              && !hasGeneratedModel && (
+              <div className="atelier-chat-action-bar" style={{ background: 'rgba(15, 15, 16, 0.04)', borderRadius: '0.5rem', padding: '0.75rem' }}>
+                <span className="atelier-model-limit-notice" style={{ display: 'block', marginBottom: '0.5rem' }}>
+                  Llevas {clientMessageCount} mensajes en esta conversación. ¿Quieres continuar o empezar de nuevo?
+                </span>
+                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                  <button
+                    type="button"
+                    className="atelier-reset-link"
+                    onClick={() => setLimitBannerDismissed(true)}
+                  >
+                    Continuar
+                  </button>
+                  <button
+                    type="button"
+                    className="atelier-reset-link"
+                    onClick={handleReset}
+                  >
+                    Empezar de nuevo
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Action bar: only render when there is content to show */}
             {hasGeneratedModel && (
