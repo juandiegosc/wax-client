@@ -19,38 +19,64 @@ export const isAffirmative = (text: string) =>
   AFFIRMATIVES.has(text.toLowerCase().trim().replaceAll(/[!¡.¿?]/g, ''));
 
 // Parseo string-based (sin regex) — O(n) garantizado, evita ReDoS.
-const PROMPT_OPEN = '<!--prompt:';
-const PROMPT_CLOSE = '-->';
+const SKETCH_OPEN = '<!--sketch:';
+const CONFIRM_TAG = '<!--confirm-->';
+const MARKER_CLOSE = '-->';
 
-const findPromptBounds = (text: string): { start: number; end: number } | null => {
-  const start = text.toLowerCase().indexOf(PROMPT_OPEN);
+const findSketchBounds = (text: string): { start: number; end: number } | null => {
+  const start = text.toLowerCase().indexOf(SKETCH_OPEN);
   if (start === -1) return null;
-  const end = text.indexOf(PROMPT_CLOSE, start + PROMPT_OPEN.length);
+  const end = text.indexOf(MARKER_CLOSE, start + SKETCH_OPEN.length);
   if (end === -1) return null;
   return { start, end };
 };
 
-export const extractMeshyPrompt = (text: string): { prompt: string; artStyle?: ArtStyle } | null => {
-  const bounds = findPromptBounds(text);
-  if (!bounds) return null;
-  const content = text.slice(bounds.start + PROMPT_OPEN.length, bounds.end).trim();
-  const pipeIdx = content.indexOf('|');
-  // WAX solo genera en realista: ignoramos cualquier estilo que sugiera la IA
-  // y dejamos que el valor por defecto ('realistic') se aplique aguas abajo.
-  const prompt = pipeIdx === -1 ? content : content.slice(pipeIdx + 1).trim();
-  return { prompt };
+const findConfirmIndex = (text: string): number => text.toLowerCase().indexOf(CONFIRM_TAG);
+
+export type AtelierMarker =
+  | { kind: 'sketch'; prompt: string; description?: string; artStyle?: ArtStyle }
+  | { kind: 'confirm' };
+
+// Extrae el primer marcador relevante del mensaje del agente. Hay 2 tipos:
+//   <!--SKETCH:[english prompt]|[spanish description]-->  → generar/refinar boceto
+//   <!--CONFIRM-->                                         → disparar generación 3D
+export const extractAtelierMarker = (text: string): AtelierMarker | null => {
+  const sketchBounds = findSketchBounds(text);
+  if (sketchBounds) {
+    const content = text
+      .slice(sketchBounds.start + SKETCH_OPEN.length, sketchBounds.end)
+      .trim();
+    const parts = content.split('|').map((p) => p.trim());
+    const prompt = parts[0] ?? '';
+    const description = parts.length >= 2 ? parts[1] : undefined;
+    return { kind: 'sketch', prompt, description };
+  }
+  if (findConfirmIndex(text) !== -1) {
+    return { kind: 'confirm' };
+  }
+  return null;
 };
 
-export const stripHiddenPrompt = (text: string): string => {
+// Quita TODOS los marcadores (SKETCH y CONFIRM) del texto visible al cliente.
+export const stripHiddenMarkers = (text: string): string => {
   let result = text;
   // Loop seguro: cada iteración consume al menos los caracteres del marcador
   while (true) {
-    const bounds = findPromptBounds(result);
-    if (!bounds) break;
-    // Absorber whitespace previo al marcador
-    let realStart = bounds.start;
-    while (realStart > 0 && /\s/.test(result[realStart - 1])) realStart--;
-    result = result.slice(0, realStart) + result.slice(bounds.end + PROMPT_CLOSE.length);
+    const sketchBounds = findSketchBounds(result);
+    if (sketchBounds) {
+      let realStart = sketchBounds.start;
+      while (realStart > 0 && /\s/.test(result[realStart - 1])) realStart--;
+      result = result.slice(0, realStart) + result.slice(sketchBounds.end + MARKER_CLOSE.length);
+      continue;
+    }
+    const confirmIdx = findConfirmIndex(result);
+    if (confirmIdx !== -1) {
+      let realStart = confirmIdx;
+      while (realStart > 0 && /\s/.test(result[realStart - 1])) realStart--;
+      result = result.slice(0, realStart) + result.slice(confirmIdx + CONFIRM_TAG.length);
+      continue;
+    }
+    break;
   }
   return result.trim();
 };

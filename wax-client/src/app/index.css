@@ -2078,6 +2078,30 @@ select {
   30%            { transform: scale(1);    opacity: 1;   }
 }
 
+/* ─── Sketch loading spinner ───────────────────────────────────── */
+
+.atelier-sketch-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+  color: var(--wax-color-stone, #888);
+}
+
+.atelier-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(15, 15, 16, 0.12);
+  border-top-color: var(--wax-color-graphite, #444);
+  border-radius: 50%;
+  animation: atelier-spin 0.8s linear infinite;
+}
+
+@keyframes atelier-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ─── Gen card in chat ───────────────────────────────────────────── */
 
 .atelier-gen-card {

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   isAffirmative,
-  extractMeshyPrompt,
-  stripHiddenPrompt,
+  extractAtelierMarker,
+  stripHiddenMarkers,
   getProgressMessage,
 } from '@/features/atelier/utils/atelierHelpers';
 
@@ -42,69 +42,77 @@ describe('isAffirmative', () => {
   });
 });
 
-// ── extractMeshyPrompt ────────────────────────────────────────────────────────
-describe('extractMeshyPrompt', () => {
-  it('extrae prompt sin art style', () => {
-    const result = extractMeshyPrompt('Texto <!--PROMPT:a leather handbag-->');
-    expect(result).toEqual({ prompt: 'a leather handbag', artStyle: undefined });
+// ── extractAtelierMarker ──────────────────────────────────────────────────────
+describe('extractAtelierMarker', () => {
+  it('extrae marcador SKETCH con prompt y descripción', () => {
+    const result = extractAtelierMarker(
+      '¡Generando! <!--SKETCH:a black leather tote|Bolso tote en cuero negro-->'
+    );
+    expect(result).toEqual({
+      kind: 'sketch',
+      prompt: 'a black leather tote',
+      description: 'Bolso tote en cuero negro',
+    });
   });
 
-  it('ignora el estilo y devuelve solo el prompt (realistic)', () => {
-    const result = extractMeshyPrompt('<!--PROMPT:realistic|a black leather clutch bag-->');
-    expect(result).toEqual({ prompt: 'a black leather clutch bag' });
-    expect(result?.artStyle).toBeUndefined();
+  it('extrae marcador SKETCH solo con prompt (sin descripción)', () => {
+    const result = extractAtelierMarker('<!--SKETCH:a leather handbag-->');
+    expect(result).toEqual({ kind: 'sketch', prompt: 'a leather handbag', description: undefined });
   });
 
-  it('descarta cualquier estilo sugerido por la IA (sculpture)', () => {
-    const result = extractMeshyPrompt('<!--PROMPT:sculpture|minimalist marble vase-->');
-    expect(result).toEqual({ prompt: 'minimalist marble vase' });
-    expect(result?.artStyle).toBeUndefined();
-  });
-
-  it('descarta cualquier estilo sugerido por la IA (pbr)', () => {
-    const result = extractMeshyPrompt('<!--PROMPT:pbr|silver ring with gems-->');
-    expect(result).toEqual({ prompt: 'silver ring with gems' });
-    expect(result?.artStyle).toBeUndefined();
+  it('detecta marcador CONFIRM', () => {
+    const result = extractAtelierMarker('¡Vamos! Creando tu modelo 3D. <!--CONFIRM-->');
+    expect(result).toEqual({ kind: 'confirm' });
   });
 
   it('devuelve null si no hay marcador', () => {
-    expect(extractMeshyPrompt('Texto normal sin marcador')).toBeNull();
+    expect(extractAtelierMarker('Texto normal sin marcador')).toBeNull();
   });
 
-  it('es case-insensitive en el tag y nunca devuelve estilo', () => {
-    const result = extractMeshyPrompt('<!--prompt:realistic|a belt-->');
-    expect(result?.prompt).toBe('a belt');
-    expect(result?.artStyle).toBeUndefined();
+  it('es case-insensitive en el tag', () => {
+    const sketch = extractAtelierMarker('<!--sketch:a belt|Cinturón-->');
+    expect(sketch).toEqual({ kind: 'sketch', prompt: 'a belt', description: 'Cinturón' });
+    const confirm = extractAtelierMarker('<!--confirm-->');
+    expect(confirm).toEqual({ kind: 'confirm' });
   });
 
-  it('funciona con marcador en medio del texto', () => {
-    const result = extractMeshyPrompt(
-      '¡Perfecto! Voy a generarlo ahora. <!--PROMPT:realistic|white leather tote bag, 30x25cm--> ¿Te parece bien?'
+  it('funciona con marcador SKETCH en medio del texto', () => {
+    const result = extractAtelierMarker(
+      '¡Perfecto! <!--SKETCH:white leather tote bag|Bolso tote blanco--> Generando…'
     );
-    expect(result?.prompt).toBe('white leather tote bag, 30x25cm');
+    expect(result).toEqual({
+      kind: 'sketch',
+      prompt: 'white leather tote bag',
+      description: 'Bolso tote blanco',
+    });
   });
 });
 
-// ── stripHiddenPrompt ─────────────────────────────────────────────────────────
-describe('stripHiddenPrompt', () => {
-  it('elimina el marcador del texto', () => {
-    const input = '¡Perfecto! <!--PROMPT:realistic|a bag--> Voy a generarlo.';
-    expect(stripHiddenPrompt(input)).toBe('¡Perfecto! Voy a generarlo.');
+// ── stripHiddenMarkers ────────────────────────────────────────────────────────
+describe('stripHiddenMarkers', () => {
+  it('elimina marcador SKETCH del texto', () => {
+    const input = '¡Perfecto! <!--SKETCH:a bag|Bolso--> Voy a generarlo.';
+    expect(stripHiddenMarkers(input)).toBe('¡Perfecto! Voy a generarlo.');
+  });
+
+  it('elimina marcador CONFIRM del texto', () => {
+    const input = '¡Vamos! <!--CONFIRM--> Generando 3D.';
+    expect(stripHiddenMarkers(input)).toBe('¡Vamos! Generando 3D.');
   });
 
   it('no modifica texto sin marcador', () => {
     const input = 'Cuéntame más sobre el diseño.';
-    expect(stripHiddenPrompt(input)).toBe(input);
+    expect(stripHiddenMarkers(input)).toBe(input);
   });
 
-  it('elimina el marcador y los espacios inmediatamente antes de él', () => {
-    const input = 'Resumen:   <!--PROMPT:pbr|bag-->   Confirma para continuar.';
-    expect(stripHiddenPrompt(input)).toBe('Resumen:   Confirma para continuar.');
+  it('elimina el marcador y los espacios inmediatamente antes', () => {
+    const input = 'Resumen:   <!--SKETCH:bag|Bolso-->   Confirma para continuar.';
+    expect(stripHiddenMarkers(input)).toBe('Resumen:   Confirma para continuar.');
   });
 
-  it('elimina múltiples marcadores si existieran', () => {
-    const input = '<!--PROMPT:realistic|bag--> texto <!--PROMPT:pbr|ring-->';
-    expect(stripHiddenPrompt(input)).toBe('texto');
+  it('elimina múltiples marcadores mixtos', () => {
+    const input = '<!--SKETCH:bag|Bolso--> texto <!--CONFIRM-->';
+    expect(stripHiddenMarkers(input)).toBe('texto');
   });
 });
 
