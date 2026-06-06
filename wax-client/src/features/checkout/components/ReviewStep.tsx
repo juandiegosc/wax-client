@@ -1,5 +1,6 @@
 import type { ConfirmationToken } from '@stripe/stripe-js';
 import type { Basket } from '@/features/basket/types/basket.types';
+import { isCustom3dModel } from '@/features/basket/utils/basketHelpers';
 import { calculateDeliveryFee, formatCurrency } from '@/utils/currency';
 
 interface Props {
@@ -45,7 +46,17 @@ export const ReviewStep = ({ confirmationToken, basket }: Props) => {
       <div className="checkout-review-items">
         {basket.items.map((item) => (
           <div key={item.productId} className="checkout-review-item">
-            <img src={item.pictureUrl} alt={item.productName} className="checkout-review-item-img" />
+            {isCustom3dModel(item.pictureUrl) ? (
+              <div className="checkout-review-item-img checkout-review-item-3d" aria-label={item.productName}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                  <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg>
+              </div>
+            ) : (
+              <img src={item.pictureUrl} alt={item.productName} className="checkout-review-item-img" />
+            )}
             <div className="checkout-review-item-body">
               <span className="checkout-review-item-name">{item.productName}</span>
               <span className="checkout-review-item-qty">×{item.quantity}</span>

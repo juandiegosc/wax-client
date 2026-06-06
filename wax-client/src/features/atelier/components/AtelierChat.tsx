@@ -6,6 +6,7 @@ import { useChat } from '@/features/atelier/hooks/useChat';
 import { useGenerateFromText, useGenerateFromImage, useRefineFromPreview } from '@/features/atelier/hooks/useGenerate';
 import { useTaskStatus } from '@/features/atelier/hooks/useTaskStatus';
 import { isAffirmative, extractAtelierMarker, stripHiddenMarkers, getProgressMessage, meshyUrl } from '@/features/atelier/utils/atelierHelpers';
+import { useUsdzFromGlb } from '@/features/atelier/hooks/useUsdzFromGlb';
 import type { ArtStyle, TaskStatus } from '@/features/atelier/types/atelier.types';
 import { CotizarFormModal, type CotizarFormValues } from '@/features/atelier/components/CotizarFormModal';
 
@@ -41,10 +42,7 @@ type SketchMsg = {
   attemptNumber: number;
 };
 
-// 1 boceto inicial + 2 refinamientos = 3 sketches en total por conversación.
 const SKETCH_MAX_ATTEMPTS = 3;
-// Después de N mensajes del cliente sin generar el 3D, mostramos un banner
-// para evitar abuso / costos descontrolados de OpenAI.
 const CLIENT_MESSAGE_SOFT_LIMIT = 30;
 
 type AnyMsg = ChatMsg | GenMsg | SketchMsg;
@@ -119,6 +117,9 @@ const ModelViewerPopup = ({
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  const proxiedGlb = meshyUrl(glbUrl);
+  const { usdzUrl } = useUsdzFromGlb(proxiedGlb);
+
   return (
     <div className="atelier-popup-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="atelier-popup" onClick={e => e.stopPropagation()}>
@@ -131,7 +132,8 @@ const ModelViewerPopup = ({
 
         <div className="atelier-popup-viewer">
           <model-viewer
-            src={meshyUrl(glbUrl)}
+            src={proxiedGlb}
+            ios-src={usdzUrl ?? undefined}
             poster={thumbnailUrl ? meshyUrl(thumbnailUrl) : undefined}
             camera-controls="true"
             auto-rotate="true"
@@ -140,12 +142,16 @@ const ModelViewerPopup = ({
             loading="eager"
             reveal="auto"
             environment-image="neutral"
+            ar="true"
+            ar-modes="scene-viewer webxr quick-look"
+            ar-scale="auto"
+            ar-placement="floor"
             style={{ width: '100%', height: '100%', background: '#1c1c1e' }}
           />
         </div>
 
         <div className="atelier-popup-footer">
-          <p className="atelier-popup-hint">Arrastra para rotar · Pellizca para hacer zoom</p>
+          <p className="atelier-popup-hint">Arrastra para rotar · Pellizca para hacer zoom · En móvil toca el ícono AR para verlo en tu espacio</p>
           <a href={glbUrl} download className="atelier-gen-download">
             Descargar GLB
           </a>
@@ -175,6 +181,8 @@ const GenCard = ({
   const thumbUrl = msg.result?.thumbnailUrl   ?? liveStatus?.thumbnail_url;
   const progress = liveStatus?.progress ?? 0;
   const activeStep = Math.min(Math.floor(progress / 25), 3);
+  const proxiedGlb = glbUrl ? meshyUrl(glbUrl) : null;
+  const { usdzUrl } = useUsdzFromGlb(proxiedGlb);
 
   if (isFailed) {
     return (
@@ -186,12 +194,13 @@ const GenCard = ({
     );
   }
 
-  if (isDone && glbUrl) {
+  if (isDone && glbUrl && proxiedGlb) {
     return (
       <div className="atelier-gen-card atelier-gen-card--done">
         <div className="atelier-model-wrapper">
           <model-viewer
-            src={meshyUrl(glbUrl)}
+            src={proxiedGlb}
+            ios-src={usdzUrl ?? undefined}
             poster={thumbUrl ? meshyUrl(thumbUrl) : undefined}
             camera-controls="true"
             auto-rotate="true"
@@ -199,6 +208,10 @@ const GenCard = ({
             loading="eager"
             reveal="auto"
             environment-image="neutral"
+            ar="true"
+            ar-modes="scene-viewer webxr quick-look"
+            ar-scale="auto"
+            ar-placement="floor"
             style={{ width: '100%', height: '16rem', background: '#1c1c1e' }}
           />
           <button
@@ -306,6 +319,16 @@ export const AtelierChat = () => {
   const bottomRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLTextAreaElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(pointer: coarse)');
+    setIsTouchDevice(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsTouchDevice(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const { mutate: sendMessage,     isPending: isChatPending }     = useChat();
   const { mutate: generateText,    isPending: isGeneratingText }  = useGenerateFromText();
@@ -320,7 +343,6 @@ export const AtelierChat = () => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isChatPending]);
 
-  // Persistir la conversación para no perderla al navegar / recargar
   useEffect(() => {
     const data: PersistedAtelier = {
       sessionId,
@@ -343,7 +365,6 @@ export const AtelierChat = () => {
     }
   }, [sessionId, messages, lastGenPrompt, lastGenDescription, lastSketchUrl, sketchAttempts, clientMessageCount, limitBannerDismissed, artStyle, activeGen, hasGeneratedModel, generatedFromImageDataUrl]);
 
-  // Resolve generation result when task finishes; auto-start refine after preview
   useEffect(() => {
     if (!activeGen || !taskStatus) return;
     const done = taskStatus.status === 'SUCCEEDED' || taskStatus.status === 'FAILED';
@@ -437,8 +458,7 @@ export const AtelierChat = () => {
       return;
     }
 
-    // Text flow: la IA ya generó una ficha de producto limpia en el marcador <!--PROMPT:...|...|descripción-->
-    // Si por alguna razón no llegó (formato viejo o error), caemos al chat completo como respaldo.
+    // Fallback al chat completo si el AI no emitió la descripción en el marcador.
     const description = lastGenDescription
       || messages
         .filter(m => m.kind === 'chat')
@@ -483,18 +503,11 @@ export const AtelierChat = () => {
   }, []);
 
   // ── Sketch (boceto 2D) ────────────────────────────────────────────────────
-  // Lanza una generación de boceto y actualiza el mensaje (loading → done/failed).
-  // Cada SKETCH marker emitido por el AI dispara una llamada aquí. El AI es quien
-  // valida que el cliente confirmó cada refinamiento ("¿estás seguro?") antes de
-  // emitir el marcador, asi que aqui solo defendemos el limite duro.
-  // NO limpia lastSketchUrl: lo conserva como respaldo si el cliente confirma 3D
-  // mientras un refinamiento esta en vuelo.
+  // No limpia lastSketchUrl: lo conserva como respaldo si el cliente confirma
+  // el 3D mientras un refinamiento esta en vuelo.
   const launchSketch = (prompt: string) => {
     const nextAttempt = sketchAttempts + 1;
-    if (nextAttempt > SKETCH_MAX_ATTEMPTS) {
-      // Defensa: el AI no debería haber emitido este SKETCH. Ignoramos en silencio.
-      return;
-    }
+    if (nextAttempt > SKETCH_MAX_ATTEMPTS) return;
     setSketchAttempts(nextAttempt);
     setIsSketchLoading(true);
     const sketchId = crypto.randomUUID();
@@ -518,8 +531,6 @@ export const AtelierChat = () => {
       .finally(() => setIsSketchLoading(false));
   };
 
-  // Dispara la generación 3D. Reusada por (1) el "sí" en el chat y (2) el
-  // botón "Sí, crear el 3D" del aviso de límite.
   const triggerGeneration = () => {
     if (!lastGenPrompt || hasGeneratedModel) return;
     const msgId = crypto.randomUUID();
@@ -538,8 +549,7 @@ export const AtelierChat = () => {
       });
     };
 
-    // Si tenemos un boceto valido, lo usamos como input para image-to-3d (mas
-    // fiel visualmente que text-to-3d). Si fallo, caemos a text-to-3d.
+    // Preferimos image-to-3d con el boceto (mas fiel), fallback a text-to-3d.
     if (lastSketchUrl) {
       generateImage(
         { imageDataUrl: lastSketchUrl },
@@ -553,9 +563,6 @@ export const AtelierChat = () => {
     }
   };
 
-  // Click del boton "Si, crear el 3D" cuando el cliente llego al limite de
-  // bocetos. Simulamos el "si" en el chat para que la conversacion quede
-  // coherente y disparamos la generacion.
   const handleConfirmFromLimit = () => {
     if (!lastGenPrompt || hasGeneratedModel) return;
     addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'user', content: 'sí' });
@@ -571,10 +578,7 @@ export const AtelierChat = () => {
     setInput('');
     setClientMessageCount((n) => n + 1);
 
-    // Atajo SOLO despues de agotar los 3 sketches: si el AI no logra emitir
-    // CONFIRM y el cliente dice "si", disparamos el 3D directamente.
-    // Antes del limite, "si" es puro texto que va al AI (puede estar confirmando
-    // un refinamiento, "Vas a anadir X. Lo confirmas?" -> "si").
+    // Fallback al limite: si el AI no logra emitir CONFIRM, "si" dispara el 3D.
     if (
       sketchAttempts >= SKETCH_MAX_ATTEMPTS
       && lastSketchUrl
@@ -593,10 +597,6 @@ export const AtelierChat = () => {
           const displayText = stripHiddenMarkers(data.output);
           addMsg({ id: crypto.randomUUID(), kind: 'chat', role: 'assistant', content: displayText });
 
-          // El AI conduce el flujo. Reaccionamos al tipo de marcador emitido:
-          //  - SKETCH → genera boceto (inicial o refinamiento; contador en launchSketch)
-          //  - CONFIRM → dispara generación 3D (image-to-3d con el último boceto)
-          //  - sin marcador → solo conversa, mantenemos estado intacto
           if (marker?.kind === 'sketch') {
             setLastGenPrompt(marker.prompt);
             setLastGenDescription(marker.description ?? '');
@@ -782,8 +782,6 @@ export const AtelierChat = () => {
                         alt="Boceto del diseño"
                         style={{ maxWidth: '100%', borderRadius: '0.5rem', marginTop: '0.5rem' }}
                       />
-                      {/* Red de seguridad: si llegamos al limite de 3 sketches,
-                          mostramos botones por si el AI no logra cerrar el flujo. */}
                       {reachedLimit && !hasGeneratedModel && (
                         <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -869,9 +867,6 @@ export const AtelierChat = () => {
         {!inputImgPreview && (
           <div className="atelier-chat-bottom">
 
-            {/* Banner anti-desvio: aparece a los 30 mensajes del cliente sin haber
-                generado el 3D. Es soft (dismissible) — el cliente puede continuar
-                o reiniciar. Una sola vez por sesion. */}
             {clientMessageCount >= CLIENT_MESSAGE_SOFT_LIMIT
               && !limitBannerDismissed
               && !hasGeneratedModel && (
@@ -911,21 +906,37 @@ export const AtelierChat = () => {
             )}
 
             <div className={`atelier-chat-input-row${isConversationEmpty ? '' : ' atelier-chat-input-row--no-img'}`}>
-              {/* Image upload — only on empty conversation */}
+              {/* Imagen + camara solo al inicio. Envueltos para no romper la grilla. */}
               {isConversationEmpty && (
-                <button
-                  type="button"
-                  className="atelier-img-upload-btn"
-                  onClick={() => imgInputRef.current?.click()}
-                  aria-label="Subir imagen de referencia (solo al inicio)"
-                  title="Sube una imagen para generar directamente en 3D"
-                >
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                    <circle cx="8.5" cy="8.5" r="1.5" />
-                    <polyline points="21 15 16 10 5 21" />
-                  </svg>
-                </button>
+                <div className="atelier-img-upload-group">
+                  <button
+                    type="button"
+                    className="atelier-img-upload-btn"
+                    onClick={() => imgInputRef.current?.click()}
+                    aria-label="Subir imagen de referencia"
+                    title="Subir imagen desde tu dispositivo"
+                  >
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                  </button>
+                  {isTouchDevice && (
+                    <button
+                      type="button"
+                      className="atelier-img-upload-btn"
+                      onClick={() => cameraInputRef.current?.click()}
+                      aria-label="Tomar foto con la cámara"
+                      title="Tomar foto con la cámara"
+                    >
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               )}
 
               <textarea
@@ -983,6 +994,14 @@ export const AtelierChat = () => {
           ref={imgInputRef}
           type="file"
           accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleImgChange}
+        />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
           style={{ display: 'none' }}
           onChange={handleImgChange}
         />

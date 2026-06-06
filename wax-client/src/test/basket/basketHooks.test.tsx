@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { useBasket } from '@/features/basket/hooks/useBasket';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 import { useRemoveFromBasket } from '@/features/basket/hooks/useRemoveFromBasket';
+import { MiniCartProvider } from '@/features/basket/context/MiniCartProvider';
 
 const { mockGetBasket, mockAddItem, mockRemoveItem } = vi.hoisted(() => ({
   mockGetBasket: vi.fn(),
@@ -27,7 +28,9 @@ vi.mock('react-toastify', () => ({
 const makeWrapper = () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    <QueryClientProvider client={client}>
+      <MiniCartProvider>{children}</MiniCartProvider>
+    </QueryClientProvider>
   );
 };
 

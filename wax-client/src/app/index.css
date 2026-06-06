@@ -42,6 +42,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: transparent;
+  overflow-x: hidden;
 }
 
 a {
@@ -2720,12 +2721,22 @@ select {
 
 /* ─── One-model-per-session notice ──────────────────────────────── */
 
+/* Inline en vez de flex para que el texto "Modelo generado en esta sesión —"
+   y el botón "Nueva conversación" se ajusten naturalmente en móvil sin que
+   se desborden a líneas raras. */
 .atelier-model-limit-notice {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  display: inline;
   font-size: 0.78rem;
   color: var(--wax-color-smoke);
+  line-height: 1.5;
+}
+
+/* Grupo de botones de subir foto + cámara — ocupa una sola columna en el
+   grid del input-row para no romper la grilla auto/1fr/auto cuando hay 2 */
+.atelier-img-upload-group {
+  display: flex;
+  align-items: end;
+  gap: 0.4rem;
 }
 
 .atelier-reset-link {
@@ -3054,16 +3065,17 @@ select {
 @media (max-width: 48rem) {
   .atelier-page {
     grid-template-columns: 1fr;
-    margin: -2.5rem -0.75rem 0;
-    width: calc(100% + 1.5rem);
-    min-height: auto;
+    grid-template-rows: auto 1fr;
+    margin: -2.5rem 0 -4rem;
+    width: 100%;
+    min-height: calc(100svh + 4rem);
   }
 
   .atelier-brand-panel {
     position: static;
     height: auto;
-    padding: 2rem 1.25rem 1.75rem;
-    gap: 1.25rem;
+    padding: 2rem 1.25rem 1.25rem;
+    gap: 1rem;
     justify-content: flex-start;
   }
 
@@ -3079,12 +3091,16 @@ select {
     position: static;
     height: auto;
     overflow: visible;
-    padding: 1.5rem 0.75rem 4rem;
+    padding: 0.5rem 0.5rem max(0.25rem, env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 
   .atelier-chat {
-    height: 80svh;
-    min-height: 28rem;
+    flex: 1;
+    height: auto;
+    min-height: 22rem;
     border-radius: 0.75rem;
   }
 
@@ -3094,6 +3110,66 @@ select {
 
   .atelier-msg {
     max-width: 88%;
+  }
+
+  /* Botones de subir/camara — un poco mas chicos y juntos en mobile */
+  .atelier-img-upload-btn {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  .atelier-img-upload-group {
+    gap: 0.3rem;
+  }
+
+  /* Input row más compacto en mobile */
+  .atelier-chat-input-row {
+    padding: 0.5rem 0.65rem 0.65rem;
+    gap: 0.35rem;
+  }
+
+  .atelier-chat-input {
+    font-size: 0.88rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  /* Send button proporcional al input en mobile, no gigante */
+  .atelier-chat-send {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  /* Action bar (Modelo generado / banner) sin padding excesivo */
+  .atelier-chat-action-bar {
+    padding: 0.5rem 0.85rem 0;
+    font-size: 0.75rem;
+  }
+
+  /* Disclaimer más compacto en mobile */
+  .atelier-chat > div:first-child {
+    font-size: 0.7rem !important;
+    padding: 0.4rem 0.85rem !important;
+  }
+
+  /* Preview de imagen con wrap para que el boton "Generar" no force ancho */
+  .atelier-img-preview-area {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .atelier-img-preview-label {
+    min-width: 0;
+    flex: 1 1 8rem;
+  }
+
+  .atelier-img-preview-actions {
+    flex-wrap: wrap;
+  }
+
+  .atelier-img-preview-actions .atelier-gen-cta {
+    width: auto;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.78rem;
   }
 }
 
@@ -3538,7 +3614,8 @@ select {
 }
 
 .basket-item-visual {
-  width: 6rem;
+  width: 100%;
+  max-width: 6rem;
   height: 7.5rem;
   overflow: hidden;
   border-radius: var(--wax-radius-soft);
@@ -3573,6 +3650,7 @@ select {
   display: grid;
   gap: 0.3rem;
   align-content: start;
+  min-width: 0;
 }
 
 .basket-item-header {
@@ -3956,6 +4034,24 @@ select {
   border-radius: var(--wax-radius-soft);
 }
 
+.checkout-summary-item-3d {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wax-color-bone);
+  color: var(--wax-color-smoke);
+  flex-shrink: 0;
+}
+
+.checkout-review-item-3d {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wax-color-bone);
+  color: var(--wax-color-smoke);
+  flex-shrink: 0;
+}
+
 .checkout-summary-item-body {
   display: grid;
   gap: 0.2rem;
@@ -4136,13 +4232,15 @@ select {
   position: relative;
   overflow: hidden;
   border-radius: var(--wax-radius-strong);
+  aspect-ratio: 1 / 1;
 }
 
 .product-details-image {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   display: block;
   object-fit: cover;
+  object-position: center;
 }
 
 .product-details-visual-badge,
@@ -4454,7 +4552,7 @@ select {
 @media (max-width: 560px) {
   .home-page {
     gap: 2.25rem;
-    padding-top: 0.5rem;
+    padding-top: 0;
   }
 
   .home-campaign {
@@ -4562,7 +4660,32 @@ select {
 
   .catalog-loading,
   .catalog-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 0.85rem;
+  }
+
+  .product-card {
+    gap: 0.5rem;
+  }
+
+  .product-card-name {
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .product-card-price {
+    font-size: 0.82rem;
+  }
+
+  .product-card-type {
+    font-size: 0.58rem;
+  }
+
+  .product-card-brand-tag {
+    top: 0.55rem;
+    left: 0.55rem;
+    padding: 0.22rem 0.45rem;
+    font-size: 0.56rem;
   }
 
   .product-details-layout {
@@ -4579,7 +4702,18 @@ select {
 
   .product-details-visual-note {
     min-width: 0;
-    left: 1rem;
+    padding: 0.45rem 0.65rem;
+    bottom: 0.6rem;
+    right: 0.6rem;
+    gap: 0.05rem;
+  }
+
+  .product-details-visual-note span {
+    font-size: 0.6rem;
+  }
+
+  .product-details-visual-note strong {
+    font-size: 0.82rem;
   }
 }
 
@@ -4693,7 +4827,7 @@ select {
 .quote-detail-page {
   max-width: 56rem;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 0 0 4rem;
 }
 
 .quote-kicker {
