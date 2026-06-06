@@ -4232,13 +4232,15 @@ select {
   position: relative;
   overflow: hidden;
   border-radius: var(--wax-radius-strong);
+  aspect-ratio: 1 / 1;
 }
 
 .product-details-image {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   display: block;
   object-fit: cover;
+  object-position: center;
 }
 
 .product-details-visual-badge,
