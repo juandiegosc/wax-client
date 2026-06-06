@@ -7,7 +7,7 @@ describe('usePwaInstall', () => {
 
   beforeEach(() => {
     mockMatchMedia = vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() });
-    globalThis.matchMedia = mockMatchMedia;
+    globalThis.matchMedia = mockMatchMedia as unknown as typeof globalThis.matchMedia;
     Object.defineProperty(globalThis.navigator, 'maxTouchPoints', { value: 0, configurable: true });
     Object.defineProperty(globalThis.navigator, 'userAgent', {
       value: 'Mozilla/5.0 Windows', configurable: true,

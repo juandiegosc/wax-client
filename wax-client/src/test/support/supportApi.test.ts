@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { supportApi } from '@/features/support/api/supportApi';
+import { TICKET_CATEGORY, TICKET_STATUS } from '@/features/support/types/support.types';
 
 const { mockGet, mockPost, mockPut, mockDelete } = vi.hoisted(() => ({
   mockGet: vi.fn(), mockPost: vi.fn(), mockPut: vi.fn(), mockDelete: vi.fn(),
@@ -67,7 +68,13 @@ describe('supportApi', () => {
   describe('createTicket', () => {
     it('POST /support con el dto y devuelve el id creado', async () => {
       mockPost.mockResolvedValue({ data: 'new-id-123' });
-      const dto = { subject: 'Test', description: 'Desc', category: 1, orderId: 'o1', status: 1 };
+      const dto = {
+        subject: 'Test',
+        description: 'Desc',
+        category: TICKET_CATEGORY.PaymentIssue,
+        orderId: 'o1',
+        status: TICKET_STATUS.InProgress,
+      };
       const result = await supportApi.createTicket(dto);
       expect(result).toBe('new-id-123');
       expect(mockPost).toHaveBeenCalledWith('/support', dto);
@@ -77,7 +84,12 @@ describe('supportApi', () => {
   describe('updateTicket', () => {
     it('PUT /support/{id} con el dto', async () => {
       mockPut.mockResolvedValue({ data: { ok: true } });
-      const dto = { status: 2 };
+      const dto = {
+        subject: 'Cambio de status',
+        description: 'Resuelto',
+        category: TICKET_CATEGORY.OrderIssue,
+        status: TICKET_STATUS.Closed,
+      };
       await supportApi.updateTicket('t1', dto);
       expect(mockPut).toHaveBeenCalledWith('/support/t1', dto);
     });

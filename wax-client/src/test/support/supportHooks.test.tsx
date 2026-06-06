@@ -16,6 +16,7 @@ vi.mock('react-toastify', () => ({ toast: { success: vi.fn(), error: vi.fn() } }
 import { useTickets } from '@/features/support/hooks/useTickets';
 import { useTicket } from '@/features/support/hooks/useTicket';
 import { useCreateTicket } from '@/features/support/hooks/useCreateTicket';
+import { TICKET_CATEGORY, TICKET_STATUS } from '@/features/support/types/support.types';
 
 const makeWrapper = () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -66,7 +67,13 @@ describe('useCreateTicket', () => {
   it('llama supportApi.createTicket con el dto', async () => {
     mockCreateTicket.mockResolvedValue('new-ticket-id');
     const { result } = renderHook(() => useCreateTicket(), { wrapper: makeWrapper() });
-    const dto = { subject: 'X', description: 'D', category: 1, orderId: 'o1', status: 1 };
+    const dto = {
+      subject: 'X',
+      description: 'D',
+      category: TICKET_CATEGORY.PaymentIssue,
+      orderId: 'o1',
+      status: TICKET_STATUS.InProgress,
+    };
     await act(async () => { await result.current.mutateAsync(dto); });
     expect(mockCreateTicket).toHaveBeenCalledWith(dto);
   });
