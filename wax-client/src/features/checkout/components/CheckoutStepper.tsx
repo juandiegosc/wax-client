@@ -132,9 +132,7 @@ export const CheckoutStepper = ({ basket }: Props) => {
       </nav>
 
       <div className="checkout-content">
-        {/* Stripe requiere que AddressElement y PaymentElement permanezcan montados
-            en todo momento — getElement('address') retorna null si el elemento fue
-            desmontado, lo que rompe getStripeAddress() en el paso de confirmación */}
+        {/* Stripe exige que AddressElement y PaymentElement queden montados siempre — sino getElement() retorna null y rompe la confirmación. */}
         <div style={{ display: activeStep === 0 ? 'block' : 'none' }}>
           <AddressStep savedAddress={savedAddress} onComplete={setAddressComplete} />
         </div>

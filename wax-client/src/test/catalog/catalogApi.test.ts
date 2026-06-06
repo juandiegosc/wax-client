@@ -11,7 +11,14 @@ vi.mock('@/services/httpClient', () => ({
   },
 }));
 
+vi.mock('@/utils/formData', () => ({
+  toFormData: vi.fn((dto) => dto),
+}));
+
 const mockedGet = vi.mocked(httpClient.get);
+const mockedPost = vi.mocked(httpClient.post);
+const mockedPut = vi.mocked(httpClient.put);
+const mockedDelete = vi.mocked(httpClient.delete);
 
 describe('catalogApi.getProducts', () => {
   beforeEach(() => {
@@ -65,5 +72,63 @@ describe('catalogApi.getProducts', () => {
     expect(mockedGet).toHaveBeenCalledWith('/product', {
       params: { searchTerm: 'bolso', pageNumber: 1 },
     });
+  });
+});
+
+describe('catalogApi.getProduct', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('llama a GET /product/:id y devuelve el producto', async () => {
+    const product = { id: 'p1', name: 'Bag', price: 2000 };
+    mockedGet.mockResolvedValue({ data: product });
+
+    const result = await catalogApi.getProduct('p1');
+
+    expect(mockedGet).toHaveBeenCalledWith('/product/p1');
+    expect(result).toEqual(product);
+  });
+});
+
+describe('catalogApi.createProduct', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('llama a POST /product con multipart/form-data', async () => {
+    const dto = { name: 'New', price: 5000 } as never;
+    const created = { id: 'p99', name: 'New', price: 5000 };
+    mockedPost.mockResolvedValue({ data: created });
+
+    const result = await catalogApi.createProduct(dto);
+
+    expect(mockedPost).toHaveBeenCalledWith('/product', dto, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    expect(result).toEqual(created);
+  });
+});
+
+describe('catalogApi.updateProduct', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('llama a PUT /product con multipart/form-data', async () => {
+    const dto = { id: 'p1', name: 'Updated' } as never;
+    mockedPut.mockResolvedValue({ data: null });
+
+    await catalogApi.updateProduct(dto);
+
+    expect(mockedPut).toHaveBeenCalledWith('/product', dto, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  });
+});
+
+describe('catalogApi.deleteProduct', () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it('llama a DELETE /product/:id', async () => {
+    mockedDelete.mockResolvedValue({ data: null });
+
+    await catalogApi.deleteProduct('p1');
+
+    expect(mockedDelete).toHaveBeenCalledWith('/product/p1');
   });
 });

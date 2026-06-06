@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { env } from '@/config/env';
 
-// Instancia sin interceptor de navegación — para calls fire-and-forget donde un 500 no debe redirigir al usuario
+// Sin interceptor de navegación: un 500 no debe redirigir al usuario.
 const silentApi = axios.create({
   baseURL: env.apiUrl,
   withCredentials: true,
@@ -90,6 +90,11 @@ export const atelierApi = {
   analyzeImage: async (imageDataUrl: string): Promise<DesignFields> => {
     const res = await n8n.post<AnalyzeImageResponse>('/meshy-analyze-image', { imageDataUrl });
     return res.data.design;
+  },
+
+  generateSketch: async (prompt: string): Promise<string> => {
+    const res = await n8n.post<{ success: boolean; imageUrl: string }>('/meshy-sketch', { prompt });
+    return res.data.imageUrl;
   },
 
   submitCotizacionDirect: async (req: SubmitCotizacionDirectRequest): Promise<void> => {
