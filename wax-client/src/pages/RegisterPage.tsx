@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
-import { useCurrentUser, useRegister } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useRegister } from '@/features/auth/hooks';
 import { registerSchema } from '@/lib/schemas/registerSchema';
 import type { RegisterSchema } from '@/lib/schemas/registerSchema';
 import { routePaths } from '@/routes/routePaths';

@@ -5,7 +5,7 @@ import { useCreateTicket } from '@/features/support/hooks/useCreateTicket';
 import { TicketCard } from '@/features/support/components/TicketCard';
 import { TICKET_CATEGORY, TICKET_STATUS } from '@/features/support/types/support.types';
 import type { TicketCategory } from '@/features/support/types/support.types';
-import { useOrders } from '@/lib/hooks/useOrders';
+import { useOrders } from '@/features/orders/hooks/useOrders';
 import { formatCurrency } from '@/utils/currency';
 
 const PAGE_SIZE = 8;

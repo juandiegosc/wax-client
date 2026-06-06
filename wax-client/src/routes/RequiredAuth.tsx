@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
-import { useCurrentUser, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useUserAddress } from '@/features/auth/hooks';
 import { routePaths } from '@/routes/routePaths';
 
 export const PROFILE_WARNING_KEY = 'wax_profile_warning_shown';

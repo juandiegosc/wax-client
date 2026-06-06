@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { useTicket } from '@/features/support/hooks/useTicket';
 import { useSupportHub } from '@/features/support/hooks/useSupportHub';
-import { useCurrentUser } from '@/lib/hooks/useAccount';
+import { useCurrentUser } from '@/features/auth/hooks';
 import { CATEGORY_LABELS, STATUS_LABELS } from '@/features/support/types/support.types';
 import type { CommentDto } from '@/features/support/types/support.types';
 import { routePaths } from '@/routes/routePaths';

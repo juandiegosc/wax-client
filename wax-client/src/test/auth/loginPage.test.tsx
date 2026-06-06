@@ -22,13 +22,13 @@ vi.mock('react-router', async (importOriginal) => {
   };
 });
 
-vi.mock('@/lib/hooks/useAccount', () => ({
+vi.mock('@/features/auth/hooks', () => ({
   useCurrentUser: vi.fn(),
   useLogin: vi.fn(),
   useUserAddress: vi.fn(),
 }));
 
-import { useCurrentUser, useLogin, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useLogin, useUserAddress } from '@/features/auth/hooks';
 
 const mockUseCurrentUser = vi.mocked(useCurrentUser);
 const mockUseLogin = vi.mocked(useLogin);

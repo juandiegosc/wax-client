@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
-import { useCurrentUser, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useUserAddress } from '@/features/auth/hooks';
 import { routePaths } from '@/routes/routePaths';
 
 export const useProfileGuard = () => {
