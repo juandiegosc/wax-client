@@ -4660,7 +4660,32 @@ select {
 
   .catalog-loading,
   .catalog-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 0.85rem;
+  }
+
+  .product-card {
+    gap: 0.5rem;
+  }
+
+  .product-card-name {
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .product-card-price {
+    font-size: 0.82rem;
+  }
+
+  .product-card-type {
+    font-size: 0.58rem;
+  }
+
+  .product-card-brand-tag {
+    top: 0.55rem;
+    left: 0.55rem;
+    padding: 0.22rem 0.45rem;
+    font-size: 0.56rem;
   }
 
   .product-details-layout {
