@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
-import { useCurrentUser, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useUserAddress } from '@/features/auth/hooks';
 import { routePaths } from '@/routes/routePaths';
 import { PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { AtelierPageContent } from '@/features/atelier';

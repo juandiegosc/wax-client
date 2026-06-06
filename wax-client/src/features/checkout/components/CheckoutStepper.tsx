@@ -8,7 +8,7 @@ import { AddressStep } from './AddressStep';
 import { PaymentStep } from './PaymentStep';
 import { ReviewStep } from './ReviewStep';
 import { useCreateOrder } from '../hooks/useCheckout';
-import { useUserAddress } from '@/lib/hooks/useAccount';
+import { useUserAddress } from '@/features/auth/hooks';
 import { queryKeys } from '@/lib/queryKeys';
 import { routePaths } from '@/routes/routePaths';
 import { calculateDeliveryFee, formatCurrency } from '@/utils/currency';

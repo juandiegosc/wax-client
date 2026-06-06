@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
 import { toast } from 'react-toastify';
-import { useCurrentUser, useSaveAddress, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useSaveAddress, useUserAddress } from '@/features/auth/hooks';
 import { billingProfileSchema } from '@/lib/schemas/billingProfileSchema';
 import type { BillingProfileSchema } from '@/lib/schemas/billingProfileSchema';
 import type { Address, UserInfo } from '@/lib/types/user';

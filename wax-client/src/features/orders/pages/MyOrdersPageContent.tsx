@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { useOrders } from '@/lib/hooks/useOrders';
+import { useOrders } from '@/features/orders/hooks/useOrders';
 import { OrderCard } from '@/features/orders/components/OrderCard';
 import { routePaths } from '@/routes/routePaths';
 

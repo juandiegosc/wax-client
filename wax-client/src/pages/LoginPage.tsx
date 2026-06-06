@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useLocation, useNavigate } from 'react-router';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
-import { useCurrentUser, useLogin, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useLogin, useUserAddress } from '@/features/auth/hooks';
 import { loginSchema } from '@/lib/schemas/loginSchema';
 import type { LoginSchema } from '@/lib/schemas/loginSchema';
 import { routePaths } from '@/routes/routePaths';

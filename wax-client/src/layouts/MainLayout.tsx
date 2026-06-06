@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { waxBrand } from '@/config/brand';
 import { waxMenuFooterLinks, waxMenuSections } from '@/config/menu';
-import { useCurrentUser, useLogout, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useLogout, useUserAddress } from '@/features/auth/hooks';
 import { useBasket } from '@/features/basket/hooks/useBasket';
 import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustomProducts';
 import { MenuToggle } from '@/layouts/MenuToggle';
