@@ -9,6 +9,23 @@
   --wax-color-oxblood: #4f2730;
   --wax-color-bronze: #75624b;
   --wax-color-olive: #4c4f45;
+  --wax-color-chrome: #c0c0c0;
+  --wax-color-chrome-soft: #9fa1a4;
+  --wax-color-chrome-bright: #e8e8ec;
+
+  /* Tokens semanticos: en desktop son claros, en mobile se invierten a dark.
+     Permite que el CSS que use estas variables mute automaticamente con el
+     media query mobile sin tocar los inline styles de TSX. */
+  --wax-bg: var(--wax-color-porcelain);
+  --wax-bg-elevated: rgba(250, 249, 246, 0.92);
+  --wax-fg: var(--wax-color-ink);
+  --wax-fg-muted: var(--wax-color-graphite);
+  --wax-fg-soft: var(--wax-color-smoke);
+  --wax-border: rgba(15, 15, 16, 0.08);
+  --wax-border-strong: rgba(15, 15, 16, 0.18);
+  --wax-accent: var(--wax-color-amber);
+  --wax-accent-gradient: linear-gradient(135deg, var(--wax-color-amber), var(--wax-color-bronze));
+
   --wax-font-display: Georgia, "Times New Roman", serif;
   --wax-font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --wax-radius-soft: 0.35rem;
@@ -27,6 +44,259 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE DARK MODE
+   En mobile invertimos los tokens semanticos a paleta dark con acento
+   plata cromada — alineada con la identidad real de @wax.ec (luxury
+   industrial latinoamericano, joyas cromadas). El amarillo neon se
+   rechazo explicitamente por riesgo de leerse streetwear vs lux.
+═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  :root {
+    --wax-bg: var(--wax-color-ink);
+    --wax-bg-elevated: rgba(255, 255, 255, 0.04);
+    --wax-fg: var(--wax-color-porcelain);
+    --wax-fg-muted: rgba(250, 249, 246, 0.78);
+    --wax-fg-soft: rgba(250, 249, 246, 0.5);
+    --wax-border: rgba(192, 192, 192, 0.18);
+    --wax-border-strong: rgba(192, 192, 192, 0.42);
+    --wax-accent: var(--wax-color-chrome);
+    --wax-accent-gradient: linear-gradient(135deg, var(--wax-color-chrome-soft) 0%, var(--wax-color-chrome-bright) 50%, var(--wax-color-chrome) 100%);
+
+    color: var(--wax-fg);
+    background:
+      radial-gradient(circle at top, rgba(192, 192, 192, 0.06), transparent 32%),
+      linear-gradient(180deg, var(--wax-color-ink) 0%, #000 100%);
+  }
+
+  body {
+    background: transparent;
+  }
+
+  /* Header mobile: fondo dark con borde plata sutil */
+  .site-header {
+    background: rgba(15, 15, 16, 0.92) !important;
+    border-bottom: 1px solid var(--wax-border) !important;
+    box-shadow: none !important;
+  }
+
+  /* Footer del home invertido */
+  .home-footer {
+    border-top-color: var(--wax-border);
+  }
+
+  .home-footer-heading {
+    color: var(--wax-color-chrome);
+  }
+
+  .home-footer-description {
+    color: var(--wax-fg-muted);
+  }
+
+  .home-footer-link {
+    color: var(--wax-fg);
+  }
+
+  .home-footer-bottom {
+    border-top-color: var(--wax-border);
+  }
+
+  .home-footer-region,
+  .home-footer-legal {
+    color: var(--wax-fg-muted);
+  }
+
+  .home-footer-wordmark {
+    background: linear-gradient(135deg, var(--wax-color-chrome-bright), var(--wax-color-chrome) 50%, var(--wax-color-chrome-soft));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Login en mobile */
+  .login-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--wax-border);
+    color: var(--wax-fg);
+  }
+
+  .login-title {
+    color: var(--wax-fg);
+  }
+
+  .login-lead {
+    color: var(--wax-fg-muted);
+  }
+
+  .login-kicker,
+  .login-label,
+  .login-visual-kicker {
+    color: var(--wax-color-chrome);
+  }
+
+  .login-input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--wax-border);
+    color: var(--wax-fg);
+  }
+
+  .login-input:focus {
+    border-color: var(--wax-color-chrome);
+    box-shadow: 0 0 0 3px rgba(192, 192, 192, 0.12);
+  }
+
+  .login-button-primary {
+    background: var(--wax-accent-gradient);
+    color: var(--wax-color-ink);
+  }
+
+  .login-button-secondary {
+    border-color: var(--wax-border-strong);
+    color: var(--wax-fg);
+  }
+
+  .login-meta {
+    color: var(--wax-fg-muted);
+  }
+
+  /* Profile en mobile */
+  .profile-form-container,
+  .profile-data-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--wax-border);
+  }
+
+  .profile-title,
+  .profile-section-title,
+  .profile-data-value {
+    color: var(--wax-fg);
+  }
+
+  .profile-kicker,
+  .profile-label,
+  .profile-legend,
+  .profile-data-label,
+  .profile-data-title {
+    color: var(--wax-color-chrome);
+  }
+
+  .profile-form-intro,
+  .profile-submit-copy span {
+    color: var(--wax-fg-muted);
+  }
+
+  .profile-input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--wax-border);
+    color: var(--wax-fg);
+  }
+
+  .profile-input::placeholder {
+    color: var(--wax-fg-soft);
+  }
+
+  .profile-submit-bar {
+    background: rgba(255, 255, 255, 0.02);
+    border-top-color: var(--wax-border);
+  }
+
+  .profile-submit-btn,
+  .profile-btn-primary {
+    background: var(--wax-accent-gradient);
+    color: var(--wax-color-ink);
+  }
+
+  .profile-btn-secondary {
+    border-color: var(--wax-border-strong);
+    color: var(--wax-fg);
+  }
+
+  /* Support */
+  .support-title,
+  .ticket-subject,
+  .ticket-detail-subject {
+    color: var(--wax-fg);
+  }
+
+  .support-kicker,
+  .support-label,
+  .ticket-category,
+  .ticket-date,
+  .ticket-order-ref {
+    color: var(--wax-color-chrome);
+  }
+
+  .support-lead,
+  .ticket-description,
+  .ticket-detail-description {
+    color: var(--wax-fg-muted);
+  }
+
+  .support-form-shell,
+  .ticket-card,
+  .ticket-detail-header,
+  .support-chat {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--wax-border);
+  }
+
+  .support-input,
+  .support-select,
+  .support-textarea,
+  .support-chat-input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--wax-border);
+    color: var(--wax-fg);
+  }
+
+  .support-new-btn,
+  .support-submit-btn,
+  .support-chat-send {
+    background: var(--wax-accent-gradient);
+    color: var(--wax-color-ink);
+  }
+
+  /* Basket y product detail */
+  .basket-title,
+  .basket-empty-title,
+  .product-details-title {
+    color: var(--wax-fg);
+  }
+
+  .basket-kicker,
+  .basket-empty-kicker,
+  .product-details-kicker {
+    color: var(--wax-color-chrome);
+  }
+
+  .basket-empty-lead,
+  .product-details-lead {
+    color: var(--wax-fg-muted);
+  }
+
+  .checkout-summary,
+  .basket-summary {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--wax-border);
+  }
+
+  .basket-checkout-btn {
+    background: var(--wax-accent-gradient);
+    color: var(--wax-color-ink);
+  }
+
+  /* Auth loading */
+  .auth-loading-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--wax-border);
+    color: var(--wax-fg);
+  }
+
+  .auth-loading-kicker {
+    color: var(--wax-color-chrome);
+  }
 }
 
 * {
