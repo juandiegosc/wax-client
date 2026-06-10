@@ -112,7 +112,7 @@ describe('CatalogPageContent', () => {
 
     renderCatalog();
 
-    expect(screen.getByText(/no se pudo cargar el catalogo/i)).toBeInTheDocument();
+    expect(screen.getByText(/no se pudo cargar el catálogo/i)).toBeInTheDocument();
   });
 
   it('shows pagination when there are multiple pages', () => {

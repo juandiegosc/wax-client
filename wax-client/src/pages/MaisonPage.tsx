@@ -48,7 +48,7 @@ export const MaisonPage = () => (
           fontSize: '0.72rem',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: waxBrand.color.smoke,
+          color: 'var(--wax-fg-soft)',
         }}
       >
         Maison
@@ -59,7 +59,7 @@ export const MaisonPage = () => (
           fontSize: 'clamp(2.4rem, 4vw, 3.4rem)',
           lineHeight: 1.05,
           letterSpacing: '-0.01em',
-          color: waxBrand.color.ink,
+          color: 'var(--wax-fg)',
           margin: 0,
         }}
       >
@@ -69,7 +69,7 @@ export const MaisonPage = () => (
         style={{
           fontSize: '1.05rem',
           lineHeight: 1.55,
-          color: waxBrand.color.graphite,
+          color: 'var(--wax-fg-muted)',
           margin: 0,
         }}
       >
@@ -81,7 +81,7 @@ export const MaisonPage = () => (
         style={{
           fontSize: '1rem',
           lineHeight: 1.55,
-          color: waxBrand.color.graphite,
+          color: 'var(--wax-fg-muted)',
           margin: 0,
         }}
       >
@@ -96,12 +96,12 @@ export const MaisonPage = () => (
           fontSize: '0.7rem',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: waxBrand.color.smoke,
+          color: 'var(--wax-fg-soft)',
         }}
       >
         Proceso
       </span>
-      <h2 style={{ fontFamily: 'var(--wax-font-display)', fontSize: '1.8rem', margin: 0, color: waxBrand.color.ink }}>
+      <h2 style={{ fontFamily: 'var(--wax-font-display)', fontSize: '1.8rem', margin: 0, color: 'var(--wax-fg)' }}>
         De la idea al taller, en cuatro pasos.
       </h2>
       <div
@@ -116,7 +116,7 @@ export const MaisonPage = () => (
             key={step.kicker}
             style={{
               padding: '1.5rem',
-              background: waxBrand.color.bone,
+              background: 'var(--wax-bg-elevated)',
               borderRadius: waxBrand.radius.strong,
               boxShadow: waxBrand.shadow.soft,
               display: 'grid',
@@ -128,7 +128,7 @@ export const MaisonPage = () => (
                 fontSize: '0.65rem',
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
-                color: waxBrand.color.bronze,
+                color: 'var(--wax-color-bronze)',
               }}
             >
               {step.kicker}
@@ -137,12 +137,12 @@ export const MaisonPage = () => (
               style={{
                 fontFamily: 'var(--wax-font-display)',
                 fontSize: '1.15rem',
-                color: waxBrand.color.ink,
+                color: 'var(--wax-fg)',
               }}
             >
               {step.title}
             </strong>
-            <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: waxBrand.color.graphite, margin: 0 }}>
+            <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: 'var(--wax-fg-muted)', margin: 0 }}>
               {step.body}
             </p>
           </article>
@@ -156,12 +156,12 @@ export const MaisonPage = () => (
           fontSize: '0.7rem',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: waxBrand.color.smoke,
+          color: 'var(--wax-fg-soft)',
         }}
       >
         Lo que defendemos
       </span>
-      <h2 style={{ fontFamily: 'var(--wax-font-display)', fontSize: '1.8rem', margin: 0, color: waxBrand.color.ink }}>
+      <h2 style={{ fontFamily: 'var(--wax-font-display)', fontSize: '1.8rem', margin: 0, color: 'var(--wax-fg)' }}>
         Tres principios que sostienen cada pieza.
       </h2>
       <div
@@ -186,12 +186,12 @@ export const MaisonPage = () => (
               style={{
                 fontFamily: 'var(--wax-font-display)',
                 fontSize: '1.15rem',
-                color: waxBrand.color.ink,
+                color: 'var(--wax-fg)',
               }}
             >
               {value.title}
             </strong>
-            <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: waxBrand.color.graphite, margin: 0 }}>
+            <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: 'var(--wax-fg-muted)', margin: 0 }}>
               {value.body}
             </p>
           </article>
@@ -205,12 +205,12 @@ export const MaisonPage = () => (
           fontSize: '0.7rem',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: waxBrand.color.smoke,
+          color: 'var(--wax-fg-soft)',
         }}
       >
         Envíos y entregas
       </span>
-      <h2 style={{ fontFamily: 'var(--wax-font-display)', fontSize: '1.8rem', margin: 0, color: waxBrand.color.ink }}>
+      <h2 style={{ fontFamily: 'var(--wax-font-display)', fontSize: '1.8rem', margin: 0, color: 'var(--wax-fg)' }}>
         Llegamos a donde estés.
       </h2>
       <div
@@ -248,12 +248,12 @@ export const MaisonPage = () => (
               style={{
                 fontFamily: 'var(--wax-font-display)',
                 fontSize: '1.1rem',
-                color: waxBrand.color.ink,
+                color: 'var(--wax-fg)',
               }}
             >
               {entry.title}
             </strong>
-            <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: waxBrand.color.graphite, margin: 0 }}>
+            <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: 'var(--wax-fg-muted)', margin: 0 }}>
               {entry.body}
             </p>
           </article>
@@ -264,8 +264,8 @@ export const MaisonPage = () => (
     <section
       style={{
         padding: '3rem 2rem',
-        background: waxBrand.color.ink,
-        color: waxBrand.color.porcelain,
+        background: 'var(--wax-color-ink)',
+        color: 'var(--wax-color-porcelain)',
         borderRadius: waxBrand.radius.strong,
         display: 'grid',
         gap: '1.25rem',
@@ -301,8 +301,8 @@ export const MaisonPage = () => (
           style={{
             display: 'inline-block',
             padding: '0.85rem 1.4rem',
-            background: waxBrand.color.porcelain,
-            color: waxBrand.color.ink,
+            background: 'var(--wax-color-porcelain)',
+            color: 'var(--wax-fg)',
             borderRadius: waxBrand.radius.soft,
             fontSize: '0.78rem',
             letterSpacing: '0.16em',
@@ -318,8 +318,8 @@ export const MaisonPage = () => (
           style={{
             display: 'inline-block',
             padding: '0.85rem 1.4rem',
-            border: `1px solid ${waxBrand.color.porcelain}`,
-            color: waxBrand.color.porcelain,
+            border: `1px solid var(--wax-color-porcelain)`,
+            color: 'var(--wax-color-porcelain)',
             borderRadius: waxBrand.radius.soft,
             fontSize: '0.78rem',
             letterSpacing: '0.16em',

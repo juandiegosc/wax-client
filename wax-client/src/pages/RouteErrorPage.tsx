@@ -1,5 +1,4 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router';
-import { waxBrand } from '@/config/brand';
 
 export const RouteErrorPage = () => {
   const error = useRouteError();
@@ -32,14 +31,14 @@ export const RouteErrorPage = () => {
           display: 'grid',
           gap: '1rem',
           padding: '2rem',
-          background: 'rgba(250, 249, 246, 0.92)',
-          border: `1px solid ${waxBrand.color.stone}`,
-          boxShadow: waxBrand.shadow.soft,
+          background: 'var(--wax-bg-elevated)',
+          border: `1px solid var(--wax-color-stone)`,
+          boxShadow: 'var(--wax-shadow-soft)',
         }}
       >
         <span
           style={{
-            color: waxBrand.color.smoke,
+            color: 'var(--wax-fg-soft)',
             fontSize: '0.75rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
@@ -48,7 +47,7 @@ export const RouteErrorPage = () => {
           Error de aplicacion
         </span>
         <h1 style={{ margin: 0, fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>{title}</h1>
-        <p style={{ margin: 0, color: waxBrand.color.graphite, lineHeight: 1.7 }}>
+        <p style={{ margin: 0, color: 'var(--wax-fg-muted)', lineHeight: 1.7 }}>
           {typeof description === 'string' ? description : 'No fue posible completar esta accion.'}
         </p>
       </div>

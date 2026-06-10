@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { ProductGrid } from '@/features/catalog/components/ProductGrid';
 import { useProducts } from '@/features/catalog/hooks/useProducts';
-import { waxBrand } from '@/config/brand';
 
 const PAGE_SIZE = 12;
 
@@ -69,7 +68,7 @@ export const CatalogPageContent = () => {
   };
 
   if (isError) {
-    return <p style={{ color: waxBrand.color.graphite }}>No se pudo cargar el catalogo.</p>;
+    return <p style={{ color: 'var(--wax-fg-muted)' }}>No se pudo cargar el catálogo.</p>;
   }
 
   return (

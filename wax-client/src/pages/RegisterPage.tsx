@@ -8,12 +8,11 @@ import { useCurrentUser, useRegister } from '@/features/auth/hooks';
 import { registerSchema } from '@/lib/schemas/registerSchema';
 import type { RegisterSchema } from '@/lib/schemas/registerSchema';
 import { routePaths } from '@/routes/routePaths';
-import { waxBrand } from '@/config/brand';
 
 type PasswordStrength = { score: 0 | 1 | 2 | 3 | 4; label: string; color: string };
 
 const evaluatePasswordStrength = (password: string): PasswordStrength => {
-  if (!password) return { score: 0, label: 'Sin definir', color: waxBrand.color.stone };
+  if (!password) return { score: 0, label: 'Sin definir', color: 'var(--wax-color-stone)' };
   let score = 0;
   if (password.length >= 8) score += 1;
   if (password.length >= 12) score += 1;
@@ -21,11 +20,11 @@ const evaluatePasswordStrength = (password: string): PasswordStrength => {
   if (/[0-9]/.test(password) && /[^a-zA-Z0-9]/.test(password)) score += 1;
   const clamped = Math.min(score, 4) as 0 | 1 | 2 | 3 | 4;
   const map: Record<typeof clamped, { label: string; color: string }> = {
-    0: { label: 'Muy débil', color: waxBrand.color.oxblood },
-    1: { label: 'Débil', color: waxBrand.color.oxblood },
-    2: { label: 'Aceptable', color: waxBrand.color.waxAmber },
-    3: { label: 'Fuerte', color: waxBrand.color.bronze },
-    4: { label: 'Excelente', color: waxBrand.color.olive },
+    0: { label: 'Muy débil', color: 'var(--wax-color-oxblood)' },
+    1: { label: 'Débil', color: 'var(--wax-color-oxblood)' },
+    2: { label: 'Aceptable', color: 'var(--wax-color-amber)' },
+    3: { label: 'Fuerte', color: 'var(--wax-color-bronze)' },
+    4: { label: 'Excelente', color: 'var(--wax-color-olive)' },
   };
   return { score: clamped, ...map[clamped] };
 };
@@ -166,7 +165,7 @@ export const RegisterPage = () => {
                         style={{
                           height: '0.25rem',
                           borderRadius: '999px',
-                          background: passwordStrength.score >= tier ? passwordStrength.color : waxBrand.color.stone,
+                          background: passwordStrength.score >= tier ? passwordStrength.color : 'var(--wax-color-stone)',
                           transition: 'background 180ms ease',
                         }}
                       />
@@ -209,7 +208,7 @@ export const RegisterPage = () => {
                 alignItems: 'flex-start',
                 gap: '0.6rem',
                 fontSize: '0.82rem',
-                color: waxBrand.color.graphite,
+                color: 'var(--wax-fg-muted)',
                 lineHeight: 1.45,
                 cursor: 'pointer',
               }}
@@ -218,10 +217,10 @@ export const RegisterPage = () => {
                 type="checkbox"
                 checked={acceptedTerms}
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
-                style={{ marginTop: '0.25rem', accentColor: waxBrand.color.ink }}
+                style={{ marginTop: '0.25rem', accentColor: 'var(--wax-fg)' }}
               />
               <span>
-                Acepto los <a href="mailto:hello@waxatelier.com?subject=T%C3%A9rminos%20y%20condiciones" style={{ color: waxBrand.color.ink }}>Términos y Condiciones</a> y la <a href="mailto:hello@waxatelier.com?subject=Pol%C3%ADtica%20de%20privacidad" style={{ color: waxBrand.color.ink }}>Política de Privacidad</a> de WAX.
+                Acepto los <a href="mailto:hello@waxatelier.com?subject=T%C3%A9rminos%20y%20condiciones" style={{ color: 'var(--wax-fg)' }}>Términos y Condiciones</a> y la <a href="mailto:hello@waxatelier.com?subject=Pol%C3%ADtica%20de%20privacidad" style={{ color: 'var(--wax-fg)' }}>Política de Privacidad</a> de WAX.
               </span>
             </label>
 

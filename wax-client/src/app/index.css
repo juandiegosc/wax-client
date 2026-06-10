@@ -46,29 +46,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   AURORA & INK BACKGROUND
-   Capas de color que se mueven lentamente detras del glass para que
-   el blur tenga algo que difuminar. Los tonos vienen 100% de la
-   paleta WAX (bronze, oxblood, olive, chrome) — sin traicionar la
-   identidad luxury industrial. Solo se aplican en mobile dark.
-═══════════════════════════════════════════════════════════════════ */
-@keyframes wax-aurora-warm {
-  0%   { transform: translate3d(-8%, -6%, 0) scale(1.0)  rotate(0deg);   opacity: 0.55; }
-  50%  { transform: translate3d(6%,   4%, 0) scale(1.15) rotate(8deg);   opacity: 0.78; }
-  100% { transform: translate3d(-8%, -6%, 0) scale(1.0)  rotate(0deg);   opacity: 0.55; }
-}
-
-@keyframes wax-aurora-cold {
-  0%   { transform: translate3d(7%, 5%, 0)   scale(1.05) rotate(0deg);   opacity: 0.5;  }
-  50%  { transform: translate3d(-5%, -4%, 0) scale(0.92) rotate(-6deg);  opacity: 0.7;  }
-  100% { transform: translate3d(7%, 5%, 0)   scale(1.05) rotate(0deg);   opacity: 0.5;  }
-}
-
-@keyframes wax-chrome-shimmer {
-  0%, 100% { opacity: 0.25; transform: scale(1);    }
-  50%      { opacity: 0.55; transform: scale(1.08); }
-}
+/* (Animaciones aurora removidas — el dark mode mobile ahora es plano y
+   funcional, sin efectos visuales complicados.) */
 
 /* ═══════════════════════════════════════════════════════════════════
    MOBILE DARK MODE
@@ -90,73 +69,20 @@
     --wax-accent-gradient: linear-gradient(135deg, var(--wax-color-chrome-soft) 0%, var(--wax-color-chrome-bright) 50%, var(--wax-color-chrome) 100%);
 
     color: var(--wax-fg);
-    background:
-      /* Halo bronze suave superior izquierda — calidez sutil */
-      radial-gradient(ellipse 55% 45% at 18% 12%, rgba(143, 115, 82, 0.32), transparent 60%),
-      /* Mancha oxblood profunda central — profundidad winelike */
-      radial-gradient(ellipse 70% 55% at 70% 45%, rgba(79, 39, 48, 0.45), transparent 65%),
-      /* Toque olive inferior izquierda — verde apagado */
-      radial-gradient(circle 50% at 25% 85%, rgba(76, 79, 69, 0.3), transparent 60%),
-      /* Reflejo chrome esquina inferior derecha */
-      radial-gradient(circle 40% at 88% 92%, rgba(192, 192, 192, 0.18), transparent 60%),
-      /* Base negro tinta */
-      linear-gradient(180deg, #0a0a0b 0%, #000 100%);
-    background-attachment: fixed;
-  }
-
-  /* Capa aurora caliente (bronze + oxblood) que se mueve lento */
-  .site-shell::before {
-    content: '';
-    position: fixed;
-    inset: -25%;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(ellipse 50% 40% at 30% 25%, rgba(143, 115, 82, 0.55), transparent 55%),
-      radial-gradient(ellipse 45% 50% at 75% 55%, rgba(79, 39, 48, 0.6), transparent 60%),
-      radial-gradient(ellipse 35% 30% at 50% 90%, rgba(117, 98, 75, 0.5), transparent 55%);
-    filter: blur(60px);
-    animation: wax-aurora-warm 32s ease-in-out infinite;
-    mix-blend-mode: screen;
-  }
-
-  /* Capa aurora fria (olive + chrome) en contraflujo */
-  .site-shell::after {
-    content: '';
-    position: fixed;
-    inset: -25%;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(ellipse 45% 50% at 78% 22%, rgba(76, 79, 69, 0.5), transparent 60%),
-      radial-gradient(circle 35% at 18% 65%, rgba(192, 192, 192, 0.2), transparent 55%),
-      radial-gradient(ellipse 40% 40% at 60% 78%, rgba(120, 100, 140, 0.35), transparent 60%);
-    filter: blur(70px);
-    animation: wax-aurora-cold 38s ease-in-out infinite;
-    mix-blend-mode: screen;
-  }
-
-  /* El main y el header van por encima del efecto smokey */
-  .site-main, .site-header, .wax-side-menu {
-    position: relative;
-    z-index: 2;
+    background: #0a0a0b;
   }
 
   body {
-    background: transparent;
+    background: #0a0a0b;
   }
 
   /* ═══════════ HEADER MOBILE ═══════════
-     Override de los inline color del headerTextColor calculado en JS.
-     Necesario porque MainLayout pasa color hardcoded en style={}. */
+     Plano: fondo casi opaco negro, borde sutil plata, textos blancos.
+     !important porque MainLayout pasa colores inline calculados en JS. */
   .site-header {
-    background: rgba(15, 15, 16, 0.42) !important;
+    background: rgba(10, 10, 11, 0.96) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.06) inset,
-      0 8px 32px rgba(0, 0, 0, 0.42) !important;
-    backdrop-filter: blur(32px) saturate(180%);
-    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    box-shadow: none !important;
   }
 
   .site-header a,
@@ -172,25 +98,17 @@
     color: var(--wax-fg-soft) !important;
   }
 
-  /* Wordmark del centro con gradiente cromado */
-  .site-header-center strong {
-    background: linear-gradient(135deg, var(--wax-color-chrome-bright), var(--wax-color-chrome) 50%, var(--wax-color-chrome-soft)) !important;
-    -webkit-background-clip: text !important;
-    background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    color: transparent !important;
-  }
-
   /* ═══════════ SIDE MENU MOBILE ═══════════ */
   .wax-side-menu {
-    background: rgba(10, 10, 11, 0.58) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(36px) saturate(180%);
-    -webkit-backdrop-filter: blur(36px) saturate(180%);
+    background: #0a0a0b !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
     color: var(--wax-fg);
-    box-shadow:
-      1px 0 0 rgba(255, 255, 255, 0.08) inset,
-      0 0 80px rgba(0, 0, 0, 0.6);
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .wax-side-menu-header,
+  .wax-side-menu-footer {
+    border-color: rgba(255, 255, 255, 0.06) !important;
   }
 
   .wax-side-menu a,
@@ -200,11 +118,34 @@
     color: var(--wax-fg);
   }
 
+  .wax-side-menu-wordmark {
+    color: var(--wax-fg) !important;
+  }
+
   .wax-side-menu .wax-menu-kicker {
     color: var(--wax-color-chrome) !important;
   }
 
   .wax-side-menu .wax-menu-item-desc {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  .wax-side-menu-email {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  /* Profile dropdown del header en mobile */
+  .wax-profile-dropdown {
+    background: #18181b !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .wax-profile-dropdown-item {
+    color: var(--wax-fg) !important;
+    border-top-color: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  .wax-profile-dropdown-item--logout {
     color: var(--wax-fg-muted) !important;
   }
 
@@ -227,18 +168,6 @@
 
   .home-footer-bottom {
     border-top-color: var(--wax-border);
-  }
-
-  .home-footer-region,
-  .home-footer-legal {
-    color: var(--wax-fg-muted);
-  }
-
-  .home-footer-wordmark {
-    background: linear-gradient(135deg, var(--wax-color-chrome-bright), var(--wax-color-chrome) 50%, var(--wax-color-chrome-soft));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
   }
 
   /* Login en mobile */
@@ -424,11 +353,9 @@
     color: var(--wax-color-chrome);
   }
 
-  /* ═══════════ GLASSMORPHISM EN CARDS ═══════════
-     Cards con blur fuerte para difuminar las auroras del fondo. Bg
-     mas transparente para dejar pasar mas color, borde plata sutil
-     que sugiere borde de cristal, y inset highlight superior tipo
-     reflejo de luz. */
+  /* ═══════════ CARDS Y SUPERFICIES ═══════════
+     Dark mode plano: fondo gris muy sutil (no transparente), bordes
+     plateados, sin blur ni efectos. Solo limpio y legible. */
   .login-card,
   .profile-form-container,
   .profile-data-card,
@@ -438,46 +365,40 @@
   .support-chat,
   .basket-summary,
   .checkout-summary,
-  .auth-loading-card {
-    background: rgba(255, 255, 255, 0.025) !important;
+  .auth-loading-card,
+  .product-card,
+  .atelier-chat,
+  .atelier-gen-card,
+  .quote-banner,
+  .checkout-stepper,
+  .wax-card {
+    background: #18181b !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    backdrop-filter: blur(28px) saturate(160%);
-    -webkit-backdrop-filter: blur(28px) saturate(160%);
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.12) inset,
-      0 -1px 0 rgba(0, 0, 0, 0.3) inset,
-      0 18px 48px rgba(0, 0, 0, 0.42),
-      0 2px 12px rgba(0, 0, 0, 0.28);
-    position: relative;
+    color: var(--wax-fg) !important;
+    box-shadow: none !important;
   }
 
-  /* Highlight tipo reflejo en el borde superior de cada card */
-  .login-card::before,
-  .profile-form-container::before,
-  .profile-data-card::before,
-  .support-form-shell::before,
-  .ticket-card::before,
-  .basket-summary::before,
-  .checkout-summary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 12%;
-    right: 12%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    pointer-events: none;
-  }
-
-  /* Inputs con un toque cristal */
+  /* Inputs */
   .login-input,
   .profile-input,
   .support-input,
   .support-select,
   .support-textarea,
-  .support-chat-input {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  .support-chat-input,
+  .catalog-filter-input,
+  .catalog-filter-select {
+    background: #1c1c20 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--wax-fg) !important;
+  }
+
+  .login-input::placeholder,
+  .profile-input::placeholder,
+  .support-input::placeholder,
+  .support-textarea::placeholder,
+  .support-chat-input::placeholder,
+  .catalog-filter-input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
   }
 
   /* ═══════════ ATELIER MOBILE ═══════════ */
@@ -486,27 +407,18 @@
   }
 
   .atelier-brand-panel {
-    background: rgba(10, 10, 11, 0.65) !important;
-    backdrop-filter: blur(22px) saturate(140%);
-    -webkit-backdrop-filter: blur(22px) saturate(140%);
-    border-bottom: 1px solid var(--wax-border);
-  }
-
-  .atelier-chat {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border-color: var(--wax-border) !important;
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    background: #0a0a0b !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .atelier-msg--assistant {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: var(--wax-border) !important;
-    color: var(--wax-fg);
+    background: #1c1c20 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: var(--wax-fg) !important;
   }
 
   .atelier-msg--user {
-    background: var(--wax-accent-gradient) !important;
+    background: var(--wax-color-porcelain) !important;
     color: var(--wax-color-ink) !important;
   }
 
@@ -516,31 +428,25 @@
   }
 
   .atelier-chat-chip {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: var(--wax-border) !important;
+    background: #1c1c20 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
     color: var(--wax-fg) !important;
   }
 
-  .atelier-gen-card {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border-color: var(--wax-border) !important;
-    color: var(--wax-fg);
-  }
-
   .atelier-gen-cta {
-    background: var(--wax-accent-gradient) !important;
+    background: var(--wax-color-porcelain) !important;
     color: var(--wax-color-ink) !important;
   }
 
   .atelier-gen-download {
-    border-color: var(--wax-border-strong) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
     color: var(--wax-fg) !important;
   }
 
   /* ═══════════ CATALOG MOBILE ═══════════ */
   .catalog-page-title,
   .product-card-name {
-    color: var(--wax-fg);
+    color: var(--wax-fg) !important;
   }
 
   .catalog-kicker,
@@ -548,41 +454,293 @@
     color: var(--wax-color-chrome) !important;
   }
 
-  .catalog-filter-input,
-  .catalog-filter-select {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: var(--wax-border) !important;
+  .product-card-price {
     color: var(--wax-fg) !important;
   }
 
-  .product-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--wax-border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: var(--wax-radius-strong);
-    overflow: hidden;
-  }
-
-  .product-card-price {
-    color: var(--wax-fg);
-  }
-
   .product-card-brand-tag {
-    background: rgba(15, 15, 16, 0.7) !important;
+    background: rgba(0, 0, 0, 0.8) !important;
     color: var(--wax-color-chrome) !important;
-    border: 1px solid var(--wax-border);
-  }
-
-  .product-card-quick-add-btn {
-    background: var(--wax-accent-gradient) !important;
-    color: var(--wax-color-ink) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   /* Catalog skeleton mas oscuro */
-  .catalog-skeleton {
-    background: linear-gradient(110deg, rgba(192, 192, 192, 0.04) 30%, rgba(192, 192, 192, 0.10) 50%, rgba(192, 192, 192, 0.04) 70%);
-    background-size: 200% 100%;
+  .catalog-skeleton,
+  .home-editorial-card-skeleton {
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0.04) 30%, rgba(255, 255, 255, 0.10) 50%, rgba(255, 255, 255, 0.04) 70%) !important;
+    background-size: 200% 100% !important;
+  }
+
+  /* ═══════════ BOTONES PRIMARIOS ═══════════
+     Dark mode: invertimos los buttons primary (eran ink sobre porcelain;
+     ahora porcelain sobre ink). */
+  .login-button-primary,
+  .profile-submit-btn,
+  .profile-btn-primary,
+  .support-new-btn,
+  .support-submit-btn,
+  .support-chat-send,
+  .basket-checkout-btn,
+  .product-card-quick-add-btn,
+  .quote-btn--primary,
+  .home-campaign-action-primary {
+    background: var(--wax-color-porcelain) !important;
+    color: var(--wax-color-ink) !important;
+    border-color: var(--wax-color-porcelain) !important;
+  }
+
+  .login-button-secondary,
+  .profile-btn-secondary,
+  .quote-btn--ghost {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: var(--wax-fg) !important;
+    background: transparent !important;
+  }
+
+  /* ═══════════ TICKET STATUS PILLS ═══════════
+     Mantener el color del status pero con fondo dark. */
+  .ticket-status--open {
+    background: rgba(143, 115, 82, 0.18) !important;
+  }
+
+  .ticket-status--inprogress {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: var(--wax-fg) !important;
+  }
+
+  .ticket-status--closed {
+    background: rgba(76, 79, 69, 0.22) !important;
+  }
+
+  /* ═══════════ ORDERS / QUOTES MOBILE ═══════════ */
+  .quote-title,
+  .basket-title,
+  .basket-empty-title,
+  .product-details-title,
+  .checkout-title,
+  .checkout-empty-title,
+  .support-title,
+  .profile-title,
+  .profile-section-title,
+  .login-title,
+  .auth-loading-title,
+  .ticket-detail-subject {
+    color: var(--wax-fg) !important;
+  }
+
+  .quote-kicker,
+  .basket-kicker,
+  .basket-empty-kicker,
+  .product-details-kicker,
+  .checkout-kicker,
+  .support-kicker,
+  .profile-kicker,
+  .login-kicker,
+  .auth-loading-kicker {
+    color: var(--wax-color-chrome) !important;
+  }
+
+  .quote-lead,
+  .basket-empty-lead,
+  .product-details-lead,
+  .support-lead,
+  .login-lead,
+  .profile-form-intro,
+  .ticket-description,
+  .ticket-detail-description {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  .quote-empty {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  .quote-banner {
+    background: rgba(143, 115, 82, 0.18) !important;
+    color: var(--wax-fg) !important;
+    border-color: rgba(143, 115, 82, 0.32) !important;
+  }
+
+  /* ═══════════ FOOTER MOBILE ═══════════ */
+  .home-footer-region,
+  .home-footer-legal {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  .home-footer-wordmark {
+    color: var(--wax-fg) !important;
+    background: none !important;
+    -webkit-text-fill-color: var(--wax-fg) !important;
+  }
+
+  /* ═══════════ CHECKOUT STEPPER ═══════════ */
+  .checkout-loading,
+  .checkout-loading-label {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  /* ═══════════ BASKET ITEM (card individual) ═══════════ */
+  .basket-item {
+    background: #18181b !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: var(--wax-fg) !important;
+  }
+
+  .basket-item-brand,
+  .basket-item-type,
+  .basket-item-unit-price {
+    color: var(--wax-fg-soft) !important;
+  }
+
+  .basket-item-name,
+  .basket-item-subtotal {
+    color: var(--wax-fg) !important;
+  }
+
+  .basket-qty-btn {
+    background: #1c1c20 !important;
+    color: var(--wax-fg) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .basket-qty-value {
+    color: var(--wax-fg) !important;
+  }
+
+  .basket-remove-btn {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  /* ═══════════ BASKET SUMMARY rows ═══════════ */
+  .basket-summary-row {
+    color: var(--wax-fg) !important;
+  }
+
+  .basket-summary-row span,
+  .basket-summary-row strong {
+    color: inherit !important;
+  }
+
+  .basket-summary-row--total {
+    color: var(--wax-fg) !important;
+  }
+
+  .basket-summary-note {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  .basket-count {
+    color: var(--wax-fg) !important;
+  }
+
+  /* ═══════════ PRODUCT DETAIL extras ═══════════ */
+  .product-details-availability {
+    color: var(--wax-fg-soft) !important;
+  }
+
+  .product-details-add-btn {
+    background: var(--wax-color-porcelain) !important;
+    color: var(--wax-color-ink) !important;
+    border: 1px solid var(--wax-color-porcelain) !important;
+  }
+
+  .product-details-add-btn:disabled {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: rgba(250, 249, 246, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+
+  .product-details-fact-card {
+    background: #18181b !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .product-details-fact-label {
+    color: var(--wax-color-chrome) !important;
+  }
+
+  .product-details-fact-value {
+    color: var(--wax-fg) !important;
+  }
+
+  /* La parte visual del product detail tiene un fondo stone inline que
+     ahora se ve raro en dark — la oscurecemos. */
+  .product-details-visual {
+    background: #1c1c20 !important;
+    box-shadow: none !important;
+  }
+
+  .product-details-visual-badge,
+  .product-details-visual-note {
+    color: var(--wax-fg) !important;
+  }
+
+  /* ═══════════ CHECKOUT SUMMARY items ═══════════ */
+  .checkout-summary-item-name,
+  .checkout-summary-item-price {
+    color: var(--wax-fg) !important;
+  }
+
+  .checkout-summary-item-qty {
+    color: var(--wax-fg-soft) !important;
+  }
+
+  .checkout-summary-item-img {
+    background: #1c1c20 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* ═══════════ CHECKOUT STEPPER pasos ═══════════ */
+  .checkout-step,
+  .checkout-step-number,
+  .checkout-step-label,
+  .checkout-stepper * {
+    color: var(--wax-fg) !important;
+  }
+
+  .checkout-step--inactive,
+  .checkout-step--inactive .checkout-step-number,
+  .checkout-step--inactive .checkout-step-label {
+    color: var(--wax-fg-soft) !important;
+  }
+
+  /* ═══════════ HOMEPAGE editorial mobile ═══════════ */
+  .home-editorial-kicker {
+    color: var(--wax-color-chrome) !important;
+  }
+
+  .home-editorial-title {
+    color: var(--wax-fg) !important;
+  }
+
+  /* ═══════════ SUPPORT empty state ═══════════ */
+  .support-empty-state {
+    color: var(--wax-fg) !important;
+  }
+
+  .support-empty-text {
+    color: var(--wax-fg) !important;
+  }
+
+  .support-empty-help {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  .support-empty-link {
+    color: var(--wax-color-chrome) !important;
+  }
+
+  /* ═══════════ FOOTER REGION mobile ═══════════ */
+  .home-footer-heading {
+    color: var(--wax-color-chrome) !important;
+  }
+
+  .home-footer-description {
+    color: var(--wax-fg-muted) !important;
+  }
+
+  .home-footer-link {
+    color: var(--wax-fg) !important;
   }
 }
 
@@ -755,6 +913,47 @@ select {
   text-transform: uppercase;
   color: var(--wax-color-ink);
   text-decoration: none;
+}
+
+/* ═══════════ PROFILE DROPDOWN (header right) ═══════════ */
+.wax-profile-dropdown-wrapper {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  padding-top: 0.35rem;
+}
+
+.wax-profile-dropdown {
+  background: var(--wax-color-porcelain);
+  border: 1px solid rgba(15, 15, 16, 0.1);
+  border-radius: var(--wax-radius-soft);
+  box-shadow: var(--wax-shadow-elevated);
+  overflow: hidden;
+  min-width: 10rem;
+}
+
+.wax-profile-dropdown-item {
+  display: block;
+  width: 100%;
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  padding: 0.72rem 1.1rem;
+  color: var(--wax-color-ink);
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(15, 15, 16, 0.06);
+  text-align: left;
+}
+
+.wax-profile-dropdown-item:first-child {
+  border-top: 0;
+}
+
+.wax-profile-dropdown-item--logout {
+  color: var(--wax-color-smoke);
 }
 
 .site-header-bar {

@@ -387,8 +387,8 @@ const SiteHeader = ({
                 badgeContent={pendingQuotationsCount || null}
                 sx={{
                   '& .MuiBadge-badge': {
-                    backgroundColor: waxBrand.color.ink,
-                    color: waxBrand.color.porcelain,
+                    backgroundColor: 'var(--wax-fg)',
+                    color: 'var(--wax-bg)',
                     fontSize: '0.65rem',
                     minWidth: 16,
                     height: 16,
@@ -400,81 +400,39 @@ const SiteHeader = ({
             </IconButton>
 
             {profileMenuOpen && (
-              <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 20, paddingTop: '0.35rem' }}>
-              <div style={{
-                background: waxBrand.color.porcelain,
-                border: `1px solid rgba(15, 15, 16, 0.1)`,
-                borderRadius: waxBrand.radius.soft,
-                boxShadow: waxBrand.shadow.elevated,
-                overflow: 'hidden',
-                minWidth: '10rem',
-              }}>
-                <Link
-                  to={routePaths.profile}
-                  onClick={() => setProfileMenuOpen(false)}
-                  style={{
-                    display: 'block',
-                    padding: '0.72rem 1.1rem',
-                    fontSize: '0.78rem',
-                    letterSpacing: '0.06em',
-                    color: waxBrand.color.ink,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Ver perfil
-                </Link>
-                <Link
-                  to={routePaths.myOrders}
-                  onClick={() => setProfileMenuOpen(false)}
-                  style={{
-                    display: 'block',
-                    padding: '0.72rem 1.1rem',
-                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
-                    fontSize: '0.78rem',
-                    letterSpacing: '0.06em',
-                    color: waxBrand.color.ink,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Mis pedidos
-                </Link>
-                <Link
-                  to={routePaths.myCustomProducts}
-                  onClick={() => setProfileMenuOpen(false)}
-                  style={{
-                    display: 'block',
-                    padding: '0.72rem 1.1rem',
-                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
-                    fontSize: '0.78rem',
-                    letterSpacing: '0.06em',
-                    color: waxBrand.color.ink,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Mis cotizaciones
-                </Link>
-                <button
-                  type="button"
-                  onClick={onLogout}
-                  disabled={isLoggingOut}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '0.72rem 1.1rem',
-                    border: 0,
-                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
-                    background: 'transparent',
-                    fontSize: '0.78rem',
-                    letterSpacing: '0.06em',
-                    color: waxBrand.color.smoke,
-                    cursor: isLoggingOut ? 'wait' : 'pointer',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {isLoggingOut ? 'Saliendo...' : 'Salir'}
-                </button>
-              </div>
+              <div className="wax-profile-dropdown-wrapper">
+                <div className="wax-profile-dropdown">
+                  <Link
+                    to={routePaths.profile}
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="wax-profile-dropdown-item"
+                  >
+                    Ver perfil
+                  </Link>
+                  <Link
+                    to={routePaths.myOrders}
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="wax-profile-dropdown-item"
+                  >
+                    Mis pedidos
+                  </Link>
+                  <Link
+                    to={routePaths.myCustomProducts}
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="wax-profile-dropdown-item"
+                  >
+                    Mis cotizaciones
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    disabled={isLoggingOut}
+                    className="wax-profile-dropdown-item wax-profile-dropdown-item--logout"
+                    style={{ cursor: isLoggingOut ? 'wait' : 'pointer' }}
+                  >
+                    {isLoggingOut ? 'Saliendo...' : 'Salir'}
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -500,8 +458,8 @@ const SiteHeader = ({
             badgeContent={basketCount || null}
             sx={{
               '& .MuiBadge-badge': {
-                backgroundColor: waxBrand.color.ink,
-                color: waxBrand.color.porcelain,
+                backgroundColor: 'var(--wax-fg)',
+                color: 'var(--wax-bg)',
                 fontSize: '0.65rem',
                 minWidth: 16,
                 height: 16,
@@ -555,8 +513,8 @@ export const MainLayout = () => {
     sessionStorage.removeItem(PROFILE_PROMPT_PENDING_KEY);
   }, [billingAddress, currentUser, isLoadingAddress]);
 
-  const headerTextColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.96)' : waxBrand.color.ink;
-  const headerMutedColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.76)' : waxBrand.color.graphite;
+  const headerTextColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.96)' : 'var(--wax-fg)';
+  const headerMutedColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.76)' : 'var(--wax-fg-muted)';
   const headerBrandSize = isFloatingHeader ? '3.1rem' : '1.78rem';
   const headerBrandSpacing = isFloatingHeader ? '0.22em' : '0.16em';
   const headerKickerSize = isFloatingHeader ? '0.72rem' : '0.62rem';

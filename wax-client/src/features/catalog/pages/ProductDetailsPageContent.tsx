@@ -1,5 +1,4 @@
 import { useParams } from 'react-router';
-import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { useProduct } from '@/features/catalog/hooks/useProduct';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
@@ -17,7 +16,7 @@ export const ProductDetailsPageContent = () => {
   }
 
   if (isError || !product) {
-    return <p style={{ color: waxBrand.color.graphite }}>No pudimos cargar esta pieza.</p>;
+    return <p style={{ color: 'var(--wax-fg-muted)' }}>No pudimos cargar esta pieza.</p>;
   }
 
   const outOfStock = product.quantityInStock === 0;
@@ -25,7 +24,7 @@ export const ProductDetailsPageContent = () => {
 
   return (
     <section className="product-details-layout">
-      <div className="product-details-visual" style={{ background: waxBrand.color.stone, boxShadow: waxBrand.shadow.soft }}>
+      <div className="product-details-visual" style={{ background: 'var(--wax-color-stone)', boxShadow: 'var(--wax-shadow-soft)' }}>
         <img src={product.pictureUrl} alt={product.name} className="product-details-image" />
 
         <div className="product-details-visual-badge">{product.brand}</div>

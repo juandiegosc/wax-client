@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router';
-import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { routePaths } from '@/routes/routePaths';
 import { useBasket } from '@/features/basket/hooks/useBasket';
@@ -18,7 +17,7 @@ export const BasketPageContent = () => {
   }
 
   if (isError) {
-    return <p style={{ color: waxBrand.color.graphite }}>No pudimos cargar el carrito.</p>;
+    return <p style={{ color: 'var(--wax-fg-muted)' }}>No pudimos cargar el carrito.</p>;
   }
 
   if (!items.length) {
@@ -51,7 +50,7 @@ export const BasketPageContent = () => {
       <p
         style={{
           fontSize: '0.78rem',
-          color: waxBrand.color.smoke,
+          color: 'var(--wax-fg-soft)',
           letterSpacing: '0.05em',
           margin: '0.75rem 0 1.25rem',
         }}

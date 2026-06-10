@@ -1,5 +1,3 @@
-import { waxBrand } from '@/config/brand';
-
 type Props = {
   label?: string;
   rows?: number;
@@ -15,7 +13,7 @@ export const PageLoadingSkeleton = ({ label, rows = 4 }: Props) => (
           fontSize: '0.72rem',
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
-          color: waxBrand.color.smoke,
+          color: 'var(--wax-fg-soft)',
           marginBottom: '1.25rem',
         }}
       >
