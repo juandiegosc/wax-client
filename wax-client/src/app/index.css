@@ -47,33 +47,27 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   SMOKE & INK BACKGROUND
-   Animacion lenta de manchas humeadas que evocan tinta diluyendose en
-   agua — referencia directa al video de metal liquido del Instagram
-   de WAX. Usadas SOLO en mobile dark mode.
+   AURORA & INK BACKGROUND
+   Capas de color que se mueven lentamente detras del glass para que
+   el blur tenga algo que difuminar. Los tonos vienen 100% de la
+   paleta WAX (bronze, oxblood, olive, chrome) — sin traicionar la
+   identidad luxury industrial. Solo se aplican en mobile dark.
 ═══════════════════════════════════════════════════════════════════ */
-@keyframes wax-ink-drift {
-  0% {
-    transform: translate3d(-5%, -3%, 0) scale(1);
-    opacity: 0.55;
-  }
-  33% {
-    transform: translate3d(4%, 2%, 0) scale(1.08);
-    opacity: 0.72;
-  }
-  66% {
-    transform: translate3d(-2%, 5%, 0) scale(0.95);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translate3d(-5%, -3%, 0) scale(1);
-    opacity: 0.55;
-  }
+@keyframes wax-aurora-warm {
+  0%   { transform: translate3d(-8%, -6%, 0) scale(1.0)  rotate(0deg);   opacity: 0.55; }
+  50%  { transform: translate3d(6%,   4%, 0) scale(1.15) rotate(8deg);   opacity: 0.78; }
+  100% { transform: translate3d(-8%, -6%, 0) scale(1.0)  rotate(0deg);   opacity: 0.55; }
 }
 
-@keyframes wax-smoke-pulse {
-  0%, 100% { opacity: 0.35; }
-  50%      { opacity: 0.6;  }
+@keyframes wax-aurora-cold {
+  0%   { transform: translate3d(7%, 5%, 0)   scale(1.05) rotate(0deg);   opacity: 0.5;  }
+  50%  { transform: translate3d(-5%, -4%, 0) scale(0.92) rotate(-6deg);  opacity: 0.7;  }
+  100% { transform: translate3d(7%, 5%, 0)   scale(1.05) rotate(0deg);   opacity: 0.5;  }
+}
+
+@keyframes wax-chrome-shimmer {
+  0%, 100% { opacity: 0.25; transform: scale(1);    }
+  50%      { opacity: 0.55; transform: scale(1.08); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -97,43 +91,49 @@
 
     color: var(--wax-fg);
     background:
-      /* Mancha humeada superior izquierda */
-      radial-gradient(ellipse 60% 50% at 15% 10%, rgba(192, 192, 192, 0.08), transparent 60%),
-      /* Mancha tinta central diluyendose */
-      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(40, 40, 50, 0.7), transparent 65%),
-      /* Mancha plata inferior derecha */
-      radial-gradient(circle 45% at 85% 90%, rgba(192, 192, 192, 0.05), transparent 55%),
+      /* Halo bronze suave superior izquierda — calidez sutil */
+      radial-gradient(ellipse 55% 45% at 18% 12%, rgba(143, 115, 82, 0.32), transparent 60%),
+      /* Mancha oxblood profunda central — profundidad winelike */
+      radial-gradient(ellipse 70% 55% at 70% 45%, rgba(79, 39, 48, 0.45), transparent 65%),
+      /* Toque olive inferior izquierda — verde apagado */
+      radial-gradient(circle 50% at 25% 85%, rgba(76, 79, 69, 0.3), transparent 60%),
+      /* Reflejo chrome esquina inferior derecha */
+      radial-gradient(circle 40% at 88% 92%, rgba(192, 192, 192, 0.18), transparent 60%),
       /* Base negro tinta */
       linear-gradient(180deg, #0a0a0b 0%, #000 100%);
     background-attachment: fixed;
   }
 
-  /* Capa de tinta humeada animada que cubre todo el sitio en mobile */
+  /* Capa aurora caliente (bronze + oxblood) que se mueve lento */
   .site-shell::before {
     content: '';
     position: fixed;
-    inset: -20%;
+    inset: -25%;
     z-index: 0;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 60% 45% at 30% 20%, rgba(60, 60, 80, 0.55), transparent 55%),
-      radial-gradient(ellipse 50% 55% at 75% 60%, rgba(30, 30, 40, 0.6), transparent 60%),
-      radial-gradient(ellipse 40% 35% at 50% 85%, rgba(80, 80, 100, 0.35), transparent 55%);
-    filter: blur(40px);
-    animation: wax-ink-drift 28s ease-in-out infinite;
+      radial-gradient(ellipse 50% 40% at 30% 25%, rgba(143, 115, 82, 0.55), transparent 55%),
+      radial-gradient(ellipse 45% 50% at 75% 55%, rgba(79, 39, 48, 0.6), transparent 60%),
+      radial-gradient(ellipse 35% 30% at 50% 90%, rgba(117, 98, 75, 0.5), transparent 55%);
+    filter: blur(60px);
+    animation: wax-aurora-warm 32s ease-in-out infinite;
     mix-blend-mode: screen;
   }
 
-  /* Halo plata pulsando muy lento — evoca el reflejo cromado */
+  /* Capa aurora fria (olive + chrome) en contraflujo */
   .site-shell::after {
     content: '';
     position: fixed;
-    inset: 0;
+    inset: -25%;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(circle 80% at 50% 50%, rgba(192, 192, 192, 0.04), transparent 65%);
-    animation: wax-smoke-pulse 14s ease-in-out infinite;
-    mix-blend-mode: overlay;
+    background:
+      radial-gradient(ellipse 45% 50% at 78% 22%, rgba(76, 79, 69, 0.5), transparent 60%),
+      radial-gradient(circle 35% at 18% 65%, rgba(192, 192, 192, 0.2), transparent 55%),
+      radial-gradient(ellipse 40% 40% at 60% 78%, rgba(120, 100, 140, 0.35), transparent 60%);
+    filter: blur(70px);
+    animation: wax-aurora-cold 38s ease-in-out infinite;
+    mix-blend-mode: screen;
   }
 
   /* El main y el header van por encima del efecto smokey */
@@ -150,11 +150,13 @@
      Override de los inline color del headerTextColor calculado en JS.
      Necesario porque MainLayout pasa color hardcoded en style={}. */
   .site-header {
-    background: rgba(15, 15, 16, 0.62) !important;
-    border-bottom: 1px solid var(--wax-border) !important;
-    box-shadow: none !important;
-    backdrop-filter: blur(22px) saturate(140%);
-    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    background: rgba(15, 15, 16, 0.42) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.06) inset,
+      0 8px 32px rgba(0, 0, 0, 0.42) !important;
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
   }
 
   .site-header a,
@@ -181,12 +183,14 @@
 
   /* ═══════════ SIDE MENU MOBILE ═══════════ */
   .wax-side-menu {
-    background: rgba(10, 10, 11, 0.85) !important;
-    border-right: 1px solid var(--wax-border) !important;
-    backdrop-filter: blur(28px) saturate(150%);
-    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    background: rgba(10, 10, 11, 0.58) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(36px) saturate(180%);
+    -webkit-backdrop-filter: blur(36px) saturate(180%);
     color: var(--wax-fg);
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+    box-shadow:
+      1px 0 0 rgba(255, 255, 255, 0.08) inset,
+      0 0 80px rgba(0, 0, 0, 0.6);
   }
 
   .wax-side-menu a,
@@ -421,8 +425,10 @@
   }
 
   /* ═══════════ GLASSMORPHISM EN CARDS ═══════════
-     Las cards principales reciben blur del fondo para que la animacion
-     smokey se difumine detras de ellas, evocando vidrio empañado. */
+     Cards con blur fuerte para difuminar las auroras del fondo. Bg
+     mas transparente para dejar pasar mas color, borde plata sutil
+     que sugiere borde de cristal, y inset highlight superior tipo
+     reflejo de luz. */
   .login-card,
   .profile-form-container,
   .profile-data-card,
@@ -433,11 +439,34 @@
   .basket-summary,
   .checkout-summary,
   .auth-loading-card {
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
     box-shadow:
-      0 1px 0 rgba(192, 192, 192, 0.08) inset,
-      0 12px 32px rgba(0, 0, 0, 0.32);
+      0 1px 0 rgba(255, 255, 255, 0.12) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.3) inset,
+      0 18px 48px rgba(0, 0, 0, 0.42),
+      0 2px 12px rgba(0, 0, 0, 0.28);
+    position: relative;
+  }
+
+  /* Highlight tipo reflejo en el borde superior de cada card */
+  .login-card::before,
+  .profile-form-container::before,
+  .profile-data-card::before,
+  .support-form-shell::before,
+  .ticket-card::before,
+  .basket-summary::before,
+  .checkout-summary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    pointer-events: none;
   }
 
   /* Inputs con un toque cristal */
