@@ -4,6 +4,7 @@ import { formatCurrency } from '@/utils/currency';
 import { useProduct } from '@/features/catalog/hooks/useProduct';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 import { useProfileGuard } from '@/lib/hooks/useProfileGuard';
+import { PageLoadingSkeleton } from '@/components/PageLoadingSkeleton';
 
 export const ProductDetailsPageContent = () => {
   const { id } = useParams();
@@ -12,11 +13,11 @@ export const ProductDetailsPageContent = () => {
   const { requireProfile } = useProfileGuard();
 
   if (isLoading) {
-    return <p style={{ color: waxBrand.color.graphite }}>Cargando producto...</p>;
+    return <PageLoadingSkeleton label="Cargando pieza" rows={5} />;
   }
 
   if (isError || !product) {
-    return <p style={{ color: waxBrand.color.graphite }}>No se pudo cargar el producto solicitado.</p>;
+    return <p style={{ color: waxBrand.color.graphite }}>No pudimos cargar esta pieza.</p>;
   }
 
   const outOfStock = product.quantityInStock === 0;
@@ -37,7 +38,7 @@ export const ProductDetailsPageContent = () => {
 
       <div className="product-details-content">
         <div className="product-details-header">
-          <span className="product-details-kicker">Edicion WAX</span>
+          <span className="product-details-kicker">Edición WAX</span>
           <h1 className="product-details-title">{product.name}</h1>
           <p className="product-details-lead">{product.description}</p>
         </div>

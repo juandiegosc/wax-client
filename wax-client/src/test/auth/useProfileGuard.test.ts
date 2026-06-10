@@ -55,7 +55,7 @@ describe('useProfileGuard', () => {
 
     expect(action).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/login');
-    expect(mockToast).toHaveBeenCalledWith('Inicia sesión para añadir piezas al carrito');
+    expect(mockToast).toHaveBeenCalledWith('Inicia sesión para añadir piezas al carrito.');
   });
 
   it('redirects to profile when user has Enrolled role', () => {
@@ -67,7 +67,7 @@ describe('useProfileGuard', () => {
 
     expect(action).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
-    expect(mockToast).toHaveBeenCalledWith('Completa tu perfil para continuar');
+    expect(mockToast).toHaveBeenCalledWith('Completa tu perfil para continuar.');
   });
 
   it('redirects to profile when authenticated but has no address', () => {

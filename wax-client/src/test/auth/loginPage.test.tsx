@@ -63,7 +63,7 @@ const setupLoggedIn = () => {
 
 const fillForm = async (email: string, password: string) => {
   await userEvent.type(screen.getByPlaceholderText('tu@correo.com'), email);
-  await userEvent.type(screen.getByPlaceholderText('Ingresa tu contrasena'), password);
+  await userEvent.type(screen.getByPlaceholderText('Ingresa tu contraseña'), password);
 };
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -74,9 +74,9 @@ describe('LoginPage', () => {
     it('renders the login form', () => {
       setupGuest();
       renderLogin();
-      expect(screen.getByRole('heading', { name: /iniciar sesion/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /iniciar sesión/i })).toBeInTheDocument();
       expect(screen.getByPlaceholderText('tu@correo.com')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Ingresa tu contrasena')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Ingresa tu contraseña')).toBeInTheDocument();
     });
 
     it('submit button is disabled when the form is empty', () => {
@@ -92,17 +92,17 @@ describe('LoginPage', () => {
       await userEvent.type(screen.getByPlaceholderText('tu@correo.com'), 'no-es-un-correo');
       await userEvent.tab();
 
-      expect(await screen.findByText('Ingresa un correo valido.')).toBeInTheDocument();
+      expect(await screen.findByText('Ingresa un correo válido.')).toBeInTheDocument();
     });
 
     it('shows password validation error when password is too short', async () => {
       setupGuest();
       renderLogin();
 
-      await userEvent.type(screen.getByPlaceholderText('Ingresa tu contrasena'), '123');
+      await userEvent.type(screen.getByPlaceholderText('Ingresa tu contraseña'), '123');
       await userEvent.tab();
 
-      expect(await screen.findByText('La contrasena debe tener al menos 6 caracteres.')).toBeInTheDocument();
+      expect(await screen.findByText('La contraseña debe tener al menos 6 caracteres.')).toBeInTheDocument();
     });
 
     it('enables the submit button when form is valid', async () => {
@@ -140,7 +140,7 @@ describe('LoginPage', () => {
       await userEvent.click(screen.getByRole('button', { name: /entrar/i }));
 
       expect(
-        await screen.findByText(/el correo o la contrasena no coinciden/i),
+        await screen.findByText(/el correo o la contraseña no coinciden/i),
       ).toBeInTheDocument();
     });
   });
@@ -150,7 +150,7 @@ describe('LoginPage', () => {
       setupLoggedIn();
       renderLogin();
 
-      expect(screen.getByText(/ya estas dentro de WAX/i)).toBeInTheDocument();
+      expect(screen.getByText(/ya estás dentro de WAX/i)).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /entrar/i })).not.toBeInTheDocument();
     });
 

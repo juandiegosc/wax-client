@@ -40,7 +40,7 @@ agent.interceptors.response.use(
         await sleep(1000);
 
         if (!error.response) {
-            toast.error('No fue posible conectar con el servidor.');
+            toast.error('No pudimos conectar con el servidor.');
             throw error;
         }
 
@@ -75,7 +75,7 @@ agent.interceptors.response.use(
                 router.navigate('/server-error', {state:{error: data}})
                 break;
             case 401:
-                toast.error('Unauthorized')
+                toast.error('No tienes permiso para realizar esta acción.');
                 break;
             default:
                 break;

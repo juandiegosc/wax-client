@@ -42,10 +42,10 @@ describe('BasketPageContent', () => {
     expect(screen.getByText(/Cargando carrito/i)).toBeInTheDocument();
   });
 
-  it('muestra "No se pudo cargar" en error', () => {
+  it('muestra "No pudimos cargar" en error', () => {
     mockUseBasket.mockReturnValue({ isLoading: false, isError: true } as unknown as ReturnType<typeof useBasket>);
     renderPage();
-    expect(screen.getByText(/No se pudo cargar/i)).toBeInTheDocument();
+    expect(screen.getByText(/No pudimos cargar/i)).toBeInTheDocument();
   });
 
   it('muestra empty state cuando el carrito esta vacio', () => {
@@ -54,7 +54,7 @@ describe('BasketPageContent', () => {
     } as unknown as ReturnType<typeof useBasket>);
     renderPage();
     expect(screen.getByText(/Sin piezas seleccionadas/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Ir al catalogo/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Ir al catálogo/i })).toBeInTheDocument();
   });
 
   it('renderiza items, total y boton de pago', () => {

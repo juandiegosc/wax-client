@@ -28,17 +28,17 @@ const homeServiceBlocks: HomeServiceBlock[] = [
     link: { label: 'Iniciar encargo', to: routePaths.atelier },
   },
   {
-    title: 'Compra de coleccion',
-    description: 'Exploras piezas ya disponibles, eliges la que quieres, confirmas la compra y coordinamos el envio desde Ecuador.',
-    ctaLabel: 'Ver coleccion',
-    link: { label: 'Ver coleccion', to: routePaths.catalog },
+    title: 'Compra de colección',
+    description: 'Exploras piezas ya disponibles, eliges la que quieres, confirmas la compra y coordinamos el envío desde Ecuador.',
+    ctaLabel: 'Ver colección',
+    link: { label: 'Ver colección', to: routePaths.catalog },
   },
 ] as const;
 
 const homeFooterColumns: HomeFooterColumn[] = [
   {
     title: 'Ayuda',
-    description: 'Asistencia para pedidos, tiempos de entrega y acompanamiento en compras privadas.',
+    description: 'Asistencia para pedidos, tiempos de entrega y acompañamiento en compras privadas.',
     links: [
       { label: 'Hablar con WAX', href: 'mailto:hello@waxatelier.com' },
       { label: 'Soporte', to: routePaths.support },
@@ -48,15 +48,15 @@ const homeFooterColumns: HomeFooterColumn[] = [
     title: 'Servicios',
     links: [
       { label: 'Atelier AI', to: routePaths.atelier },
-      { label: 'Coleccion Umbral', to: routePaths.catalog },
+      { label: 'Colección Umbral', to: routePaths.catalog },
       { label: 'Carrito', to: routePaths.basket },
     ],
   },
   {
     title: 'Maison',
     links: [
+      { label: 'Historia WAX', to: routePaths.maison },
       { label: 'Explorar piezas', to: routePaths.catalog },
-      { label: 'Cuenta', to: routePaths.login },
       { label: 'Contacto', href: 'mailto:hello@waxatelier.com' },
     ],
   },
@@ -83,7 +83,7 @@ export const HomePage = () => {
           <img
             className="home-campaign-image"
             src={homePageMainImage}
-            alt="Bolso escultorico negro presentado en una composicion editorial de WAX"
+            alt="Bolso escultórico negro presentado en una composición editorial de WAX"
           />
 
           <div aria-hidden className="home-campaign-overlay" />
@@ -97,7 +97,7 @@ export const HomePage = () => {
 
               <div className="home-campaign-actions">
                 <Link to={routePaths.catalog} className="home-campaign-action home-campaign-action-primary">
-                  Ver seleccion
+                  Ver selección
                 </Link>
               </div>
             </div>
@@ -186,14 +186,14 @@ export const HomePage = () => {
         </div>
 
         <div className="home-footer-bottom">
-          <div className="home-footer-region">Envios desde Ecuador</div>
+          <div className="home-footer-region">Envíos desde Ecuador</div>
           <strong className="home-footer-wordmark">WAX</strong>
           <div className="home-footer-legal">
             <Link to={routePaths.support} className="home-footer-legal-link">
               Soporte
             </Link>
             <Link to={routePaths.catalog} className="home-footer-legal-link">
-              Coleccion
+              Colección
             </Link>
             <Link to={routePaths.login} className="home-footer-legal-link">
               Cuenta

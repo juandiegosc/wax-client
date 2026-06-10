@@ -14,6 +14,7 @@ import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustom
 import { MenuToggle } from '@/layouts/MenuToggle';
 import { PwaInstallButton } from '@/layouts/PwaInstallButton';
 import { MiniCartDrawer } from '@/features/basket/components/MiniCartDrawer';
+import { PROFILE_COMPLETION_TOAST } from '@/lib/utils/profileToasts';
 import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
 
@@ -53,24 +54,20 @@ const renderMenuSection = (section: MenuSection, closeMenu: () => void) => {
   );
 };
 
-const renderFooterLink = (item: FooterLink) => {
-  const style = {
-    fontSize: '0.75rem',
-    letterSpacing: '0.06em',
-    color: waxBrand.color.smoke,
-    textDecoration: 'none' as const,
-  };
-
-  if ('href' in item) {
-    return (
-      <a key={item.label} href={item.href} style={style}>
-        {item.label}
-      </a>
-    );
-  }
-
-  return <span key={item.label} style={style}>{item.label}</span>;
-};
+const renderFooterLink = (item: FooterLink) => (
+  <a
+    key={item.label}
+    href={item.href}
+    style={{
+      fontSize: '0.75rem',
+      letterSpacing: '0.06em',
+      color: waxBrand.color.smoke,
+      textDecoration: 'none',
+    }}
+  >
+    {item.label}
+  </a>
+);
 
 type MenuOverlayProps = {
   isMenuOpen: boolean;
@@ -531,7 +528,7 @@ const SiteHeader = ({
         ) : (
           <IconButton
             className="site-utility-secondary site-account-button"
-            aria-label="Iniciar sesion"
+            aria-label="Iniciar sesión"
             component={Link}
             to={routePaths.login}
             sx={utilityButtonStyle}
@@ -596,7 +593,7 @@ export const MainLayout = () => {
 
     const needsProfileCompletion = isEnrolledUser || !billingAddress;
     if (needsProfileCompletion && !sessionStorage.getItem(PROFILE_WARNING_KEY)) {
-      toast.warn('Completa tu perfil para desbloquear funciones privadas de WAX.', {
+      toast.info(PROFILE_COMPLETION_TOAST, {
         toastId: PROFILE_WARNING_KEY,
       });
       sessionStorage.setItem(PROFILE_WARNING_KEY, 'true');
