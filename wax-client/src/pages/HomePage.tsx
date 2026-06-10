@@ -38,17 +38,17 @@ const homeServiceBlocks: HomeServiceBlock[] = [
 const homeFooterColumns: HomeFooterColumn[] = [
   {
     title: 'Ayuda',
-    description: 'Asistencia para pedidos, tiempos de entrega y acompañamiento en compras privadas.',
+    description: 'Asistencia para pedidos, tiempos de entrega y acompañamiento posterior.',
     links: [
-      { label: 'Hablar con WAX', href: 'mailto:hello@waxatelier.com' },
       { label: 'Soporte', to: routePaths.support },
+      { label: 'Envíos y entregas', to: `${routePaths.maison}#envios` },
     ],
   },
   {
     title: 'Servicios',
     links: [
       { label: 'Atelier AI', to: routePaths.atelier },
-      { label: 'Colección Umbral', to: routePaths.catalog },
+      { label: 'Catálogo', to: routePaths.catalog },
       { label: 'Carrito', to: routePaths.basket },
     ],
   },
@@ -56,7 +56,7 @@ const homeFooterColumns: HomeFooterColumn[] = [
     title: 'Maison',
     links: [
       { label: 'Historia WAX', to: routePaths.maison },
-      { label: 'Explorar piezas', to: routePaths.catalog },
+      { label: 'Instagram', href: 'https://instagram.com/wax.ec' },
       { label: 'Contacto', href: 'mailto:hello@waxatelier.com' },
     ],
   },

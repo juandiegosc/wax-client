@@ -63,7 +63,7 @@ export const MaisonPage = () => (
           margin: 0,
         }}
       >
-        Una maison 3D <em style={{ fontStyle: 'italic' }}>a medida</em>, hecha en Ecuador.
+        Accesorios 3D con <em style={{ fontStyle: 'italic' }}>identidad</em>, diseñados en Ecuador.
       </h1>
       <p
         style={{
@@ -73,9 +73,20 @@ export const MaisonPage = () => (
           margin: 0,
         }}
       >
-        WAX nace para repensar la forma en que se diseña y se compra una pieza de lujo. Cada accesorio empieza
-        en una conversación con nuestro Atelier AI y termina en un taller artesanal — sin sobreproducción,
-        sin catálogos infinitos, sin piezas que nadie va a usar.
+        WAX es una marca ecuatoriana de impresión 3D que diseña y produce accesorios únicos
+        con identidad y visión. A través del diseño 3D impulsamos la creatividad emergente,
+        fusionando tecnología y arte para convertir tus ideas en piezas auténticas y personalizadas.
+      </p>
+      <p
+        style={{
+          fontSize: '1rem',
+          lineHeight: 1.55,
+          color: waxBrand.color.graphite,
+          margin: 0,
+        }}
+      >
+        Nuestro objetivo es visibilizar el talento de la región y posicionar el diseño 3D
+        como una herramienta de expresión e innovación, hecha desde Latinoamérica para el mundo.
       </p>
     </header>
 
@@ -182,6 +193,68 @@ export const MaisonPage = () => (
             </strong>
             <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: waxBrand.color.graphite, margin: 0 }}>
               {value.body}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="envios" style={{ display: 'grid', gap: '1.5rem', scrollMarginTop: '5rem' }}>
+      <span
+        style={{
+          fontSize: '0.7rem',
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: waxBrand.color.smoke,
+        }}
+      >
+        Envíos y entregas
+      </span>
+      <h2 style={{ fontFamily: 'var(--wax-font-display)', fontSize: '1.8rem', margin: 0, color: waxBrand.color.ink }}>
+        Llegamos a donde estés.
+      </h2>
+      <div
+        style={{
+          display: 'grid',
+          gap: '1rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(16rem, 1fr))',
+        }}
+      >
+        {[
+          {
+            title: 'Cobertura',
+            body: 'Enviamos a todo el mundo desde Quito, Ecuador. Confirmamos la disponibilidad y la tarifa exacta al revisar tu pedido.',
+          },
+          {
+            title: 'Tiempos',
+            body: 'Las piezas en catálogo salen del taller en 3 a 7 días hábiles. Los encargos del Atelier dependen de la complejidad — te confirmamos un estimado al aceptar la cotización.',
+          },
+          {
+            title: 'Pago y soporte',
+            body: 'Aceptamos tarjeta y PayPal. Si necesitas detalles particulares de tu envío, escríbenos a hello@waxatelier.com o abre un ticket en Soporte.',
+          },
+        ].map((entry) => (
+          <article
+            key={entry.title}
+            style={{
+              padding: '1.5rem',
+              border: `1px solid rgba(15, 15, 16, 0.08)`,
+              borderRadius: waxBrand.radius.strong,
+              display: 'grid',
+              gap: '0.6rem',
+            }}
+          >
+            <strong
+              style={{
+                fontFamily: 'var(--wax-font-display)',
+                fontSize: '1.1rem',
+                color: waxBrand.color.ink,
+              }}
+            >
+              {entry.title}
+            </strong>
+            <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: waxBrand.color.graphite, margin: 0 }}>
+              {entry.body}
             </p>
           </article>
         ))}
