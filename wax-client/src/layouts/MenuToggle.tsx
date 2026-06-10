@@ -4,7 +4,7 @@ import type { CSSProperties } from 'react';
 type MenuToggleProps = {
   isOpen: boolean;
   onToggle: () => void;
-  color: string;
+  color?: string;
   size?: number;
   gap?: CSSProperties['gap'];
   containerStyle?: CSSProperties;
@@ -16,7 +16,7 @@ const textTransition = 'opacity 0.24s ease, transform 0.32s cubic-bezier(0.22, 1
 export const MenuToggle = ({
   isOpen,
   onToggle,
-  color,
+  color = 'currentColor',
   size = 18,
   gap = '0.7rem',
   containerStyle,

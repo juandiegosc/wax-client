@@ -111,6 +111,7 @@ type SideMenuProps = {
 const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogout, isLoggingOut }: SideMenuProps) => (
   <aside
     aria-hidden={!isMenuOpen}
+    className="wax-side-menu"
     style={{
       position: 'fixed',
       top: 0,
@@ -118,9 +119,6 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
       zIndex: 19,
       width: 'min(27rem, 100vw)',
       height: '100vh',
-      background: waxBrand.color.porcelain,
-      borderRight: `1px solid rgba(15, 15, 16, 0.08)`,
-      boxShadow: waxBrand.shadow.elevated,
       transform: isMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
       transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
       display: 'grid',
@@ -129,78 +127,39 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
     }}
   >
     {/* Cabecera: wordmark + cerrar */}
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '1.4rem 1.75rem',
-      borderBottom: `1px solid rgba(15, 15, 16, 0.07)`,
-    }}>
+    <div className="wax-side-menu-header">
       <Link
         to={routePaths.home}
         onClick={closeMenu}
-        style={{
-          fontFamily: 'var(--wax-font-display)',
-          fontSize: '1.55rem',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: waxBrand.color.ink,
-          fontWeight: 400,
-          lineHeight: 1,
-        }}
+        className="wax-side-menu-wordmark"
       >
         WAX
       </Link>
       <MenuToggle
         isOpen={isMenuOpen}
         onToggle={toggleMenu}
-        color={waxBrand.color.ink}
         size={18}
       />
     </div>
 
     {/* Navegación */}
-    <nav style={{ overflowY: 'auto', padding: '2.25rem 1.75rem 2rem' }}>
+    <nav className="wax-side-menu-nav">
       <div style={{ display: 'grid', gap: '2.75rem' }}>
         {waxMenuSections.map((section) => renderMenuSection(section, closeMenu))}
       </div>
     </nav>
 
     {/* Pie: sesión + links */}
-    <div style={{
-      padding: '1.25rem 1.75rem 1.75rem',
-      borderTop: `1px solid rgba(15, 15, 16, 0.07)`,
-      display: 'grid',
-      gap: '1.1rem',
-    }}>
+    <div className="wax-side-menu-footer">
       {currentUserEmail ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-          <span style={{
-            fontSize: '0.82rem',
-            color: waxBrand.color.graphite,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}>
-            {currentUserEmail}
-          </span>
+          <span className="wax-side-menu-email">{currentUserEmail}</span>
           <button
             type="button"
             onClick={onLogout}
             disabled={isLoggingOut}
-            style={{
-              flexShrink: 0,
-              padding: 0,
-              border: 0,
-              background: 'transparent',
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: waxBrand.color.smoke,
-              cursor: isLoggingOut ? 'wait' : 'pointer',
-              whiteSpace: 'nowrap',
-            }}
+            className="wax-side-menu-logout"
+            style={{ cursor: isLoggingOut ? 'wait' : 'pointer' }}
           >
             {isLoggingOut ? 'Saliendo...' : 'Salir'}
           </button>
@@ -209,13 +168,7 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
         <Link
           to={routePaths.login}
           onClick={closeMenu}
-          style={{
-            fontSize: '0.72rem',
-            fontWeight: 700,
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            color: waxBrand.color.ink,
-          }}
+          className="wax-side-menu-login"
         >
           Iniciar sesión
         </Link>
