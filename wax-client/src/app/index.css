@@ -38,7 +38,7 @@
   font-weight: 400;
   color: var(--wax-color-ink);
   background:
-    radial-gradient(circle at top, rgba(39, 39, 42, 0.08), transparent 26%),
+    radial-gradient(circle at top, rgba(143, 115, 82, 0.07), transparent 30%),
     linear-gradient(180deg, var(--wax-color-porcelain) 0%, var(--wax-color-bone) 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -6346,4 +6346,68 @@ select {
   margin-top: 0.22rem;
   line-height: 1.5;
   letter-spacing: 0.01em;
+}
+
+/* ═══════════ DESKTOP — acentos calidos de marca ═══════════ */
+::selection {
+  background: rgba(143, 115, 82, 0.28);
+}
+
+@media (min-width: 769px) {
+  .catalog-kicker,
+  .product-details-kicker,
+  .basket-kicker,
+  .support-kicker,
+  .checkout-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--wax-color-amber);
+  }
+
+  .catalog-kicker::before,
+  .product-details-kicker::before,
+  .basket-kicker::before,
+  .support-kicker::before,
+  .checkout-kicker::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    flex-shrink: 0;
+    background: linear-gradient(90deg, var(--wax-color-amber), var(--wax-color-bronze));
+  }
+
+  .product-card-image {
+    filter: saturate(0.92);
+    transition: transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 600ms ease;
+  }
+
+  .product-card:hover .product-card-image {
+    filter: saturate(1.04);
+  }
+
+  .product-card-type {
+    transition: color 200ms ease;
+  }
+
+  .product-card:hover .product-card-type {
+    color: var(--wax-color-amber);
+  }
+
+  .catalog-filter-input:focus {
+    border-color: rgba(143, 115, 82, 0.55);
+    box-shadow: 0 0 0 3px rgba(143, 115, 82, 0.1);
+  }
+
+  .catalog-filter-select:focus {
+    border-color: rgba(143, 115, 82, 0.55);
+  }
+
+  .home-footer-link {
+    transition: color 160ms ease;
+  }
+
+  .home-footer-link:hover {
+    color: var(--wax-color-amber);
+  }
 }

@@ -109,7 +109,7 @@ export const HomePage = () => {
         <section className="home-editorial-section">
           <div className="home-editorial-header">
             <span className="home-editorial-kicker">New Studio Collection</span>
-            <h2 className="home-editorial-title">COLECCIÓN UMBRAL</h2>
+            <h2 className="home-editorial-title">ÚLTIMOS MODELOS</h2>
           </div>
 
           <div className="home-editorial-grid">
