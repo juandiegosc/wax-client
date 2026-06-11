@@ -10,7 +10,7 @@ import { useUsdzFromGlb } from '@/features/atelier/hooks/useUsdzFromGlb';
 import type { ArtStyle, TaskStatus } from '@/features/atelier/types/atelier.types';
 import { CotizarFormModal, type CotizarFormValues } from '@/features/atelier/components/CotizarFormModal';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// Types
 type ChatMsg = {
   id: string;
   kind: 'chat';
@@ -49,7 +49,7 @@ type AnyMsg = ChatMsg | GenMsg | SketchMsg;
 
 type ActiveGen = { msgId: string; taskId: string; taskType: 'text' | 'refine' | 'image' };
 
-// ── Persistencia de la conversación (localStorage) ──────────────────────────────
+// Persistencia de la conversación (localStorage)
 // Conserva el chat y la generación en curso al navegar, dar atrás o recargar.
 // Se limpia solo cuando el usuario hace "Empezar de nuevo".
 const ATELIER_STORAGE_KEY = 'wax-atelier-session';
@@ -78,7 +78,7 @@ const loadPersistedAtelier = (): Partial<PersistedAtelier> => {
   }
 };
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+// Constants
 const SUGGESTIONS = [
   'Diseña una bolsa minimalista en cuero blanco',
   '¿Qué materiales usas en las colecciones WAX?',
@@ -87,7 +87,7 @@ const SUGGESTIONS = [
 
 const PROGRESS_STEPS = ['Geometría', 'Detalles', 'Texturas', 'Final'];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// Helpers
 const fileToDataUrl = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -101,7 +101,7 @@ const renderContent = (text: string) =>
     /^\*\*[^*\n]+\*\*$/.test(seg) ? <strong key={i}>{seg.slice(2, -2)}</strong> : seg
   );
 
-// ── Model Viewer Popup ────────────────────────────────────────────────────────
+// Model Viewer Popup
 const ModelViewerPopup = ({
   glbUrl,
   thumbnailUrl,
@@ -161,7 +161,7 @@ const ModelViewerPopup = ({
   );
 };
 
-// ── Gen Card ──────────────────────────────────────────────────────────────────
+// Gen Card
 const GenCard = ({
   msg,
   liveStatus,
@@ -253,7 +253,7 @@ const GenCard = ({
     );
   }
 
-  // ── In progress ──
+  // In progress
   const phaseLabel = isRefining
     ? (progress < 40 ? 'Aplicando texturas…' : progress < 75 ? 'Calculando materiales PBR…' : 'Añadiendo color…')
     : getProgressMessage(progress);
@@ -282,7 +282,7 @@ const GenCard = ({
   );
 };
 
-// ── Main component ────────────────────────────────────────────────────────────
+// Main component
 export const AtelierChat = () => {
   const persisted = useRef(loadPersistedAtelier()).current;
 
@@ -414,7 +414,7 @@ export const AtelierChat = () => {
 
   const addMsg = (msg: AnyMsg) => setMessages(prev => [...prev, msg]);
 
-  // ── Reset conversation ────────────────────────────────────────────────────
+  // Reset conversation
   const handleReset = () => {
     setSessionId(crypto.randomUUID());
     setMessages([]);
@@ -502,7 +502,7 @@ export const AtelierChat = () => {
     setPopupThumbUrl(thumbUrl);
   }, []);
 
-  // ── Sketch (boceto 2D) ────────────────────────────────────────────────────
+  // Sketch (boceto 2D)
   // No limpia lastSketchUrl: lo conserva como respaldo si el cliente confirma
   // el 3D mientras un refinamiento esta en vuelo.
   const launchSketch = (prompt: string) => {
@@ -569,7 +569,7 @@ export const AtelierChat = () => {
     triggerGeneration();
   };
 
-  // ── Send chat message ─────────────────────────────────────────────────────
+  // Send chat message
   const handleSend = () => {
     const text = input.trim();
     if (!text || isChatPending || isGenerating) return;
@@ -618,7 +618,7 @@ export const AtelierChat = () => {
     );
   };
 
-  // ── Generate from image (only allowed on empty conversation) ─────────────
+  // Generate from image (only allowed on empty conversation)
   const handleGenerateFromImg = async () => {
     if (!inputImg || hasGeneratedModel) return;
     const dataUrl = await fileToDataUrl(inputImg);
@@ -667,7 +667,7 @@ export const AtelierChat = () => {
 
   const isConversationEmpty = messages.length === 0;
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // Render
   return (
     <>
       {showResumePrompt && (
@@ -708,7 +708,7 @@ export const AtelierChat = () => {
           ⓘ Los bocetos y modelos 3D son generados por IA — pueden no ser idénticos al resultado final. Úsalos como referencia visual del concepto.
         </div>
 
-        {/* ── Messages area ── */}
+        {/* Messages area */}
         <div className="atelier-chat-messages">
           {isConversationEmpty && (
             <div className="atelier-chat-empty">
@@ -837,7 +837,7 @@ export const AtelierChat = () => {
           <div ref={bottomRef} />
         </div>
 
-        {/* ── Image preview — only when conversation is empty ── */}
+        {/* Image preview — only when conversation is empty */}
         {inputImgPreview && isConversationEmpty && (
           <div className="atelier-img-preview-area">
             <img src={inputImgPreview} alt="Imagen seleccionada" className="atelier-img-preview-thumb" />
@@ -863,7 +863,7 @@ export const AtelierChat = () => {
           </div>
         )}
 
-        {/* ── Bottom input area ── */}
+        {/* Bottom input area */}
         {!inputImgPreview && (
           <div className="atelier-chat-bottom">
 
@@ -1007,7 +1007,7 @@ export const AtelierChat = () => {
         />
       </div>
 
-      {/* ── 3D popup modal ── */}
+      {/* 3D popup modal */}
       {popupGlbUrl && (
         <ModelViewerPopup
           glbUrl={popupGlbUrl}
@@ -1016,7 +1016,7 @@ export const AtelierChat = () => {
         />
       )}
 
-      {/* ── Cotizar form modal (image flow) ── */}
+      {/* Cotizar form modal (image flow) */}
       {cotizarModal && (
         <CotizarFormModal
           initialValues={cotizarSuggestions}

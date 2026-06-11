@@ -6,10 +6,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { LoginPage } from '@/pages/LoginPage';
 
-// ── Static asset mock ────────────────────────────────────────────────────────
+// Static asset mock
 vi.mock('@/assets/images/editorial/HOME_PAGE_MAIN.png', () => ({ default: '' }));
 
-// ── Hook mocks ───────────────────────────────────────────────────────────────
+// Hook mocks
 const mockNavigate = vi.fn();
 const mockMutateAsync = vi.fn();
 
@@ -34,7 +34,7 @@ const mockUseCurrentUser = vi.mocked(useCurrentUser);
 const mockUseLogin = vi.mocked(useLogin);
 const mockUseUserAddress = vi.mocked(useUserAddress);
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 const renderLogin = () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
@@ -66,7 +66,7 @@ const fillForm = async (email: string, password: string) => {
   await userEvent.type(screen.getByPlaceholderText('Ingresa tu contraseña'), password);
 };
 
-// ── Tests ────────────────────────────────────────────────────────────────────
+// Tests
 describe('LoginPage', () => {
   beforeEach(() => vi.clearAllMocks());
 

@@ -6,7 +6,7 @@ import {
   getProgressMessage,
 } from '@/features/atelier/utils/atelierHelpers';
 
-// ── isAffirmative ─────────────────────────────────────────────────────────────
+// isAffirmative
 describe('isAffirmative', () => {
   it('reconoce afirmativos comunes en español', () => {
     expect(isAffirmative('sí')).toBe(true);
@@ -42,7 +42,7 @@ describe('isAffirmative', () => {
   });
 });
 
-// ── extractAtelierMarker ──────────────────────────────────────────────────────
+// extractAtelierMarker
 describe('extractAtelierMarker', () => {
   it('extrae marcador SKETCH con prompt y descripción', () => {
     const result = extractAtelierMarker(
@@ -88,7 +88,7 @@ describe('extractAtelierMarker', () => {
   });
 });
 
-// ── stripHiddenMarkers ────────────────────────────────────────────────────────
+// stripHiddenMarkers
 describe('stripHiddenMarkers', () => {
   it('elimina marcador SKETCH del texto', () => {
     const input = '¡Perfecto! <!--SKETCH:a bag|Bolso--> Voy a generarlo.';
@@ -116,7 +116,7 @@ describe('stripHiddenMarkers', () => {
   });
 });
 
-// ── getProgressMessage ────────────────────────────────────────────────────────
+// getProgressMessage
 describe('getProgressMessage', () => {
   it('devuelve el mensaje inicial en 0%', () => {
     expect(getProgressMessage(0)).toBe('Analizando el concepto…');

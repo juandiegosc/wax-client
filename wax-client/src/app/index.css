@@ -49,13 +49,7 @@
 /* (Animaciones aurora removidas — el dark mode mobile ahora es plano y
    funcional, sin efectos visuales complicados.) */
 
-/* ═══════════════════════════════════════════════════════════════════
-   MOBILE DARK MODE — base cálida ("cuero, no acero")
-   En mobile invertimos los tokens semanticos a paleta dark con acento
-   plata cromada — alineada con la identidad real de @wax.ec (luxury
-   industrial latinoamericano, joyas cromadas). El amarillo neon se
-   rechazo explicitamente por riesgo de leerse streetwear vs lux.
-═══════════════════════════════════════════════════════════════════ */
+/* Dark mode mobile: paleta dark calida con acento plata cromada */
 @media (max-width: 768px) {
   :root {
     --wax-bg: #0c0b0a;
@@ -103,8 +97,7 @@
     mix-blend-mode: screen;
   }
 
-  /* ════════ TEXTO MERCURIO ════════
-     El guard evita texto invisible en navegadores sin clip de texto. */
+  /* Texto mercurio: el guard evita texto invisible sin soporte de clip */
   @supports ((-webkit-background-clip: text) or (background-clip: text)) {
     .site-header-center strong,
     .wax-side-menu-wordmark,
@@ -145,9 +138,7 @@
     50% { background-position: 88% 50%; }
   }
 
-  /* ═══════════ HEADER MOBILE ═══════════
-     Plano: fondo casi opaco negro, borde sutil plata, textos blancos.
-     !important porque MainLayout pasa colores inline calculados en JS. */
+  /* Header mobile: !important porque MainLayout pasa colores inline */
   .site-header {
     background: rgba(12, 11, 10, 0.96) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -167,7 +158,7 @@
     color: var(--wax-fg-soft) !important;
   }
 
-  /* ═══════════ SIDE MENU MOBILE ═══════════ */
+  /* SIDE MENU MOBILE */
   .wax-side-menu {
     background: #0c0b0a !important;
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -422,9 +413,7 @@
     color: var(--wax-color-chrome);
   }
 
-  /* ═══════════ CARDS Y SUPERFICIES ═══════════
-     Dark mode plano: fondo gris muy sutil (no transparente), bordes
-     plateados, sin blur ni efectos. Solo limpio y legible. */
+  /* Cards y superficies */
   .login-card,
   .profile-form-container,
   .profile-data-card,
@@ -470,7 +459,7 @@
     color: rgba(255, 255, 255, 0.4) !important;
   }
 
-  /* ═══════════ ATELIER MOBILE ═══════════ */
+  /* ATELIER MOBILE */
   .atelier-page {
     grid-template-columns: 1fr;
   }
@@ -512,7 +501,7 @@
     color: var(--wax-fg) !important;
   }
 
-  /* ═══════════ CATALOG MOBILE ═══════════ */
+  /* CATALOG MOBILE */
   .catalog-page-title,
   .product-card-name {
     color: var(--wax-fg) !important;
@@ -540,9 +529,7 @@
     background-size: 200% 100% !important;
   }
 
-  /* ═══════════ BOTONES PRIMARIOS ═══════════
-     Dark mode: invertimos los buttons primary (eran ink sobre porcelain;
-     ahora porcelain sobre ink). */
+  /* Botones primarios invertidos (porcelain sobre ink) */
   .login-button-primary,
   .profile-submit-btn,
   .profile-btn-primary,
@@ -566,8 +553,7 @@
     background: transparent !important;
   }
 
-  /* ═══════════ TICKET STATUS PILLS ═══════════
-     Mantener el color del status pero con fondo dark. */
+  /* Status pills: mismo color de status sobre fondo dark */
   .ticket-status--open {
     background: rgba(143, 115, 82, 0.18) !important;
   }
@@ -581,7 +567,7 @@
     background: rgba(76, 79, 69, 0.22) !important;
   }
 
-  /* ═══════════ ORDERS / QUOTES MOBILE ═══════════ */
+  /* ORDERS / QUOTES MOBILE */
   .quote-title,
   .basket-title,
   .basket-empty-title,
@@ -630,7 +616,7 @@
     border-color: rgba(143, 115, 82, 0.32) !important;
   }
 
-  /* ═══════════ FOOTER MOBILE ═══════════ */
+  /* FOOTER MOBILE */
   .home-footer-region,
   .home-footer-legal {
     color: var(--wax-fg-muted) !important;
@@ -642,13 +628,13 @@
     -webkit-text-fill-color: var(--wax-fg) !important;
   }
 
-  /* ═══════════ CHECKOUT STEPPER ═══════════ */
+  /* CHECKOUT STEPPER */
   .checkout-loading,
   .checkout-loading-label {
     color: var(--wax-fg-muted) !important;
   }
 
-  /* ═══════════ BASKET ITEM (card individual) ═══════════ */
+  /* BASKET ITEM (card individual) */
   .basket-item {
     background: #1d1a18 !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
@@ -680,7 +666,7 @@
     color: var(--wax-fg-muted) !important;
   }
 
-  /* ═══════════ BASKET SUMMARY rows ═══════════ */
+  /* BASKET SUMMARY rows */
   .basket-summary-row {
     color: var(--wax-fg) !important;
   }
@@ -702,7 +688,7 @@
     color: var(--wax-fg) !important;
   }
 
-  /* ═══════════ PRODUCT DETAIL extras ═══════════ */
+  /* PRODUCT DETAIL extras */
   .product-details-availability {
     color: var(--wax-fg-soft) !important;
   }
@@ -744,7 +730,7 @@
     color: var(--wax-fg) !important;
   }
 
-  /* ═══════════ CHECKOUT SUMMARY items ═══════════ */
+  /* CHECKOUT SUMMARY items */
   .checkout-summary-item-name,
   .checkout-summary-item-price {
     color: var(--wax-fg) !important;
@@ -759,7 +745,7 @@
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
-  /* ═══════════ CHECKOUT STEPPER pasos ═══════════ */
+  /* CHECKOUT STEPPER pasos */
   .checkout-step,
   .checkout-step-number,
   .checkout-step-label,
@@ -773,7 +759,7 @@
     color: var(--wax-fg-soft) !important;
   }
 
-  /* ═══════════ HOMEPAGE editorial mobile ═══════════ */
+  /* HOMEPAGE editorial mobile */
   .home-editorial-kicker {
     color: var(--wax-color-chrome) !important;
   }
@@ -782,7 +768,7 @@
     color: var(--wax-fg) !important;
   }
 
-  /* ═══════════ SUPPORT empty state ═══════════ */
+  /* SUPPORT empty state */
   .support-empty-state {
     color: var(--wax-fg) !important;
   }
@@ -799,7 +785,7 @@
     color: var(--wax-color-chrome) !important;
   }
 
-  /* ═══════════ FOOTER REGION mobile ═══════════ */
+  /* FOOTER REGION mobile */
   .home-footer-heading {
     color: var(--wax-color-chrome) !important;
   }
@@ -915,7 +901,7 @@ select {
   transition: background 220ms ease, border-color 220ms ease;
 }
 
-/* ═══════════ SIDE MENU (desktop base) ═══════════ */
+/* SIDE MENU (desktop base) */
 .wax-side-menu {
   background: var(--wax-color-porcelain);
   border-right: 1px solid rgba(15, 15, 16, 0.08);
@@ -984,7 +970,7 @@ select {
   text-decoration: none;
 }
 
-/* ═══════════ PROFILE DROPDOWN (header right) ═══════════ */
+/* PROFILE DROPDOWN (header right) */
 .wax-profile-dropdown-wrapper {
   position: absolute;
   top: 100%;
@@ -2413,7 +2399,7 @@ select {
   box-shadow: 0 2px 12px rgba(15, 15, 16, 0.06);
 }
 
-/* ── Ticket Detail Page ─────────────────────────── */
+/* Ticket Detail Page */
 
 .ticket-detail-page {
   display: grid;
@@ -2476,7 +2462,7 @@ select {
   color: var(--wax-color-smoke);
 }
 
-/* ── Support Chat ───────────────────────────────── */
+/* Support Chat */
 
 .support-chat {
   display: grid;
@@ -2646,11 +2632,9 @@ select {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   ATELIER
-═══════════════════════════════════════════════════════════════════ */
+/* Atelier */
 
-/* ─── Split layout ──────────────────────────────────────────────── */
+/* Split layout */
 
 .atelier-page {
   display: grid;
@@ -2660,7 +2644,7 @@ select {
   width: calc(100% + 3rem);
 }
 
-/* ─── Brand panel (left) ────────────────────────────────────────── */
+/* Brand panel (left) */
 
 .atelier-brand-panel {
   background: var(--wax-color-ink);
@@ -2708,7 +2692,7 @@ select {
   pointer-events: none;
 }
 
-/* ─── Chat shell (right) ────────────────────────────────────────── */
+/* Chat shell (right) */
 
 .atelier-chat-shell {
   position: sticky;
@@ -2720,7 +2704,7 @@ select {
   padding: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 3vw, 3rem) 2rem;
 }
 
-/* ─── Chat container ─────────────────────────────────────────────── */
+/* Chat container */
 
 .atelier-resume-banner {
   display: flex;
@@ -2783,7 +2767,7 @@ select {
   box-shadow: 0 4px 24px rgba(15, 15, 16, 0.07), 0 1px 4px rgba(15, 15, 16, 0.04);
 }
 
-/* ─── Messages area ──────────────────────────────────────────────── */
+/* Messages area */
 
 .atelier-chat-messages {
   flex: 1;
@@ -2808,7 +2792,7 @@ select {
   border-radius: 999px;
 }
 
-/* ─── Empty state ────────────────────────────────────────────────── */
+/* Empty state */
 
 .atelier-chat-empty {
   flex: 1;
@@ -2912,7 +2896,7 @@ select {
   transform: translateY(-1px);
 }
 
-/* ─── Messages ───────────────────────────────────────────────────── */
+/* Messages */
 
 .atelier-msg {
   max-width: 72%;
@@ -2947,7 +2931,7 @@ select {
   white-space: pre-wrap;
 }
 
-/* ─── Typing indicator ───────────────────────────────────────────── */
+/* Typing indicator */
 
 .atelier-typing {
   display: flex;
@@ -2973,7 +2957,7 @@ select {
   30%            { transform: scale(1);    opacity: 1;   }
 }
 
-/* ─── Sketch loading spinner ───────────────────────────────────── */
+/* Sketch loading spinner */
 
 .atelier-sketch-loading {
   display: flex;
@@ -2997,7 +2981,7 @@ select {
   to { transform: rotate(360deg); }
 }
 
-/* ─── Gen card in chat ───────────────────────────────────────────── */
+/* Gen card in chat */
 
 .atelier-gen-card {
   align-self: flex-start;
@@ -3068,7 +3052,7 @@ select {
   background: var(--wax-color-porcelain);
 }
 
-/* ─── Image preview full-area ────────────────────────────────────── */
+/* Image preview full-area */
 
 .atelier-img-preview-area {
   flex-shrink: 0;
@@ -3122,7 +3106,7 @@ select {
   color: var(--wax-color-ink);
 }
 
-/* ─── Bottom input area ──────────────────────────────────────────── */
+/* Bottom input area */
 
 .atelier-chat-bottom {
   flex-shrink: 0;
@@ -3165,7 +3149,7 @@ select {
   border-color: rgba(15, 15, 16, 0.2);
 }
 
-/* ─── Inline generation form ────────────────────────────────────── */
+/* Inline generation form */
 
 .atelier-gen-inline {
   flex-shrink: 0;
@@ -3204,7 +3188,7 @@ select {
   color: var(--wax-color-ink);
 }
 
-/* ─── Input row ──────────────────────────────────────────────────── */
+/* Input row */
 
 .atelier-chat-input-row {
   display: grid;
@@ -3265,7 +3249,7 @@ select {
   cursor: not-allowed;
 }
 
-/* ─── Image upload in input bar ─────────────────────────────────── */
+/* Image upload in input bar */
 
 .atelier-img-upload-btn {
   align-self: end;
@@ -3335,7 +3319,7 @@ select {
   background: var(--wax-color-ink);
 }
 
-/* ─── Style pills & mode tabs ────────────────────────────────────── */
+/* Style pills & mode tabs */
 
 .atelier-mode-tabs {
   display: flex;
@@ -3582,13 +3566,13 @@ select {
   background: rgba(15, 15, 16, 0.05);
 }
 
-/* ─── Input row without image button ─────────────────────────────── */
+/* Input row without image button */
 
 .atelier-chat-input-row--no-img {
   grid-template-columns: 1fr auto;
 }
 
-/* ─── Message role label ─────────────────────────────────────────── */
+/* Message role label */
 
 .atelier-msg-role {
   display: block;
@@ -3601,7 +3585,7 @@ select {
   opacity: 0.65;
 }
 
-/* ─── Image upload hint in empty state ───────────────────────────── */
+/* Image upload hint in empty state */
 
 .atelier-img-hint {
   display: flex;
@@ -3613,7 +3597,7 @@ select {
   line-height: 1.5;
 }
 
-/* ─── One-model-per-session notice ──────────────────────────────── */
+/* One-model-per-session notice */
 
 /* Inline en vez de flex para que el texto "Modelo generado en esta sesión —"
    y el botón "Nueva conversación" se ajusten naturalmente en móvil sin que
@@ -3651,7 +3635,7 @@ select {
   color: var(--wax-color-bronze);
 }
 
-/* ─── Generation progress steps ─────────────────────────────────── */
+/* Generation progress steps */
 
 .atelier-gen-card--progress {
   gap: 0.7rem;
@@ -3694,7 +3678,7 @@ select {
   transform: scale(1.4);
 }
 
-/* ─── Clickable model wrapper ────────────────────────────────────── */
+/* Clickable model wrapper */
 
 .atelier-model-wrapper {
   position: relative;
@@ -3730,7 +3714,7 @@ select {
   transform: translateY(0);
 }
 
-/* ─── 3D Popup modal ─────────────────────────────────────────────── */
+/* 3D Popup modal */
 
 .atelier-popup-overlay {
   position: fixed;
@@ -3815,7 +3799,7 @@ select {
   letter-spacing: 0.03em;
 }
 
-/* ─── Cotizar form modal ─────────────────────────────────────────── */
+/* Cotizar form modal */
 
 .atelier-cotizar-modal {
   max-width: 32rem;
@@ -3944,7 +3928,7 @@ select {
   }
 }
 
-/* ─── Responsive: chat fills right column on large screens ──────── */
+/* Responsive: chat fills right column on large screens */
 
 @media (min-width: 49rem) {
   .atelier-chat {
@@ -3954,7 +3938,7 @@ select {
   }
 }
 
-/* ─── Mobile: stack layout ───────────────────────────────────────── */
+/* Mobile: stack layout */
 
 @media (max-width: 48rem) {
   .atelier-page {
@@ -4067,7 +4051,7 @@ select {
   }
 }
 
-/* ─── Shared typography ──────────────────────────────────────────── */
+/* Shared typography */
 
 .atelier-kicker {
   display: block;
@@ -4711,7 +4695,7 @@ select {
   cursor: not-allowed;
 }
 
-/* ─── Checkout ──────────────────────────────────────────── */
+/* Checkout */
 
 .checkout-page {
   display: grid;
@@ -5636,7 +5620,7 @@ select {
   }
 }
 
-/* ── Search overlay ─────────────────────────────────────── */
+/* Search overlay */
 .search-overlay {
   position: fixed;
   inset: 0;
@@ -5715,7 +5699,7 @@ select {
   display: none;
 }
 
-/* ─── Mis cotizaciones (CustomProducts) ──────────────────────────── */
+/* Mis cotizaciones (CustomProducts) */
 
 .quote-page,
 .quote-detail-page {
@@ -5856,7 +5840,7 @@ select {
   color: var(--wax-color-graphite);
 }
 
-/* ── Order card (Mis pedidos) ──────────────────────────────────────────────── */
+/* Order card (Mis pedidos) */
 .order-card {
   border: 1px solid rgba(15, 15, 16, 0.1);
   border-radius: var(--wax-radius-strong);
@@ -6284,7 +6268,7 @@ select {
   }
 }
 
-/* ── Menú lateral con acento de color por sección ──────────────────────────── */
+/* Menú lateral con acento de color por sección */
 .wax-menu-section {
   --section-accent: var(--wax-color-smoke, #71717a);
 }
@@ -6348,7 +6332,7 @@ select {
   letter-spacing: 0.01em;
 }
 
-/* ═══════════ DESKTOP — acentos calidos de marca ═══════════ */
+/* DESKTOP — acentos calidos de marca */
 ::selection {
   background: rgba(143, 115, 82, 0.28);
 }
