@@ -23,10 +23,10 @@ const appearance: Appearance = isMobileViewport
   ? {
       theme: 'night',
       variables: {
-        colorPrimary: '#faf9f6',
-        colorBackground: '#18181b',
-        colorText: '#faf9f6',
-        colorTextSecondary: 'rgba(250, 249, 246, 0.78)',
+        colorPrimary: '#f5f2ec',
+        colorBackground: '#1d1a18',
+        colorText: '#f5f2ec',
+        colorTextSecondary: 'rgba(245, 242, 236, 0.72)',
         colorDanger: '#e88a98',
         fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
         borderRadius: '0.35rem',
@@ -37,8 +37,8 @@ const appearance: Appearance = isMobileViewport
         '.Input': {
           border: '1px solid rgba(255, 255, 255, 0.12)',
           boxShadow: 'none',
-          backgroundColor: '#1c1c20',
-          color: '#faf9f6',
+          backgroundColor: '#211e1b',
+          color: '#f5f2ec',
           padding: '0.75rem',
         },
         '.Input:focus': {
@@ -55,13 +55,13 @@ const appearance: Appearance = isMobileViewport
         },
         '.Tab': {
           border: '1px solid rgba(255, 255, 255, 0.12)',
-          backgroundColor: '#18181b',
-          color: '#faf9f6',
+          backgroundColor: '#1d1a18',
+          color: '#f5f2ec',
           boxShadow: 'none',
         },
         '.Tab--selected': {
           borderColor: 'rgba(255, 255, 255, 0.6)',
-          backgroundColor: '#1c1c20',
+          backgroundColor: '#211e1b',
           boxShadow: 'none',
         },
       },

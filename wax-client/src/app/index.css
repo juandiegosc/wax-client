@@ -50,7 +50,7 @@
    funcional, sin efectos visuales complicados.) */
 
 /* ═══════════════════════════════════════════════════════════════════
-   MOBILE DARK MODE
+   MOBILE DARK MODE — base cálida ("cuero, no acero")
    En mobile invertimos los tokens semanticos a paleta dark con acento
    plata cromada — alineada con la identidad real de @wax.ec (luxury
    industrial latinoamericano, joyas cromadas). El amarillo neon se
@@ -58,29 +58,98 @@
 ═══════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   :root {
-    --wax-bg: var(--wax-color-ink);
-    --wax-bg-elevated: rgba(255, 255, 255, 0.04);
-    --wax-fg: var(--wax-color-porcelain);
-    --wax-fg-muted: rgba(250, 249, 246, 0.78);
-    --wax-fg-soft: rgba(250, 249, 246, 0.5);
-    --wax-border: rgba(192, 192, 192, 0.18);
-    --wax-border-strong: rgba(192, 192, 192, 0.42);
+    --wax-bg: #0c0b0a;
+    --wax-bg-elevated: rgba(245, 242, 236, 0.05);
+    --wax-fg: #f5f2ec;
+    --wax-fg-muted: rgba(245, 242, 236, 0.72);
+    --wax-fg-soft: rgba(245, 242, 236, 0.52);
+    --wax-border: rgba(198, 196, 200, 0.16);
+    --wax-border-strong: rgba(198, 196, 200, 0.38);
     --wax-accent: var(--wax-color-chrome);
     --wax-accent-gradient: linear-gradient(135deg, var(--wax-color-chrome-soft) 0%, var(--wax-color-chrome-bright) 50%, var(--wax-color-chrome) 100%);
+    --wax-mercury: linear-gradient(135deg, #6f7378 0%, #eceef1 24%, #a4a6aa 46%, #f7f8fa 64%, #7e8085 84%, #cdcfd2 100%);
 
     color: var(--wax-fg);
-    background: #0a0a0b;
+    background: #0c0b0a;
   }
 
   body {
-    background: #0a0a0b;
+    background: #0c0b0a;
+  }
+
+  /* luz ambiental calida fija al viewport */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(125% 62% at 50% -12%, rgba(166, 124, 82, 0.13), transparent 58%),
+      radial-gradient(100% 50% at 50% 108%, rgba(122, 58, 68, 0.05), transparent 60%),
+      #0c0b0a;
+  }
+
+  /* film grain plateado estatico */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    opacity: 0.05;
+    mix-blend-mode: screen;
+  }
+
+  /* ════════ TEXTO MERCURIO ════════
+     El guard evita texto invisible en navegadores sin clip de texto. */
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .site-header-center strong,
+    .wax-side-menu-wordmark,
+    .home-campaign-title,
+    .catalog-page-title,
+    .basket-title,
+    .basket-empty-title,
+    .support-title,
+    .profile-title,
+    .login-title,
+    .product-details-title,
+    .checkout-title,
+    .checkout-success-title,
+    .quote-title {
+      background-image: var(--wax-mercury);
+      background-size: 250% 250%;
+      background-position: 30% 50%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* shimmer solo en el wordmark: animarlo repinta en cada frame */
+    @media (prefers-reduced-motion: no-preference) {
+      .site-header-center strong,
+      .wax-side-menu-wordmark {
+        animation: wax-merc-flow 7s ease-in-out infinite;
+      }
+    }
+  }
+
+  .wax-menu-kicker::before {
+    background: var(--wax-mercury);
+  }
+
+  @keyframes wax-merc-flow {
+    0%, 100% { background-position: 18% 50%; }
+    50% { background-position: 88% 50%; }
   }
 
   /* ═══════════ HEADER MOBILE ═══════════
      Plano: fondo casi opaco negro, borde sutil plata, textos blancos.
      !important porque MainLayout pasa colores inline calculados en JS. */
   .site-header {
-    background: rgba(10, 10, 11, 0.96) !important;
+    background: rgba(12, 11, 10, 0.96) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: none !important;
   }
@@ -100,7 +169,7 @@
 
   /* ═══════════ SIDE MENU MOBILE ═══════════ */
   .wax-side-menu {
-    background: #0a0a0b !important;
+    background: #0c0b0a !important;
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
     color: var(--wax-fg);
     box-shadow: 8px 0 24px rgba(0, 0, 0, 0.5);
@@ -136,7 +205,7 @@
 
   /* Profile dropdown del header en mobile */
   .wax-profile-dropdown {
-    background: #18181b !important;
+    background: #1d1a18 !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
   }
 
@@ -199,7 +268,7 @@
 
   .login-input:focus {
     border-color: var(--wax-color-chrome);
-    box-shadow: 0 0 0 3px rgba(192, 192, 192, 0.12);
+    box-shadow: 0 0 0 3px rgba(198, 196, 200, 0.12);
   }
 
   .login-button-primary {
@@ -372,7 +441,7 @@
   .quote-banner,
   .checkout-stepper,
   .wax-card {
-    background: #18181b !important;
+    background: #1d1a18 !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     color: var(--wax-fg) !important;
     box-shadow: none !important;
@@ -387,7 +456,7 @@
   .support-chat-input,
   .catalog-filter-input,
   .catalog-filter-select {
-    background: #1c1c20 !important;
+    background: #211e1b !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     color: var(--wax-fg) !important;
   }
@@ -407,12 +476,12 @@
   }
 
   .atelier-brand-panel {
-    background: #0a0a0b !important;
+    background: #0c0b0a !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .atelier-msg--assistant {
-    background: #1c1c20 !important;
+    background: #211e1b !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
     color: var(--wax-fg) !important;
   }
@@ -428,7 +497,7 @@
   }
 
   .atelier-chat-chip {
-    background: #1c1c20 !important;
+    background: #211e1b !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     color: var(--wax-fg) !important;
   }
@@ -581,7 +650,7 @@
 
   /* ═══════════ BASKET ITEM (card individual) ═══════════ */
   .basket-item {
-    background: #18181b !important;
+    background: #1d1a18 !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
     color: var(--wax-fg) !important;
   }
@@ -598,7 +667,7 @@
   }
 
   .basket-qty-btn {
-    background: #1c1c20 !important;
+    background: #211e1b !important;
     color: var(--wax-fg) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
   }
@@ -646,12 +715,12 @@
 
   .product-details-add-btn:disabled {
     background: rgba(255, 255, 255, 0.12) !important;
-    color: rgba(250, 249, 246, 0.5) !important;
+    color: rgba(245, 242, 236, 0.5) !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
   }
 
   .product-details-fact-card {
-    background: #18181b !important;
+    background: #1d1a18 !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
@@ -666,7 +735,7 @@
   /* La parte visual del product detail tiene un fondo stone inline que
      ahora se ve raro en dark — la oscurecemos. */
   .product-details-visual {
-    background: #1c1c20 !important;
+    background: #211e1b !important;
     box-shadow: none !important;
   }
 
@@ -686,7 +755,7 @@
   }
 
   .checkout-summary-item-img {
-    background: #1c1c20 !important;
+    background: #211e1b !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
