@@ -14,6 +14,7 @@ import { useCurrentUser, useLogout, useUserAddress } from '@/features/auth/hooks
 import { useBasket } from '@/features/basket/hooks/useBasket';
 import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustomProducts';
 import { MenuToggle } from '@/layouts/MenuToggle';
+import { TabBar } from '@/layouts/TabBar';
 import { PwaInstallButton } from '@/layouts/PwaInstallButton';
 import { MiniCartDrawer } from '@/features/basket/components/MiniCartDrawer';
 import { PROFILE_COMPLETION_TOAST } from '@/lib/utils/profileToasts';
@@ -512,6 +513,12 @@ export const MainLayout = () => {
   const isHomePage = location.pathname === routePaths.home;
   const isFloatingHeader = isHomePage && !hasScrolled && !isMenuOpen;
 
+  // El tab bar estorba donde el borde inferior ya trabaja (chat del
+  // Atelier, stepper de pago)
+  const showTabBar = ![routePaths.atelier, routePaths.checkout].some((path) =>
+    location.pathname.startsWith(path),
+  );
+
   useEffect(() => {
     const promptSource = sessionStorage.getItem(PROFILE_PROMPT_PENDING_KEY);
     if (!promptSource || !currentUser) return;
@@ -656,7 +663,7 @@ export const MainLayout = () => {
       )}
 
       <main
-        className="site-main"
+        className={showTabBar ? 'site-main has-tabbar' : 'site-main'}
         style={{
           position: 'relative',
           maxWidth: isHomePage ? 'none' : '1280px',
@@ -666,6 +673,8 @@ export const MainLayout = () => {
       >
         <Outlet />
       </main>
+
+      {showTabBar && <TabBar basketCount={basketCount} />}
     </div>
   );
 };
