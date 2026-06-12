@@ -311,6 +311,19 @@ const SiteHeader = ({
         >
           Colección
         </Link>
+
+        <IconButton
+          className="site-theme-toggle"
+          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          onClick={toggleTheme}
+          sx={utilityButtonStyle}
+        >
+          {theme === 'dark' ? (
+            <LightModeOutlinedIcon fontSize="small" />
+          ) : (
+            <DarkModeOutlinedIcon fontSize="small" />
+          )}
+        </IconButton>
       </div>
 
       {/* CENTER: brand */}
@@ -451,19 +464,6 @@ const SiteHeader = ({
             <PersonOutlineOutlinedIcon fontSize="small" />
           </IconButton>
         )}
-
-        <IconButton
-          className="site-theme-toggle"
-          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-          onClick={toggleTheme}
-          sx={utilityButtonStyle}
-        >
-          {theme === 'dark' ? (
-            <LightModeOutlinedIcon fontSize="small" />
-          ) : (
-            <DarkModeOutlinedIcon fontSize="small" />
-          )}
-        </IconButton>
 
         <IconButton
           aria-label="Carrito"

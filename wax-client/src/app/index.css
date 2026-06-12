@@ -117,6 +117,10 @@ html[data-theme='dark']{
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    /* el fondo solo pinta la caja del elemento: sin este respiro los
+       descendentes (g, j) quedan transparentes con line-height < 1 */
+    padding-block: 0.15em;
+    margin-block: -0.15em;
   }
 
   /* shimmer solo en el wordmark: animarlo repinta en cada frame */
@@ -458,11 +462,6 @@ html[data-theme='dark']{
   color: rgba(255, 255, 255, 0.4) !important;
 }
 
-/* ATELIER MOBILE */
-[data-theme='dark'] .atelier-page{
-  grid-template-columns: 1fr;
-}
-
 [data-theme='dark'] .atelier-brand-panel{
   background: #0c0b0a !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -795,6 +794,29 @@ html[data-theme='dark']{
 
 [data-theme='dark'] .home-footer-link{
   color: var(--wax-fg) !important;
+}
+
+[data-theme='dark'] .profile-edit-btn{
+  color: var(--wax-fg);
+}
+
+[data-theme='dark'] .profile-edit-btn:hover{
+  border-color: var(--wax-fg);
+}
+
+[data-theme='dark'] .quote-detail-title{
+  color: var(--wax-fg);
+}
+
+[data-theme='dark'] .support-chat-msg--other .support-chat-msg-body{
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--wax-fg);
+}
+
+[data-theme='dark'] .support-chat-msg--own .support-chat-msg-body{
+  background: var(--wax-color-porcelain);
+  color: var(--wax-color-ink);
 }
 
 * {
