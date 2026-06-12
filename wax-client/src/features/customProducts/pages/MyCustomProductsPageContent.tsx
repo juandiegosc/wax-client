@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustomProducts';
 import { CustomProductCard } from '@/features/customProducts/components/CustomProductCard';
+import { PageLoadingSkeleton } from '@/components/PageLoadingSkeleton';
 import { routePaths } from '@/routes/routePaths';
 
 export const MyCustomProductsPageContent = () => {
@@ -20,7 +21,7 @@ export const MyCustomProductsPageContent = () => {
       </header>
 
       {isLoading ? (
-        <p className="quote-empty">Cargando tus cotizaciones…</p>
+        <PageLoadingSkeleton label="Cargando tus cotizaciones" />
       ) : !items.length ? (
         <div className="quote-empty-state">
           <p className="quote-empty">Todavía no enviaste ninguna pieza a cotizar.</p>

@@ -9,6 +9,7 @@ import { CheckoutPage } from '@/pages/CheckoutPage';
 import { CheckoutSuccessPage } from '@/pages/CheckoutSuccessPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { HomePage } from '@/pages/HomePage';
+import { MaisonPage } from '@/pages/MaisonPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProductDetailsPage } from '@/pages/ProductDetailsPage';
 import { ProfilePage } from '@/pages/ProfilePage';
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
       {
         path: routePaths.catalog,
         Component: CatalogPage,
+      },
+      {
+        path: routePaths.maison,
+        Component: MaisonPage,
       },
       {
         path: routePaths.login,

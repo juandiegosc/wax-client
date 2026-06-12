@@ -34,7 +34,7 @@ const handleBadRequest = (data: unknown): void => {
     }
     throw modelStateErrors;
   }
-  toast.error(typeof data === 'string' ? data : 'Solicitud invalida');
+  toast.error(typeof data === 'string' ? data : 'Solicitud inválida.');
 };
 
 // Evita disparar el flujo de logout multiples veces si llegan varios 401
@@ -44,13 +44,13 @@ let sessionExpiredHandled = false;
 const handleSessionExpired = (requestUrl: string | undefined): void => {
   // El endpoint /login tambien retorna 401 al fallar credenciales; ignoramos.
   if (requestUrl?.includes('/login')) {
-    toast.error('Credenciales invalidas');
+    toast.error('Credenciales inválidas.');
     return;
   }
   if (sessionExpiredHandled) return;
   sessionExpiredHandled = true;
   queryClient.clear();
-  toast.info('Tu sesion expiro. Inicia sesion otra vez.');
+  toast.info('Tu sesión expiró. Inicia sesión otra vez.');
   router.navigate(routePaths.login, { replace: true });
   setTimeout(() => { sessionExpiredHandled = false; }, 2000);
 };

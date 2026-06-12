@@ -14,6 +14,7 @@ import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustom
 import { MenuToggle } from '@/layouts/MenuToggle';
 import { PwaInstallButton } from '@/layouts/PwaInstallButton';
 import { MiniCartDrawer } from '@/features/basket/components/MiniCartDrawer';
+import { PROFILE_COMPLETION_TOAST } from '@/lib/utils/profileToasts';
 import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
 
@@ -53,24 +54,20 @@ const renderMenuSection = (section: MenuSection, closeMenu: () => void) => {
   );
 };
 
-const renderFooterLink = (item: FooterLink) => {
-  const style = {
-    fontSize: '0.75rem',
-    letterSpacing: '0.06em',
-    color: waxBrand.color.smoke,
-    textDecoration: 'none' as const,
-  };
-
-  if ('href' in item) {
-    return (
-      <a key={item.label} href={item.href} style={style}>
-        {item.label}
-      </a>
-    );
-  }
-
-  return <span key={item.label} style={style}>{item.label}</span>;
-};
+const renderFooterLink = (item: FooterLink) => (
+  <a
+    key={item.label}
+    href={item.href}
+    style={{
+      fontSize: '0.75rem',
+      letterSpacing: '0.06em',
+      color: waxBrand.color.smoke,
+      textDecoration: 'none',
+    }}
+  >
+    {item.label}
+  </a>
+);
 
 type MenuOverlayProps = {
   isMenuOpen: boolean;
@@ -114,6 +111,7 @@ type SideMenuProps = {
 const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogout, isLoggingOut }: SideMenuProps) => (
   <aside
     aria-hidden={!isMenuOpen}
+    className="wax-side-menu"
     style={{
       position: 'fixed',
       top: 0,
@@ -121,9 +119,6 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
       zIndex: 19,
       width: 'min(27rem, 100vw)',
       height: '100vh',
-      background: waxBrand.color.porcelain,
-      borderRight: `1px solid rgba(15, 15, 16, 0.08)`,
-      boxShadow: waxBrand.shadow.elevated,
       transform: isMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
       transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
       display: 'grid',
@@ -132,78 +127,39 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
     }}
   >
     {/* Cabecera: wordmark + cerrar */}
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '1.4rem 1.75rem',
-      borderBottom: `1px solid rgba(15, 15, 16, 0.07)`,
-    }}>
+    <div className="wax-side-menu-header">
       <Link
         to={routePaths.home}
         onClick={closeMenu}
-        style={{
-          fontFamily: 'var(--wax-font-display)',
-          fontSize: '1.55rem',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: waxBrand.color.ink,
-          fontWeight: 400,
-          lineHeight: 1,
-        }}
+        className="wax-side-menu-wordmark"
       >
         WAX
       </Link>
       <MenuToggle
         isOpen={isMenuOpen}
         onToggle={toggleMenu}
-        color={waxBrand.color.ink}
         size={18}
       />
     </div>
 
     {/* Navegación */}
-    <nav style={{ overflowY: 'auto', padding: '2.25rem 1.75rem 2rem' }}>
+    <nav className="wax-side-menu-nav">
       <div style={{ display: 'grid', gap: '2.75rem' }}>
         {waxMenuSections.map((section) => renderMenuSection(section, closeMenu))}
       </div>
     </nav>
 
     {/* Pie: sesión + links */}
-    <div style={{
-      padding: '1.25rem 1.75rem 1.75rem',
-      borderTop: `1px solid rgba(15, 15, 16, 0.07)`,
-      display: 'grid',
-      gap: '1.1rem',
-    }}>
+    <div className="wax-side-menu-footer">
       {currentUserEmail ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-          <span style={{
-            fontSize: '0.82rem',
-            color: waxBrand.color.graphite,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}>
-            {currentUserEmail}
-          </span>
+          <span className="wax-side-menu-email">{currentUserEmail}</span>
           <button
             type="button"
             onClick={onLogout}
             disabled={isLoggingOut}
-            style={{
-              flexShrink: 0,
-              padding: 0,
-              border: 0,
-              background: 'transparent',
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: waxBrand.color.smoke,
-              cursor: isLoggingOut ? 'wait' : 'pointer',
-              whiteSpace: 'nowrap',
-            }}
+            className="wax-side-menu-logout"
+            style={{ cursor: isLoggingOut ? 'wait' : 'pointer' }}
           >
             {isLoggingOut ? 'Saliendo...' : 'Salir'}
           </button>
@@ -212,13 +168,7 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
         <Link
           to={routePaths.login}
           onClick={closeMenu}
-          style={{
-            fontSize: '0.72rem',
-            fontWeight: 700,
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            color: waxBrand.color.ink,
-          }}
+          className="wax-side-menu-login"
         >
           Iniciar sesión
         </Link>
@@ -437,8 +387,8 @@ const SiteHeader = ({
                 badgeContent={pendingQuotationsCount || null}
                 sx={{
                   '& .MuiBadge-badge': {
-                    backgroundColor: waxBrand.color.ink,
-                    color: waxBrand.color.porcelain,
+                    backgroundColor: 'var(--wax-fg)',
+                    color: 'var(--wax-bg)',
                     fontSize: '0.65rem',
                     minWidth: 16,
                     height: 16,
@@ -450,88 +400,46 @@ const SiteHeader = ({
             </IconButton>
 
             {profileMenuOpen && (
-              <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 20, paddingTop: '0.35rem' }}>
-              <div style={{
-                background: waxBrand.color.porcelain,
-                border: `1px solid rgba(15, 15, 16, 0.1)`,
-                borderRadius: waxBrand.radius.soft,
-                boxShadow: waxBrand.shadow.elevated,
-                overflow: 'hidden',
-                minWidth: '10rem',
-              }}>
-                <Link
-                  to={routePaths.profile}
-                  onClick={() => setProfileMenuOpen(false)}
-                  style={{
-                    display: 'block',
-                    padding: '0.72rem 1.1rem',
-                    fontSize: '0.78rem',
-                    letterSpacing: '0.06em',
-                    color: waxBrand.color.ink,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Ver perfil
-                </Link>
-                <Link
-                  to={routePaths.myOrders}
-                  onClick={() => setProfileMenuOpen(false)}
-                  style={{
-                    display: 'block',
-                    padding: '0.72rem 1.1rem',
-                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
-                    fontSize: '0.78rem',
-                    letterSpacing: '0.06em',
-                    color: waxBrand.color.ink,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Mis pedidos
-                </Link>
-                <Link
-                  to={routePaths.myCustomProducts}
-                  onClick={() => setProfileMenuOpen(false)}
-                  style={{
-                    display: 'block',
-                    padding: '0.72rem 1.1rem',
-                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
-                    fontSize: '0.78rem',
-                    letterSpacing: '0.06em',
-                    color: waxBrand.color.ink,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Mis cotizaciones
-                </Link>
-                <button
-                  type="button"
-                  onClick={onLogout}
-                  disabled={isLoggingOut}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '0.72rem 1.1rem',
-                    border: 0,
-                    borderTop: `1px solid rgba(15, 15, 16, 0.06)`,
-                    background: 'transparent',
-                    fontSize: '0.78rem',
-                    letterSpacing: '0.06em',
-                    color: waxBrand.color.smoke,
-                    cursor: isLoggingOut ? 'wait' : 'pointer',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {isLoggingOut ? 'Saliendo...' : 'Salir'}
-                </button>
-              </div>
+              <div className="wax-profile-dropdown-wrapper">
+                <div className="wax-profile-dropdown">
+                  <Link
+                    to={routePaths.profile}
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="wax-profile-dropdown-item"
+                  >
+                    Ver perfil
+                  </Link>
+                  <Link
+                    to={routePaths.myOrders}
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="wax-profile-dropdown-item"
+                  >
+                    Mis pedidos
+                  </Link>
+                  <Link
+                    to={routePaths.myCustomProducts}
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="wax-profile-dropdown-item"
+                  >
+                    Mis cotizaciones
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    disabled={isLoggingOut}
+                    className="wax-profile-dropdown-item wax-profile-dropdown-item--logout"
+                    style={{ cursor: isLoggingOut ? 'wait' : 'pointer' }}
+                  >
+                    {isLoggingOut ? 'Saliendo...' : 'Salir'}
+                  </button>
+                </div>
               </div>
             )}
           </div>
         ) : (
           <IconButton
             className="site-utility-secondary site-account-button"
-            aria-label="Iniciar sesion"
+            aria-label="Iniciar sesión"
             component={Link}
             to={routePaths.login}
             sx={utilityButtonStyle}
@@ -550,8 +458,8 @@ const SiteHeader = ({
             badgeContent={basketCount || null}
             sx={{
               '& .MuiBadge-badge': {
-                backgroundColor: waxBrand.color.ink,
-                color: waxBrand.color.porcelain,
+                backgroundColor: 'var(--wax-fg)',
+                color: 'var(--wax-bg)',
                 fontSize: '0.65rem',
                 minWidth: 16,
                 height: 16,
@@ -596,7 +504,7 @@ export const MainLayout = () => {
 
     const needsProfileCompletion = isEnrolledUser || !billingAddress;
     if (needsProfileCompletion && !sessionStorage.getItem(PROFILE_WARNING_KEY)) {
-      toast.warn('Completa tu perfil para desbloquear funciones privadas de WAX.', {
+      toast.info(PROFILE_COMPLETION_TOAST, {
         toastId: PROFILE_WARNING_KEY,
       });
       sessionStorage.setItem(PROFILE_WARNING_KEY, 'true');
@@ -605,8 +513,8 @@ export const MainLayout = () => {
     sessionStorage.removeItem(PROFILE_PROMPT_PENDING_KEY);
   }, [billingAddress, currentUser, isLoadingAddress]);
 
-  const headerTextColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.96)' : waxBrand.color.ink;
-  const headerMutedColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.76)' : waxBrand.color.graphite;
+  const headerTextColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.96)' : 'var(--wax-fg)';
+  const headerMutedColor = isFloatingHeader ? 'rgba(250, 249, 246, 0.76)' : 'var(--wax-fg-muted)';
   const headerBrandSize = isFloatingHeader ? '3.1rem' : '1.78rem';
   const headerBrandSpacing = isFloatingHeader ? '0.22em' : '0.16em';
   const headerKickerSize = isFloatingHeader ? '0.72rem' : '0.62rem';

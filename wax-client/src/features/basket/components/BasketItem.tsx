@@ -1,4 +1,3 @@
-import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 import { useRemoveFromBasket } from '@/features/basket/hooks/useRemoveFromBasket';
@@ -19,7 +18,7 @@ export const BasketItem = ({ item }: Props) => {
     <article className="basket-item">
       <div
         className="basket-item-visual"
-        style={{ background: `linear-gradient(135deg, ${waxBrand.color.stone}, ${waxBrand.color.porcelain})` }}
+        style={{ background: 'linear-gradient(135deg, var(--wax-color-stone), var(--wax-color-porcelain))' }}
       >
         {is3dModel ? (
           <div className="basket-item-3d-placeholder" aria-label={item.productName}>

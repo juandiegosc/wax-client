@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import type { ServerErrorState } from '@/types/api';
 import { routePaths } from '@/routes/routePaths';
-import { waxBrand } from '@/config/brand';
 
 export const ServerErrorPage = () => {
   const location = useLocation();
@@ -30,7 +29,7 @@ export const ServerErrorPage = () => {
           fontSize: '0.72rem',
           letterSpacing: '0.22em',
           textTransform: 'uppercase',
-          color: waxBrand.color.smoke,
+          color: 'var(--wax-fg-soft)',
         }}
       >
         Error 500
@@ -41,12 +40,12 @@ export const ServerErrorPage = () => {
           fontSize: 'clamp(2rem, 4vw, 2.8rem)',
           lineHeight: 1.05,
           margin: 0,
-          color: waxBrand.color.ink,
+          color: 'var(--wax-fg)',
         }}
       >
         Algo no salió como esperábamos
       </h1>
-      <p style={{ margin: 0, color: waxBrand.color.graphite, lineHeight: 1.7 }}>
+      <p style={{ margin: 0, color: 'var(--wax-fg-muted)', lineHeight: 1.7 }}>
         Tuvimos un problema temporal procesando tu solicitud. Por favor intenta de nuevo en unos
         minutos. Si el problema persiste, escríbenos y te ayudamos.
       </p>
@@ -55,12 +54,12 @@ export const ServerErrorPage = () => {
           to={routePaths.home}
           style={{
             padding: '0.85rem 1.5rem',
-            background: waxBrand.color.ink,
-            color: waxBrand.color.porcelain,
+            background: 'var(--wax-fg)',
+            color: 'var(--wax-bg)',
             fontSize: '0.78rem',
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            borderRadius: waxBrand.radius.soft,
+            borderRadius: 'var(--wax-radius-soft)',
           }}
         >
           Volver al inicio
@@ -70,12 +69,12 @@ export const ServerErrorPage = () => {
           style={{
             padding: '0.85rem 1.5rem',
             background: 'transparent',
-            color: waxBrand.color.ink,
+            color: 'var(--wax-fg)',
             fontSize: '0.78rem',
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            border: `1px solid ${waxBrand.color.ink}`,
-            borderRadius: waxBrand.radius.soft,
+            border: `1px solid var(--wax-fg)`,
+            borderRadius: 'var(--wax-radius-soft)',
           }}
         >
           Contactar a WAX

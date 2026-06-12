@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { CatalogPageContent } from '@/features/catalog/pages/CatalogPageContent';
 
-// ── Mocks ────────────────────────────────────────────────────────────────────
+// Mocks
 vi.mock('@/features/catalog/hooks/useProducts', () => ({
   useProducts: vi.fn(),
 }));
@@ -22,7 +22,7 @@ import { useProducts } from '@/features/catalog/hooks/useProducts';
 
 const mockUseProducts = vi.mocked(useProducts);
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 const renderCatalog = (search = '') =>
   render(
     <MemoryRouter initialEntries={[search ? `/catalog?q=${search}` : '/catalog']}>
@@ -35,7 +35,7 @@ const fakeProducts = [
   { id: '2', name: 'Bolso Negro Mate' },
 ];
 
-// ── Tests ────────────────────────────────────────────────────────────────────
+// Tests
 describe('CatalogPageContent', () => {
   beforeEach(() => vi.clearAllMocks());
 
@@ -112,7 +112,7 @@ describe('CatalogPageContent', () => {
 
     renderCatalog();
 
-    expect(screen.getByText(/no se pudo cargar el catalogo/i)).toBeInTheDocument();
+    expect(screen.getByText(/no se pudo cargar el catálogo/i)).toBeInTheDocument();
   });
 
   it('shows pagination when there are multiple pages', () => {

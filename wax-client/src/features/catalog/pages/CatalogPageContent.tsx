@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { ProductGrid } from '@/features/catalog/components/ProductGrid';
 import { useProducts } from '@/features/catalog/hooks/useProducts';
-import { waxBrand } from '@/config/brand';
 
 const PAGE_SIZE = 12;
 
@@ -17,6 +16,7 @@ export const CatalogPageContent = () => {
   const [searchParams] = useSearchParams();
   const [pageNumber, setPageNumber] = useState(1);
   const [orderBy, setOrderBy] = useState('');
+  const [selectedType, setSelectedType] = useState('');
   const [inputValue, setInputValue] = useState(() => searchParams.get('q') ?? '');
   const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') ?? '');
 
@@ -28,7 +28,23 @@ export const CatalogPageContent = () => {
   }, [searchParams]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { data, isLoading, isError } = useProducts({ pageNumber, pageSize: PAGE_SIZE, searchTerm, orderBy });
+  // Discovery query sin filtros para extraer los tipos disponibles.
+  // El backend devuelve los productos paginados; con pageSize alto cubrimos
+  // el universo de tipos sin sumar muchos requests.
+  const { data: typeDiscovery } = useProducts({ pageSize: 100 });
+  const availableTypes = useMemo(() => {
+    const set = new Set<string>();
+    (typeDiscovery?.items ?? []).forEach((p) => { if (p.type) set.add(p.type); });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [typeDiscovery]);
+
+  const { data, isLoading, isError } = useProducts({
+    pageNumber,
+    pageSize: PAGE_SIZE,
+    searchTerm,
+    orderBy,
+    types: selectedType || undefined,
+  });
   const products = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
 
@@ -46,8 +62,13 @@ export const CatalogPageContent = () => {
     setPageNumber(1);
   };
 
+  const handleTypeChange = (value: string) => {
+    setSelectedType(value);
+    setPageNumber(1);
+  };
+
   if (isError) {
-    return <p style={{ color: waxBrand.color.graphite }}>No se pudo cargar el catalogo.</p>;
+    return <p style={{ color: 'var(--wax-fg-muted)' }}>No se pudo cargar el catálogo.</p>;
   }
 
   return (
@@ -66,10 +87,24 @@ export const CatalogPageContent = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />
+          {availableTypes.length > 1 && (
+            <select
+              className="catalog-filter-select"
+              value={selectedType}
+              onChange={(e) => handleTypeChange(e.target.value)}
+              aria-label="Filtrar por tipo de pieza"
+            >
+              <option value="">Todos los tipos</option>
+              {availableTypes.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          )}
           <select
             className="catalog-filter-select"
             value={orderBy}
             onChange={(e) => handleOrderChange(e.target.value)}
+            aria-label="Ordenar resultados"
           >
             {ORDER_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
