@@ -1,4 +1,6 @@
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
@@ -15,6 +17,7 @@ import { MenuToggle } from '@/layouts/MenuToggle';
 import { PwaInstallButton } from '@/layouts/PwaInstallButton';
 import { MiniCartDrawer } from '@/features/basket/components/MiniCartDrawer';
 import { PROFILE_COMPLETION_TOAST } from '@/lib/utils/profileToasts';
+import { useTheme } from '@/lib/hooks/useTheme';
 import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
 
@@ -235,6 +238,7 @@ const SiteHeader = ({
 }: SiteHeaderProps) => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (!profileMenuOpen) return;
@@ -447,6 +451,19 @@ const SiteHeader = ({
             <PersonOutlineOutlinedIcon fontSize="small" />
           </IconButton>
         )}
+
+        <IconButton
+          className="site-theme-toggle"
+          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          onClick={toggleTheme}
+          sx={utilityButtonStyle}
+        >
+          {theme === 'dark' ? (
+            <LightModeOutlinedIcon fontSize="small" />
+          ) : (
+            <DarkModeOutlinedIcon fontSize="small" />
+          )}
+        </IconButton>
 
         <IconButton
           aria-label="Carrito"
