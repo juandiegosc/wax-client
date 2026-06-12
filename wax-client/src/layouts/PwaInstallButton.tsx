@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { waxBrand } from '@/config/brand';
 import { usePwaInstall } from '@/lib/hooks/usePwaInstall';
 
 export const PwaInstallButton = ({ onClick }: { onClick?: () => void } = {}) => {
@@ -40,10 +39,10 @@ export const PwaInstallButton = ({ onClick }: { onClick?: () => void } = {}) => 
           alignItems: 'center',
           gap: '0.5rem',
           padding: '0.6rem 0.85rem',
-          border: `1px solid ${waxBrand.color.ink}`,
+          border: `1px solid ${'var(--wax-fg)'}`,
           borderRadius: '0.4rem',
           background: 'transparent',
-          color: waxBrand.color.ink,
+          color: 'var(--wax-fg)',
           fontSize: '0.72rem',
           fontWeight: 700,
           letterSpacing: '0.14em',
@@ -74,18 +73,18 @@ export const PwaInstallButton = ({ onClick }: { onClick?: () => void } = {}) => 
       >
         <div
           style={{
-            background: waxBrand.color.porcelain,
+            background: 'var(--wax-bg-elevated)',
             borderRadius: '0.75rem',
             padding: '1.5rem',
-            boxShadow: waxBrand.shadow.elevated,
+            boxShadow: 'var(--wax-shadow-elevated)',
             display: 'grid',
             gap: '0.85rem',
           }}
         >
-          <h3 style={{ margin: 0, fontSize: '1rem', color: waxBrand.color.ink, fontFamily: 'var(--wax-font-display)' }}>
+          <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--wax-fg)', fontFamily: 'var(--wax-font-display)' }}>
             Instala WAX en tu iPhone
           </h3>
-          <p style={{ margin: 0, fontSize: '0.85rem', color: waxBrand.color.graphite, lineHeight: 1.5 }}>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--wax-fg-muted)', lineHeight: 1.5 }}>
             En Safari toca el botón de <strong>Compartir</strong> (⬆️ abajo) y luego selecciona <strong>"Agregar a pantalla de inicio"</strong>. Encontrarás el ícono WAX como cualquier otra app.
           </p>
           <button
@@ -93,10 +92,10 @@ export const PwaInstallButton = ({ onClick }: { onClick?: () => void } = {}) => 
             onClick={() => setShowIosHelp(false)}
             style={{
               padding: '0.5rem 0.85rem',
-              border: `1px solid ${waxBrand.color.ink}`,
+              border: `1px solid var(--wax-fg)`,
               borderRadius: '0.4rem',
-              background: waxBrand.color.ink,
-              color: waxBrand.color.porcelain,
+              background: 'var(--wax-fg)',
+              color: 'var(--wax-bg)',
               fontSize: '0.72rem',
               fontWeight: 700,
               letterSpacing: '0.12em',

@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router';
 import { ProductCard } from '@/features/catalog/components/ProductCard';
 import type { Product } from '@/features/catalog/types/catalog.types';
 
-// ── Mocks ────────────────────────────────────────────────────────────────────
+// Mocks
 const mockRequireProfile = vi.fn();
 const mockAddToBasket = vi.fn();
 
@@ -20,7 +20,7 @@ vi.mock('@/lib/hooks/useProfileGuard', () => ({
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 import { useProfileGuard } from '@/lib/hooks/useProfileGuard';
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 const makeProduct = (overrides: Partial<Product> = {}): Product => ({
   id: '1',
   name: 'Bolso Cloud Blanc',
@@ -40,7 +40,7 @@ const renderCard = (product: Product) =>
     </MemoryRouter>,
   );
 
-// ── Tests ────────────────────────────────────────────────────────────────────
+// Tests
 describe('ProductCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();

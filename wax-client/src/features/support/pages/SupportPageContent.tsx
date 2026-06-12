@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { waxBrand } from '@/config/brand';
 import { useTickets } from '@/features/support/hooks/useTickets';
 import { useCreateTicket } from '@/features/support/hooks/useCreateTicket';
 import { TicketCard } from '@/features/support/components/TicketCard';
 import { TICKET_CATEGORY, TICKET_STATUS } from '@/features/support/types/support.types';
 import type { TicketCategory } from '@/features/support/types/support.types';
-import { useOrders } from '@/lib/hooks/useOrders';
+import { useOrders } from '@/features/orders/hooks/useOrders';
+import { PageLoadingSkeleton } from '@/components/PageLoadingSkeleton';
 import { formatCurrency } from '@/utils/currency';
 
 const PAGE_SIZE = 8;
@@ -176,9 +176,18 @@ export const SupportPageContent = () => {
         <span className="support-kicker">Mis tickets</span>
 
         {isLoadingTickets ? (
-          <p style={{ color: waxBrand.color.graphite }}>Cargando tickets...</p>
+          <PageLoadingSkeleton label="Cargando tickets" />
         ) : !tickets.length ? (
-          <p style={{ color: waxBrand.color.graphite }}>No tienes tickets de soporte aún.</p>
+          <div className="support-empty-state">
+            <p className="support-empty-text">Aún no has abierto tickets de soporte.</p>
+            <p className="support-empty-help">
+              Si tienes una duda general puedes escribirnos a{' '}
+              <a href="mailto:hello@waxatelier.com" className="support-empty-link">
+                hello@waxatelier.com
+              </a>{' '}
+              o abrir un nuevo ticket aquí arriba.
+            </p>
+          </div>
         ) : (
           <ul className="support-ticket-list">
             {tickets.map((ticket) => (

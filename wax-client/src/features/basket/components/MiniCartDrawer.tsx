@@ -53,7 +53,7 @@ export const MiniCartDrawer = () => {
           zIndex: 29,
           width: 'min(26rem, 100vw)',
           height: '100svh',
-          background: waxBrand.color.porcelain,
+          background: 'var(--wax-bg)',
           boxShadow: waxBrand.shadow.elevated,
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',
@@ -73,7 +73,7 @@ export const MiniCartDrawer = () => {
             fontSize: '0.72rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: waxBrand.color.smoke,
+            color: 'var(--wax-fg-soft)',
           }}>
             Tu carrito · {totalItems} {totalItems === 1 ? 'pieza' : 'piezas'}
           </span>
@@ -86,7 +86,7 @@ export const MiniCartDrawer = () => {
               background: 'transparent',
               padding: '0.25rem',
               cursor: 'pointer',
-              color: waxBrand.color.smoke,
+              color: 'var(--wax-fg-soft)',
               fontSize: '1.5rem',
               lineHeight: 1,
             }}
@@ -97,7 +97,7 @@ export const MiniCartDrawer = () => {
 
         <div style={{ overflowY: 'auto', padding: '1rem 1.25rem' }}>
           {items.length === 0 ? (
-            <p style={{ color: waxBrand.color.smoke, fontSize: '0.9rem', textAlign: 'center', marginTop: '2rem' }}>
+            <p style={{ color: 'var(--wax-fg-soft)', fontSize: '0.9rem', textAlign: 'center', marginTop: '2rem' }}>
               Tu carrito está vacío.
             </p>
           ) : (
@@ -118,8 +118,8 @@ export const MiniCartDrawer = () => {
                       style={{
                         width: '3rem',
                         height: '3.5rem',
-                        background: waxBrand.color.bone,
-                        color: waxBrand.color.smoke,
+                        background: 'var(--wax-bg-elevated)',
+                        color: 'var(--wax-fg-soft)',
                         borderRadius: waxBrand.radius.soft,
                         display: 'flex',
                         alignItems: 'center',
@@ -148,18 +148,18 @@ export const MiniCartDrawer = () => {
                     <strong style={{
                       fontSize: '0.85rem',
                       fontWeight: 500,
-                      color: waxBrand.color.ink,
+                      color: 'var(--wax-fg)',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                     }}>
                       {item.productName}
                     </strong>
-                    <span style={{ fontSize: '0.75rem', color: waxBrand.color.smoke }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--wax-fg-soft)' }}>
                       ×{item.quantity}
                     </span>
                   </div>
-                  <strong style={{ fontSize: '0.85rem', color: waxBrand.color.ink }}>
+                  <strong style={{ fontSize: '0.85rem', color: 'var(--wax-fg)' }}>
                     {formatCurrency(item.price * item.quantity)}
                   </strong>
                 </li>
@@ -175,10 +175,10 @@ export const MiniCartDrawer = () => {
           gap: '0.75rem',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <span style={{ fontSize: '0.72rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: waxBrand.color.smoke }}>
+            <span style={{ fontSize: '0.72rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--wax-fg-soft)' }}>
               Subtotal
             </span>
-            <strong style={{ fontSize: '1.05rem', color: waxBrand.color.ink }}>
+            <strong style={{ fontSize: '1.05rem', color: 'var(--wax-fg)' }}>
               {formatCurrency(subtotal)}
             </strong>
           </div>
@@ -190,10 +190,10 @@ export const MiniCartDrawer = () => {
               style={{
                 display: 'block',
                 padding: '0.7rem 1rem',
-                border: `1px solid ${waxBrand.color.ink}`,
+                border: `1px solid var(--wax-fg)`,
                 borderRadius: waxBrand.radius.soft,
                 background: 'transparent',
-                color: waxBrand.color.ink,
+                color: 'var(--wax-fg)',
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 letterSpacing: '0.12em',
@@ -212,8 +212,8 @@ export const MiniCartDrawer = () => {
                 padding: '0.7rem 1rem',
                 border: 0,
                 borderRadius: waxBrand.radius.soft,
-                background: items.length === 0 ? waxBrand.color.smoke : waxBrand.color.ink,
-                color: waxBrand.color.porcelain,
+                background: items.length === 0 ? 'var(--wax-fg-soft)' : 'var(--wax-fg)',
+                color: 'var(--wax-bg)',
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 letterSpacing: '0.12em',

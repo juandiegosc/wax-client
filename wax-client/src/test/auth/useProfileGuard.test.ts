@@ -12,7 +12,7 @@ vi.mock('react-toastify', () => ({
   toast: { info: vi.fn() },
 }));
 
-vi.mock('@/lib/hooks/useAccount', () => ({
+vi.mock('@/features/auth/hooks', () => ({
   useCurrentUser: vi.fn(),
   useUserAddress: vi.fn(),
 }));
@@ -21,7 +21,7 @@ vi.mock('@/routes/routePaths', () => ({
   routePaths: { login: '/login', profile: '/profile' },
 }));
 
-import { useCurrentUser, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useUserAddress } from '@/features/auth/hooks';
 import { toast } from 'react-toastify';
 
 const mockUseCurrentUser = vi.mocked(useCurrentUser);
@@ -55,7 +55,7 @@ describe('useProfileGuard', () => {
 
     expect(action).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/login');
-    expect(mockToast).toHaveBeenCalledWith('Inicia sesión para añadir piezas al carrito');
+    expect(mockToast).toHaveBeenCalledWith('Inicia sesión para añadir piezas al carrito.');
   });
 
   it('redirects to profile when user has Enrolled role', () => {
@@ -67,7 +67,7 @@ describe('useProfileGuard', () => {
 
     expect(action).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
-    expect(mockToast).toHaveBeenCalledWith('Completa tu perfil para continuar');
+    expect(mockToast).toHaveBeenCalledWith('Completa tu perfil para continuar.');
   });
 
   it('redirects to profile when authenticated but has no address', () => {

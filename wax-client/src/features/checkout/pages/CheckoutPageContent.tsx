@@ -13,47 +13,100 @@ import { routePaths } from '@/routes/routePaths';
 
 const stripePromise = loadStripe(env.stripePk);
 
-const appearance: Appearance = {
-  theme: 'stripe',
-  variables: {
-    colorPrimary: '#0f0f10',
-    colorBackground: '#faf9f6',
-    colorText: '#0f0f10',
-    colorDanger: '#4f2730',
-    fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-    borderRadius: '0.35rem',
-    spacingUnit: '4px',
-    fontSizeBase: '0.92rem',
-  },
-  rules: {
-    '.Input': {
-      border: '1px solid rgba(15, 15, 16, 0.16)',
-      boxShadow: 'none',
-      backgroundColor: '#faf9f6',
-      padding: '0.75rem',
-    },
-    '.Input:focus': {
-      border: '1px solid #0f0f10',
-      boxShadow: 'none',
-      outline: '0',
-    },
-    '.Label': {
-      color: '#71717a',
-      fontSize: '0.7rem',
-      letterSpacing: '0.12em',
-      textTransform: 'uppercase',
-      fontWeight: '500',
-    },
-    '.Tab': {
-      border: '1px solid rgba(15, 15, 16, 0.12)',
-      boxShadow: 'none',
-    },
-    '.Tab--selected': {
-      borderColor: '#0f0f10',
-      boxShadow: 'none',
-    },
-  },
-};
+// Stripe Appearance no soporta CSS variables (es JSON puro). Calculamos
+// la paleta una sola vez por sesión via matchMedia. En mobile usamos la
+// version dark; en desktop la light original.
+const isMobileViewport =
+  typeof globalThis !== 'undefined' && globalThis.matchMedia?.('(max-width: 768px)').matches;
+
+const appearance: Appearance = isMobileViewport
+  ? {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#f5f2ec',
+        colorBackground: '#1d1a18',
+        colorText: '#f5f2ec',
+        colorTextSecondary: 'rgba(245, 242, 236, 0.72)',
+        colorDanger: '#e88a98',
+        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+        borderRadius: '0.35rem',
+        spacingUnit: '4px',
+        fontSizeBase: '0.92rem',
+      },
+      rules: {
+        '.Input': {
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          boxShadow: 'none',
+          backgroundColor: '#211e1b',
+          color: '#f5f2ec',
+          padding: '0.75rem',
+        },
+        '.Input:focus': {
+          border: '1px solid rgba(255, 255, 255, 0.6)',
+          boxShadow: 'none',
+          outline: '0',
+        },
+        '.Label': {
+          color: 'rgba(192, 192, 192, 0.85)',
+          fontSize: '0.7rem',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          fontWeight: '500',
+        },
+        '.Tab': {
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          backgroundColor: '#1d1a18',
+          color: '#f5f2ec',
+          boxShadow: 'none',
+        },
+        '.Tab--selected': {
+          borderColor: 'rgba(255, 255, 255, 0.6)',
+          backgroundColor: '#211e1b',
+          boxShadow: 'none',
+        },
+      },
+    }
+  : {
+      theme: 'stripe',
+      variables: {
+        colorPrimary: '#0f0f10',
+        colorBackground: '#faf9f6',
+        colorText: '#0f0f10',
+        colorDanger: '#4f2730',
+        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+        borderRadius: '0.35rem',
+        spacingUnit: '4px',
+        fontSizeBase: '0.92rem',
+      },
+      rules: {
+        '.Input': {
+          border: '1px solid rgba(15, 15, 16, 0.16)',
+          boxShadow: 'none',
+          backgroundColor: '#faf9f6',
+          padding: '0.75rem',
+        },
+        '.Input:focus': {
+          border: '1px solid #0f0f10',
+          boxShadow: 'none',
+          outline: '0',
+        },
+        '.Label': {
+          color: '#71717a',
+          fontSize: '0.7rem',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          fontWeight: '500',
+        },
+        '.Tab': {
+          border: '1px solid rgba(15, 15, 16, 0.12)',
+          boxShadow: 'none',
+        },
+        '.Tab--selected': {
+          borderColor: '#0f0f10',
+          boxShadow: 'none',
+        },
+      },
+    };
 
 export const CheckoutPageContent = () => {
   const queryClient = useQueryClient();

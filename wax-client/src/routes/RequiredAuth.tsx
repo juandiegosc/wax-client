@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
-import { useCurrentUser, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useUserAddress } from '@/features/auth/hooks';
+import { PROFILE_COMPLETION_TOAST } from '@/lib/utils/profileToasts';
 import { routePaths } from '@/routes/routePaths';
 
 export const PROFILE_WARNING_KEY = 'wax_profile_warning_shown';
@@ -20,7 +21,7 @@ export const RequiredAuth = () => {
     if (!currentUser || isLoadingAddress) return;
     const pending = sessionStorage.getItem(PROFILE_PROMPT_PENDING_KEY);
     if (pending && needsProfileCompletion && !sessionStorage.getItem(PROFILE_WARNING_KEY)) {
-      toast.info('Completa tu perfil para acceder a todas las funciones de WAX.', {
+      toast.info(PROFILE_COMPLETION_TOAST, {
         toastId: PROFILE_WARNING_KEY,
       });
       sessionStorage.setItem(PROFILE_WARNING_KEY, 'true');
@@ -33,7 +34,7 @@ export const RequiredAuth = () => {
       <section className="auth-loading-shell">
         <div className="auth-loading-card">
           <span className="auth-loading-kicker">Cuenta WAX</span>
-          <h1 className="auth-loading-title">Verificando sesion...</h1>
+          <h1 className="auth-loading-title">Verificando sesión...</h1>
         </div>
       </section>
     );

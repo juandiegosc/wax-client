@@ -1,9 +1,9 @@
 import { Link, useNavigate } from 'react-router';
-import { waxBrand } from '@/config/brand';
 import { formatCurrency } from '@/utils/currency';
 import { routePaths } from '@/routes/routePaths';
 import { useBasket } from '@/features/basket/hooks/useBasket';
 import { BasketItem } from '@/features/basket/components/BasketItem';
+import { PageLoadingSkeleton } from '@/components/PageLoadingSkeleton';
 
 export const BasketPageContent = () => {
   const { data: basket, isLoading, isError } = useBasket();
@@ -13,11 +13,11 @@ export const BasketPageContent = () => {
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   if (isLoading) {
-    return <p style={{ color: waxBrand.color.graphite }}>Cargando carrito...</p>;
+    return <PageLoadingSkeleton label="Cargando carrito" />;
   }
 
   if (isError) {
-    return <p style={{ color: waxBrand.color.graphite }}>No se pudo cargar el carrito.</p>;
+    return <p style={{ color: 'var(--wax-fg-muted)' }}>No pudimos cargar el carrito.</p>;
   }
 
   if (!items.length) {
@@ -26,10 +26,10 @@ export const BasketPageContent = () => {
         <span className="basket-empty-kicker">Carrito</span>
         <h1 className="basket-empty-title">Sin piezas seleccionadas.</h1>
         <p className="basket-empty-lead">
-          Explora el catalogo y añade las piezas que quieras reservar.
+          Explora el catálogo y añade las piezas que quieras reservar.
         </p>
         <Link to={routePaths.catalog} className="basket-cta">
-          Ir al catalogo
+          Ir al catálogo
         </Link>
       </section>
     );
@@ -40,12 +40,23 @@ export const BasketPageContent = () => {
       <header className="basket-header" style={{ borderBottom: `1px solid rgba(15, 15, 16, 0.08)` }}>
         <div className="basket-header-copy">
           <span className="basket-kicker">Carrito</span>
-          <h1 className="basket-title">Tu seleccion.</h1>
+          <h1 className="basket-title">Tu selección.</h1>
         </div>
         <div className="basket-header-meta">
           <strong className="basket-count">{totalItems} {totalItems === 1 ? 'pieza' : 'piezas'}</strong>
         </div>
       </header>
+
+      <p
+        style={{
+          fontSize: '0.78rem',
+          color: 'var(--wax-fg-soft)',
+          letterSpacing: '0.05em',
+          margin: '0.75rem 0 1.25rem',
+        }}
+      >
+        Paso 1 de 2 · Revisa tu selección antes de continuar al pago.
+      </p>
 
       <div className="basket-layout">
         <ul className="basket-list">
@@ -70,7 +81,7 @@ export const BasketPageContent = () => {
           </div>
 
           <p className="basket-summary-note">
-            El pago y envio se confirman en el siguiente paso.
+            El pago y envío se confirman en el siguiente paso.
           </p>
 
           <button

@@ -1,7 +1,8 @@
 import { Navigate, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
-import { useCurrentUser, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useUserAddress } from '@/features/auth/hooks';
+import { PROFILE_ATELIER_GATE_TOAST } from '@/lib/utils/profileToasts';
 import { routePaths } from '@/routes/routePaths';
 import { PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { AtelierPageContent } from '@/features/atelier';
@@ -17,7 +18,7 @@ export const AtelierPage = () => {
 
   useEffect(() => {
     if (needsProfileCompletion && !sessionStorage.getItem(ATELIER_WARNING_KEY)) {
-      toast.info('Antes de entrar a Atelier AI, completa tu perfil.', {
+      toast.info(PROFILE_ATELIER_GATE_TOAST, {
         toastId: ATELIER_WARNING_KEY,
       });
       sessionStorage.setItem(ATELIER_WARNING_KEY, 'true');

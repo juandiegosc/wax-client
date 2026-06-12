@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
-import { useOrders } from '@/lib/hooks/useOrders';
+import { useOrders } from '@/features/orders/hooks/useOrders';
 import { OrderCard } from '@/features/orders/components/OrderCard';
+import { PageLoadingSkeleton } from '@/components/PageLoadingSkeleton';
 import { routePaths } from '@/routes/routePaths';
 
 export const MyOrdersPageContent = () => {
@@ -19,7 +20,7 @@ export const MyOrdersPageContent = () => {
       </header>
 
       {isLoadingOrders ? (
-        <p className="quote-empty">Cargando tus pedidos…</p>
+        <PageLoadingSkeleton label="Cargando tus pedidos" />
       ) : !orders.length ? (
         <div className="quote-empty-state">
           <p className="quote-empty">Todavía no tienes pedidos.</p>

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
-import { useCurrentUser, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useUserAddress } from '@/features/auth/hooks';
+import { PROFILE_CONTINUE_TOAST, PROFILE_LOGIN_REQUIRED_TOAST } from '@/lib/utils/profileToasts';
 import { routePaths } from '@/routes/routePaths';
 
 export const useProfileGuard = () => {
@@ -14,12 +15,12 @@ export const useProfileGuard = () => {
 
   const requireProfile = (action: () => void) => {
     if (!isAuthenticated) {
-      toast.info('Inicia sesión para añadir piezas al carrito');
+      toast.info(PROFILE_LOGIN_REQUIRED_TOAST);
       navigate(routePaths.login);
       return;
     }
     if (!hasCompleteProfile) {
-      toast.info('Completa tu perfil para continuar');
+      toast.info(PROFILE_CONTINUE_TOAST);
       navigate(routePaths.profile);
       return;
     }

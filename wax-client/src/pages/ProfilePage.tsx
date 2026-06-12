@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
 import { toast } from 'react-toastify';
-import { useCurrentUser, useSaveAddress, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useSaveAddress, useUserAddress } from '@/features/auth/hooks';
 import { billingProfileSchema } from '@/lib/schemas/billingProfileSchema';
 import type { BillingProfileSchema } from '@/lib/schemas/billingProfileSchema';
 import type { Address, UserInfo } from '@/lib/types/user';
@@ -12,12 +12,12 @@ import { routePaths } from '@/routes/routePaths';
 const countryNames: Record<string, string> = {
   EC: 'Ecuador',
   CO: 'Colombia',
-  PE: 'Peru',
-  MX: 'Mexico',
+  PE: 'Perú',
+  MX: 'México',
   AR: 'Argentina',
   CL: 'Chile',
   US: 'Estados Unidos',
-  ES: 'Espana',
+  ES: 'España',
 };
 
 const buildBillingDefaults = (address?: Partial<Address> | null): BillingProfileSchema => ({
@@ -64,7 +64,7 @@ const ProfileStatusBanner = ({ needsProfileCompletion }: ProfileStatusBannerProp
       <div className="profile-status-banner profile-status-banner-warning">
         <strong>Completa tu registro</strong>
         <p>
-          Te faltan algunos datos para finalizar tu cuenta. Completa el formulario de facturacion para acceder a todas las funciones.
+          Te faltan algunos datos para finalizar tu cuenta. Completa el formulario de facturación para acceder a todas las funciones.
         </p>
       </div>
     );
@@ -73,7 +73,7 @@ const ProfileStatusBanner = ({ needsProfileCompletion }: ProfileStatusBannerProp
   return (
     <div className="profile-status-banner profile-status-banner-success">
       <strong>¡Cuenta verificada!</strong>
-      <p>Tu cuenta esta completa y lista para usar.</p>
+      <p>Tu cuenta está completa y lista para usar.</p>
     </div>
   );
 };
@@ -105,7 +105,7 @@ const BillingCompletionForm = ({
         <span className="profile-kicker">Perfil privado</span>
         <h2 className="profile-section-title">Termina tu registro</h2>
         <p className="profile-form-intro">
-          Completa tus datos de facturacion para activar todas las funciones privadas de WAX.
+          Completa tus datos de facturación para activar todas las funciones privadas de WAX.
         </p>
       </div>
 
@@ -125,10 +125,10 @@ const BillingCompletionForm = ({
         </label>
 
         <label className="profile-field">
-          <span className="profile-label">Tipo de identificacion</span>
+          <span className="profile-label">Tipo de identificación</span>
           <select className="profile-input" {...register('identificationType')}>
             <option value="">Selecciona...</option>
-            <option value="CI">Cedula de identidad</option>
+            <option value="CI">Cédula de identidad</option>
             <option value="DNI">DNI</option>
             <option value="Passport">Pasaporte</option>
             <option value="RUC">RUC</option>
@@ -137,13 +137,13 @@ const BillingCompletionForm = ({
         </label>
 
         <label className="profile-field">
-          <span className="profile-label">Numero de identificacion</span>
+          <span className="profile-label">Número de identificación</span>
           <input className="profile-input" placeholder="Ej: 1700000000" {...register('identificationNumber')} />
           {errors.identificationNumber ? <span className="profile-error">{errors.identificationNumber.message}</span> : null}
         </label>
 
         <label className="profile-field profile-span-full">
-          <span className="profile-label">Telefono</span>
+          <span className="profile-label">Teléfono</span>
           <input className="profile-input" type="tel" placeholder="Ej: +593 99 000 0000" {...register('phone')} />
           {errors.phone ? <span className="profile-error">{errors.phone.message}</span> : null}
         </label>
@@ -151,17 +151,17 @@ const BillingCompletionForm = ({
       </fieldset>
 
       <fieldset className="profile-fieldset">
-        <legend className="profile-legend">Direccion de facturacion</legend>
+        <legend className="profile-legend">Dirección de facturacion</legend>
         <div className="profile-form-grid">
         <label className="profile-field profile-span-full">
-          <span className="profile-label">Nombre o razon social</span>
+          <span className="profile-label">Nombre o razón social</span>
           <input className="profile-input" placeholder="Nombre completo o empresa" {...register('name')} />
           {errors.name ? <span className="profile-error">{errors.name.message}</span> : null}
         </label>
 
         <label className="profile-field profile-span-full">
-          <span className="profile-label">Direccion</span>
-          <input className="profile-input" placeholder="Calle, numero, etc." {...register('line1')} />
+          <span className="profile-label">Dirección</span>
+          <input className="profile-input" placeholder="Calle, número, etc." {...register('line1')} />
           {errors.line1 ? <span className="profile-error">{errors.line1.message}</span> : null}
         </label>
 
@@ -184,23 +184,23 @@ const BillingCompletionForm = ({
         </label>
 
         <label className="profile-field">
-          <span className="profile-label">Codigo postal</span>
+          <span className="profile-label">Código postal</span>
           <input className="profile-input" placeholder="Ej: 170101" {...register('postalCode')} />
           {errors.postalCode ? <span className="profile-error">{errors.postalCode.message}</span> : null}
         </label>
 
         <label className="profile-field">
-          <span className="profile-label">Pais</span>
+          <span className="profile-label">País</span>
           <select className="profile-input" {...register('country')}>
             <option value="">Selecciona...</option>
             <option value="EC">Ecuador</option>
             <option value="CO">Colombia</option>
-            <option value="PE">Peru</option>
-            <option value="MX">Mexico</option>
+            <option value="PE">Perú</option>
+            <option value="MX">México</option>
             <option value="AR">Argentina</option>
             <option value="CL">Chile</option>
             <option value="US">Estados Unidos</option>
-            <option value="ES">Espana</option>
+            <option value="ES">España</option>
           </select>
           {errors.country ? <span className="profile-error">{errors.country.message}</span> : null}
         </label>
@@ -212,7 +212,7 @@ const BillingCompletionForm = ({
       <div className="profile-submit-bar">
         <div className="profile-submit-copy">
           <strong>Guardar cambios</strong>
-          <span>Tus datos se usan para habilitar experiencias privadas y tu direccion de facturacion.</span>
+          <span>Tus datos se usan para habilitar experiencias privadas y tu dirección de facturación.</span>
         </div>
         <button
           className="profile-submit-btn"
@@ -254,28 +254,28 @@ const ProfileDetailsCard = ({ address, currentUser, onEdit }: ProfileDetailsCard
 
       {address.phone ? (
         <div className="profile-data-section">
-          <span className="profile-data-label">Telefono</span>
+          <span className="profile-data-label">Teléfono</span>
           <strong className="profile-data-value">{address.phone}</strong>
         </div>
       ) : null}
 
       {address.identificationType || address.identificationNumber ? (
         <div className="profile-data-section">
-          <span className="profile-data-label">Identificacion</span>
+          <span className="profile-data-label">Identificación</span>
           <strong className="profile-data-value">{[address.identificationType, address.identificationNumber].filter(Boolean).join(' · ')}</strong>
         </div>
       ) : null}
 
       {address.name ? (
         <div className="profile-data-section profile-span-full">
-          <span className="profile-data-label">Facturacion</span>
+          <span className="profile-data-label">Facturación</span>
           <strong className="profile-data-value">{address.name}</strong>
         </div>
       ) : null}
 
       {address.line1 ? (
         <div className="profile-data-section profile-span-full">
-          <span className="profile-data-label">Direccion</span>
+          <span className="profile-data-label">Dirección</span>
           <strong className="profile-data-value">
             {address.line1}
             {address.line2 ? `, ${address.line2}` : ''}
@@ -292,14 +292,14 @@ const ProfileDetailsCard = ({ address, currentUser, onEdit }: ProfileDetailsCard
 
       {address.postalCode ? (
         <div className="profile-data-section">
-          <span className="profile-data-label">Codigo postal</span>
+          <span className="profile-data-label">Código postal</span>
           <strong className="profile-data-value">{address.postalCode}</strong>
         </div>
       ) : null}
 
       {address.country ? (
         <div className="profile-data-section">
-          <span className="profile-data-label">Pais</span>
+          <span className="profile-data-label">País</span>
           <strong className="profile-data-value">{countryNames[address.country] ?? address.country}</strong>
         </div>
       ) : null}
@@ -397,11 +397,20 @@ export const ProfilePage = () => {
             {address ? <ProfileDetailsCard address={address} currentUser={currentUser} onEdit={() => setIsEditing(true)} /> : null}
 
             <div className="profile-quick-actions">
-              <Link to={routePaths.catalog} className="profile-btn profile-btn-primary">
-                Ver catalogo
+              <Link to={routePaths.atelier} className="profile-btn profile-btn-primary">
+                Ir al Atelier AI
               </Link>
-              <Link to={routePaths.basket} className="profile-btn profile-btn-secondary">
-                Mi carrito
+              <Link to={routePaths.catalog} className="profile-btn profile-btn-secondary">
+                Ver catálogo
+              </Link>
+              <Link to={routePaths.myOrders} className="profile-btn profile-btn-secondary">
+                Mis pedidos
+              </Link>
+              <Link to={routePaths.myCustomProducts} className="profile-btn profile-btn-secondary">
+                Mis cotizaciones
+              </Link>
+              <Link to={routePaths.support} className="profile-btn profile-btn-secondary">
+                Soporte
               </Link>
             </div>
           </div>

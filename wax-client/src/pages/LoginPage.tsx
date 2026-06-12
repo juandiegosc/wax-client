@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useLocation, useNavigate } from 'react-router';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
-import { useCurrentUser, useLogin, useUserAddress } from '@/lib/hooks/useAccount';
+import { useCurrentUser, useLogin, useUserAddress } from '@/features/auth/hooks';
 import { loginSchema } from '@/lib/schemas/loginSchema';
 import type { LoginSchema } from '@/lib/schemas/loginSchema';
 import { routePaths } from '@/routes/routePaths';
@@ -66,8 +66,8 @@ export const LoginPage = () => {
       navigate(redirectTo);
     } catch (error) {
       const message = isAxiosError(error) && error.response?.status === 401
-        ? 'El correo o la contrasena no coinciden con una cuenta existente en este entorno.'
-        : 'No pudimos iniciar sesion con esos datos.';
+        ? 'El correo o la contraseña no coinciden con ninguna cuenta.'
+        : 'No pudimos iniciar sesión con esos datos.';
 
       setError('root', {
         message,
@@ -80,10 +80,10 @@ export const LoginPage = () => {
       <section className="login-page">
         <div className="login-shell login-shell-compact">
           <div className="login-card">
-            <span className="login-kicker">Sesion activa</span>
-            <h1 className="login-title">Ya estas dentro de WAX.</h1>
+            <span className="login-kicker">Sesión activa</span>
+            <h1 className="login-title">Ya estás dentro de WAX.</h1>
             <p className="login-lead">
-              Entraste como {currentUser.email}. Puedes volver a la portada o explorar la seleccion.
+              Entraste como {currentUser.email}. Puedes volver a la portada o explorar la selección.
             </p>
             {showProfileWarning ? (
               <p className="login-feedback login-feedback-warning">
@@ -98,7 +98,7 @@ export const LoginPage = () => {
                 Volver al inicio
               </Link>
               <Link to={routePaths.catalog} className="login-button login-button-secondary">
-                Ir al catalogo
+                Ir al catálogo
               </Link>
             </div>
           </div>
@@ -117,20 +117,21 @@ export const LoginPage = () => {
             <span className="login-visual-kicker">Acceso privado</span>
             <strong className="login-visual-title">Entra a tu espacio para seguir el ritmo de la maison.</strong>
             <p className="login-visual-text">
+              Tu cuenta guarda tu carrito, tus encargos del Atelier y el estado de tus pedidos con WAX.
             </p>
           </div>
         </div>
 
         <div className="login-card">
           <span className="login-kicker">Cuenta WAX</span>
-          <h1 className="login-title">Iniciar sesion</h1>
+          <h1 className="login-title">Iniciar sesión</h1>
           <p className="login-lead">
-            Usa tu correo y tu contrasena para acceder a tu cuenta, carrito y futuras gestiones de pedido.
+            Usa tu correo y tu contraseña para acceder a tu cuenta, carrito y futuras gestiones de pedido.
           </p>
 
           {registeredEmail ? (
             <p className="login-feedback login-feedback-success">
-              Cuenta creada para {registeredEmail}. Inicia sesion para continuar.
+              Cuenta creada para {registeredEmail}. Inicia sesión para continuar.
             </p>
           ) : null}
 
@@ -149,12 +150,12 @@ export const LoginPage = () => {
             </label>
 
             <label className="login-field">
-              <span className="login-label">Contrasena</span>
+              <span className="login-label">Contraseña</span>
               <input
                 className="login-input"
                 type="password"
                 autoComplete="current-password"
-                placeholder="Ingresa tu contrasena"
+                placeholder="Ingresa tu contraseña"
                 disabled={loginMutation.isPending || isLoadingUser}
                 {...register('password')}
               />
