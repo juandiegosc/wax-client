@@ -1625,6 +1625,35 @@ select {
   box-shadow: 0 0 0 3px rgba(15, 15, 16, 0.06);
 }
 
+.password-input-wrap {
+  position: relative;
+  display: block;
+}
+
+.password-input-wrap .login-input {
+  padding-right: 2.9rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.65rem;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  padding: 0.3rem;
+  border: none;
+  background: transparent;
+  color: var(--wax-fg-soft);
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+  color: var(--wax-fg);
+}
+
 .login-feedback {
   margin: 0;
   font-size: 0.92rem;
