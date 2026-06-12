@@ -5389,6 +5389,13 @@ select {
     display: none !important;
   }
 
+  /* ya viven en el tab bar inferior: fuera del header en mobile */
+  .site-atelier-link,
+  .site-account-button,
+  .site-cart-button {
+    display: none !important;
+  }
+
   .site-search-button {
     margin-left: 0.1rem !important;
   }

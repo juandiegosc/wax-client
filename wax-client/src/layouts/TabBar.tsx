@@ -8,6 +8,7 @@ import { routePaths } from '@/routes/routePaths';
 
 type TabBarProps = {
   basketCount: number;
+  quotationsCount: number;
 };
 
 type TabItem = {
@@ -16,24 +17,26 @@ type TabItem = {
   Icon: typeof HomeOutlinedIcon;
   exact?: boolean;
   hero?: boolean;
-  withBadge?: boolean;
+  badge?: 'basket' | 'quotations';
 };
 
 const tabs: TabItem[] = [
   { to: routePaths.home, label: 'Inicio', Icon: HomeOutlinedIcon, exact: true },
   { to: routePaths.catalog, label: 'Catálogo', Icon: GridViewOutlinedIcon },
   { to: routePaths.atelier, label: 'Atelier', Icon: AutoAwesomeOutlinedIcon, hero: true },
-  { to: routePaths.basket, label: 'Carrito', Icon: ShoppingBagOutlinedIcon, withBadge: true },
-  { to: routePaths.profile, label: 'Cuenta', Icon: PersonOutlineOutlinedIcon },
+  { to: routePaths.basket, label: 'Carrito', Icon: ShoppingBagOutlinedIcon, badge: 'basket' },
+  { to: routePaths.profile, label: 'Cuenta', Icon: PersonOutlineOutlinedIcon, badge: 'quotations' },
 ];
 
-export const TabBar = ({ basketCount }: TabBarProps) => {
+export const TabBar = ({ basketCount, quotationsCount }: TabBarProps) => {
   const { pathname } = useLocation();
+  const badgeCounts = { basket: basketCount, quotations: quotationsCount };
 
   return (
     <nav className="wax-tabbar" aria-label="Navegación inferior">
-      {tabs.map(({ to, label, Icon, exact, hero, withBadge }) => {
+      {tabs.map(({ to, label, Icon, exact, hero, badge }) => {
         const active = exact ? pathname === to : pathname.startsWith(to);
+        const badgeCount = badge ? badgeCounts[badge] : 0;
         return (
           <Link
             key={to}
@@ -51,8 +54,8 @@ export const TabBar = ({ basketCount }: TabBarProps) => {
               <Icon sx={{ fontSize: 20 }} />
             )}
             <span className="wax-tab-label">{label}</span>
-            {withBadge && basketCount > 0 ? (
-              <span className="wax-tab-badge">{basketCount}</span>
+            {badgeCount > 0 ? (
+              <span className="wax-tab-badge">{badgeCount}</span>
             ) : null}
           </Link>
         );

@@ -312,19 +312,6 @@ const SiteHeader = ({
         >
           Colección
         </Link>
-
-        <IconButton
-          className="site-theme-toggle"
-          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-          onClick={toggleTheme}
-          sx={utilityButtonStyle}
-        >
-          {theme === 'dark' ? (
-            <LightModeOutlinedIcon fontSize="small" />
-          ) : (
-            <DarkModeOutlinedIcon fontSize="small" />
-          )}
-        </IconButton>
       </div>
 
       {/* CENTER: brand */}
@@ -467,6 +454,20 @@ const SiteHeader = ({
         )}
 
         <IconButton
+          className="site-theme-toggle"
+          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          onClick={toggleTheme}
+          sx={utilityButtonStyle}
+        >
+          {theme === 'dark' ? (
+            <LightModeOutlinedIcon fontSize="small" />
+          ) : (
+            <DarkModeOutlinedIcon fontSize="small" />
+          )}
+        </IconButton>
+
+        <IconButton
+          className="site-cart-button"
           aria-label="Carrito"
           component={Link}
           to={routePaths.basket}
@@ -674,7 +675,7 @@ export const MainLayout = () => {
         <Outlet />
       </main>
 
-      {showTabBar && <TabBar basketCount={basketCount} />}
+      {showTabBar && <TabBar basketCount={basketCount} quotationsCount={pendingQuotationsCount} />}
     </div>
   );
 };
