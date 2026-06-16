@@ -1,4 +1,6 @@
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
@@ -12,9 +14,11 @@ import { useCurrentUser, useLogout, useUserAddress } from '@/features/auth/hooks
 import { useBasket } from '@/features/basket/hooks/useBasket';
 import { useMyCustomProducts } from '@/features/customProducts/hooks/useMyCustomProducts';
 import { MenuToggle } from '@/layouts/MenuToggle';
+import { TabBar } from '@/layouts/TabBar';
 import { PwaInstallButton } from '@/layouts/PwaInstallButton';
 import { MiniCartDrawer } from '@/features/basket/components/MiniCartDrawer';
 import { PROFILE_COMPLETION_TOAST } from '@/lib/utils/profileToasts';
+import { useTheme } from '@/lib/hooks/useTheme';
 import { PROFILE_PROMPT_PENDING_KEY, PROFILE_WARNING_KEY } from '@/routes/RequiredAuth';
 import { routePaths } from '@/routes/routePaths';
 
@@ -235,6 +239,7 @@ const SiteHeader = ({
 }: SiteHeaderProps) => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (!profileMenuOpen) return;
@@ -449,6 +454,20 @@ const SiteHeader = ({
         )}
 
         <IconButton
+          className="site-theme-toggle"
+          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          onClick={toggleTheme}
+          sx={utilityButtonStyle}
+        >
+          {theme === 'dark' ? (
+            <LightModeOutlinedIcon fontSize="small" />
+          ) : (
+            <DarkModeOutlinedIcon fontSize="small" />
+          )}
+        </IconButton>
+
+        <IconButton
+          className="site-cart-button"
           aria-label="Carrito"
           component={Link}
           to={routePaths.basket}
@@ -494,6 +513,12 @@ export const MainLayout = () => {
 
   const isHomePage = location.pathname === routePaths.home;
   const isFloatingHeader = isHomePage && !hasScrolled && !isMenuOpen;
+
+  // El tab bar estorba donde el borde inferior ya trabaja (chat del
+  // Atelier, stepper de pago)
+  const showTabBar = ![routePaths.atelier, routePaths.checkout].some((path) =>
+    location.pathname.startsWith(path),
+  );
 
   useEffect(() => {
     const promptSource = sessionStorage.getItem(PROFILE_PROMPT_PENDING_KEY);
@@ -639,7 +664,7 @@ export const MainLayout = () => {
       )}
 
       <main
-        className="site-main"
+        className={showTabBar ? 'site-main has-tabbar' : 'site-main'}
         style={{
           position: 'relative',
           maxWidth: isHomePage ? 'none' : '1280px',
@@ -649,6 +674,8 @@ export const MainLayout = () => {
       >
         <Outlet />
       </main>
+
+      {showTabBar && <TabBar basketCount={basketCount} quotationsCount={pendingQuotationsCount} />}
     </div>
   );
 };

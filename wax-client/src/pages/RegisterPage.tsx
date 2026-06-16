@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
+import { PasswordInput } from '@/components/PasswordInput';
 import { useCurrentUser, useRegister } from '@/features/auth/hooks';
 import { registerSchema } from '@/lib/schemas/registerSchema';
 import type { RegisterSchema } from '@/lib/schemas/registerSchema';
@@ -132,9 +133,8 @@ export const RegisterPage = () => {
 
             <label className="login-field">
               <span className="login-label">Contraseña</span>
-              <input
+              <PasswordInput
                 className="login-input"
-                type="password"
                 autoComplete="new-password"
                 placeholder="Crea una contraseña"
                 disabled={registerMutation.isPending || isLoadingUser}
@@ -189,9 +189,8 @@ export const RegisterPage = () => {
 
             <label className="login-field">
               <span className="login-label">Confirmar contraseña</span>
-              <input
+              <PasswordInput
                 className="login-input"
-                type="password"
                 autoComplete="new-password"
                 placeholder="Repite tu contraseña"
                 disabled={registerMutation.isPending || isLoadingUser}
