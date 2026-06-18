@@ -99,7 +99,6 @@ html[data-theme='dark']{
 /* Texto mercurio: el guard evita texto invisible sin soporte de clip */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   [data-theme='dark'] .site-header-center strong,
-  [data-theme='dark'] .wax-side-menu-wordmark,
   [data-theme='dark'] .home-campaign-title,
   [data-theme='dark'] .catalog-page-title,
   [data-theme='dark'] .basket-title,
@@ -125,8 +124,7 @@ html[data-theme='dark']{
 
   /* shimmer solo en el wordmark: animarlo repinta en cada frame */
   @media (prefers-reduced-motion: no-preference) {
-    [data-theme='dark'] .site-header-center strong,
-    [data-theme='dark'] .wax-side-menu-wordmark {
+    [data-theme='dark'] .site-header-center strong {
       animation: wax-merc-flow 7s ease-in-out infinite;
     }
   }
@@ -819,16 +817,20 @@ html[data-theme='dark']{
   color: var(--wax-color-ink);
 }
 
-/* fundido a negro al pie del hero del home */
-[data-theme='dark'] .home-campaign::after{
+/* fundido del hero al color de fondo (claro u oscuro segun el tema) */
+.home-campaign::after{
   content: '';
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   height: 180px;
-  background: linear-gradient(180deg, transparent, #0c0b0a);
+  background: linear-gradient(180deg, transparent, var(--wax-color-porcelain));
   pointer-events: none;
+}
+
+[data-theme='dark'] .home-campaign::after{
+  background: linear-gradient(180deg, transparent, #0c0b0a);
 }
 
 * {
@@ -949,14 +951,20 @@ select {
 }
 
 .wax-side-menu-wordmark {
-  font-family: var(--wax-font-display);
-  font-size: 1.55rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--wax-color-ink);
-  font-weight: 400;
+  display: inline-flex;
   line-height: 1;
   text-decoration: none;
+}
+
+.wax-side-menu-logo {
+  height: 2rem;
+  width: auto;
+  display: block;
+  filter: invert(1);
+}
+
+[data-theme='dark'] .wax-side-menu-logo {
+  filter: none;
 }
 
 .wax-side-menu-nav {
@@ -1433,6 +1441,18 @@ select {
 
 .home-footer-region {
   justify-self: start;
+}
+
+.home-footer-logo {
+  justify-self: center;
+  height: clamp(2.4rem, 4vw, 3.4rem);
+  width: auto;
+  display: block;
+  filter: invert(1);
+}
+
+[data-theme='dark'] .home-footer-logo {
+  filter: none;
 }
 
 .home-footer-wordmark {

@@ -187,7 +187,7 @@ export const HomePage = () => {
 
         <div className="home-footer-bottom">
           <div className="home-footer-region">Envíos desde Ecuador</div>
-          <strong className="home-footer-wordmark">WAX</strong>
+          <img className="home-footer-logo" src="/LogoWax.svg" alt="WAX" />
           <div className="home-footer-legal">
             <Link to={routePaths.support} className="home-footer-legal-link">
               Soporte

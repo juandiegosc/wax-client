@@ -94,10 +94,12 @@ const MenuOverlay = ({ isMenuOpen, closeMenu, handleOverlayKeyDown }: MenuOverla
       border: 0,
       padding: 0,
       margin: 0,
-      background: 'rgba(15, 15, 16, 0.52)',
+      background: 'rgba(15, 15, 16, 0.42)',
+      backdropFilter: isMenuOpen ? 'blur(8px)' : 'blur(0px)',
+      WebkitBackdropFilter: isMenuOpen ? 'blur(8px)' : 'blur(0px)',
       opacity: isMenuOpen ? 1 : 0,
       pointerEvents: isMenuOpen ? 'auto' : 'none',
-      transition: 'opacity 0.35s ease',
+      transition: 'opacity 0.35s ease, backdrop-filter 0.35s ease',
       cursor: 'pointer',
     }}
   />
@@ -136,8 +138,9 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
         to={routePaths.home}
         onClick={closeMenu}
         className="wax-side-menu-wordmark"
+        aria-label="WAX"
       >
-        WAX
+        <img className="wax-side-menu-logo" src="/LogoWax.svg" alt="WAX" />
       </Link>
       <MenuToggle
         isOpen={isMenuOpen}
