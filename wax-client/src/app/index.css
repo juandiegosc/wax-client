@@ -824,14 +824,15 @@ html[data-theme='dark']{
   left: 0;
   right: 0;
   bottom: 0;
-  height: 300px;
-  /* stops escalonados: el color solo gana cuerpo cerca del fondo, asi el
-     fundido se siente difuminado y no como una banda con borde duro */
+  height: 240px;
+  /* el color queda casi invisible hasta muy abajo y solo se vuelve solido
+     pegado al borde inferior, para que el fundido sea un velo y no una banda */
   background: linear-gradient(
     180deg,
     rgba(250, 249, 246, 0) 0%,
-    rgba(250, 249, 246, 0.04) 45%,
-    rgba(250, 249, 246, 0.35) 75%,
+    rgba(250, 249, 246, 0.02) 60%,
+    rgba(250, 249, 246, 0.12) 82%,
+    rgba(250, 249, 246, 0.55) 94%,
     var(--wax-color-porcelain) 100%
   );
   pointer-events: none;
@@ -841,8 +842,9 @@ html[data-theme='dark']{
   background: linear-gradient(
     180deg,
     rgba(12, 11, 10, 0) 0%,
-    rgba(12, 11, 10, 0.04) 45%,
-    rgba(12, 11, 10, 0.35) 75%,
+    rgba(12, 11, 10, 0.02) 60%,
+    rgba(12, 11, 10, 0.12) 82%,
+    rgba(12, 11, 10, 0.55) 94%,
     #0c0b0a 100%
   );
 }
