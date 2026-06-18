@@ -817,36 +817,16 @@ html[data-theme='dark']{
   color: var(--wax-color-ink);
 }
 
-/* fundido del hero al color de fondo (claro u oscuro segun el tema) */
-.home-campaign::after{
+/* fundido a negro al pie del hero del home */
+[data-theme='dark'] .home-campaign::after{
   content: '';
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 240px;
-  /* el color queda casi invisible hasta muy abajo y solo se vuelve solido
-     pegado al borde inferior, para que el fundido sea un velo y no una banda */
-  background: linear-gradient(
-    180deg,
-    rgba(250, 249, 246, 0) 0%,
-    rgba(250, 249, 246, 0.02) 60%,
-    rgba(250, 249, 246, 0.12) 82%,
-    rgba(250, 249, 246, 0.55) 94%,
-    var(--wax-color-porcelain) 100%
-  );
+  height: 180px;
+  background: linear-gradient(180deg, transparent, #0c0b0a);
   pointer-events: none;
-}
-
-[data-theme='dark'] .home-campaign::after{
-  background: linear-gradient(
-    180deg,
-    rgba(12, 11, 10, 0) 0%,
-    rgba(12, 11, 10, 0.02) 60%,
-    rgba(12, 11, 10, 0.12) 82%,
-    rgba(12, 11, 10, 0.55) 94%,
-    #0c0b0a 100%
-  );
 }
 
 * {
