@@ -140,7 +140,8 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
         className="wax-side-menu-wordmark"
         aria-label="WAX"
       >
-        <img className="wax-side-menu-logo" src="/LogoWax.svg" alt="WAX" />
+        <img className="wax-side-menu-logo" src="/LogoWax.svg" alt="" />
+        <span className="wax-side-menu-logo-text">WAX</span>
       </Link>
       <MenuToggle
         isOpen={isMenuOpen}

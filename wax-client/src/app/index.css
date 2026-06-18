@@ -948,6 +948,8 @@ select {
 
 .wax-side-menu-wordmark {
   display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   line-height: 1;
   text-decoration: none;
 }
@@ -961,6 +963,15 @@ select {
 
 [data-theme='dark'] .wax-side-menu-logo {
   filter: none;
+}
+
+.wax-side-menu-logo-text {
+  font-family: var(--wax-font-display);
+  font-size: 1.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: var(--wax-fg);
 }
 
 .wax-side-menu-nav {
