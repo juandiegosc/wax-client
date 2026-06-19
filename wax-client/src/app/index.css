@@ -2324,16 +2324,31 @@ select {
 /* Atelier ocupa el ancho completo como acceso destacado */
 .profile-shortcut-feature {
   grid-column: 1 / -1;
-  background: var(--wax-accent-gradient);
+  background: var(--wax-color-ink);
   border-color: transparent;
 }
 
 .profile-shortcut-feature .profile-shortcut-label {
-  color: var(--wax-color-ink);
+  color: var(--wax-color-porcelain);
 }
 
 .profile-shortcut-feature .profile-shortcut-desc {
-  color: rgba(15, 15, 16, 0.7);
+  color: rgba(250, 249, 246, 0.7);
+}
+
+/* en dark el fondo ink se confunde con la pagina: lo distinguimos con un
+   borde de acento y una superficie levemente mas clara */
+[data-theme='dark'] .profile-shortcut-feature {
+  background: var(--wax-bg-elevated);
+  border: 1px solid var(--wax-accent);
+}
+
+[data-theme='dark'] .profile-shortcut-feature .profile-shortcut-label {
+  color: var(--wax-fg);
+}
+
+[data-theme='dark'] .profile-shortcut-feature .profile-shortcut-desc {
+  color: var(--wax-fg-soft);
 }
 
 @media (max-width: 560px) {
