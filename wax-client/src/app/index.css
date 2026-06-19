@@ -149,8 +149,14 @@ html[data-theme='dark']{
 [data-theme='dark'] .site-header a,
 [data-theme='dark'] .site-header button,
 [data-theme='dark'] .site-header strong,
-[data-theme='dark'] .site-header span{
+[data-theme='dark'] .site-header span:not(.MuiBadge-badge){
   color: var(--wax-fg) !important;
+}
+
+/* el numerito del badge va sobre fondo claro: texto oscuro para que
+   no se pierda en dark (la regla de arriba lo dejaba claro/invisible) */
+[data-theme='dark'] .site-header .MuiBadge-badge{
+  color: var(--wax-bg) !important;
 }
 
 [data-theme='dark'] .site-header .site-brand-kicker,
