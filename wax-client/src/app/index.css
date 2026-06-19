@@ -937,6 +937,11 @@ select {
   transition: background 220ms ease, border-color 220ms ease;
 }
 
+/* el logo del header solo aparece en mobile; en desktop manda el texto WAX */
+.site-brand-logo-mobile {
+  display: none;
+}
+
 /* SIDE MENU (desktop base) */
 .wax-side-menu {
   background: var(--wax-color-porcelain);
@@ -5432,6 +5437,23 @@ select {
   .site-account-button,
   .site-cart-button {
     display: none !important;
+  }
+
+  /* en mobile el wordmark de texto se reemplaza por el logo (centra mejor) */
+  .site-brand-text {
+    display: none !important;
+  }
+
+  .site-brand-logo-mobile {
+    display: block;
+    height: 2rem;
+    width: auto;
+    filter: invert(1);
+  }
+
+  [data-theme='dark'] .site-brand-logo-mobile,
+  .site-header.is-floating .site-brand-logo-mobile {
+    filter: none;
   }
 
   .site-search-button {
