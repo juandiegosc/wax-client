@@ -986,6 +986,11 @@ select {
   gap: 1.1rem;
 }
 
+.pwa-ios-dialog::backdrop {
+  background: rgba(15, 15, 16, 0.55);
+  backdrop-filter: blur(4px);
+}
+
 .wax-side-menu-email {
   font-size: 0.82rem;
   color: var(--wax-color-graphite);
@@ -6497,6 +6502,11 @@ select {
 }
 
 @media (max-width: 768px) {
+  /* el tab bar fijo tapaba el boton instalar; se reserva su alto + holgura */
+  .wax-side-menu-footer {
+    padding-bottom: calc(2.5rem + 88px + env(safe-area-inset-bottom));
+  }
+
   .wax-tabbar {
     position: fixed;
     left: 0;

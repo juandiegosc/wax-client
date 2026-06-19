@@ -62,6 +62,7 @@ export const PwaInstallButton = ({ onClick }: { onClick?: () => void } = {}) => 
 
       <dialog
         ref={dialogRef}
+        className="pwa-ios-dialog"
         onClose={() => setShowIosHelp(false)}
         style={{
           padding: 0,
@@ -73,7 +74,8 @@ export const PwaInstallButton = ({ onClick }: { onClick?: () => void } = {}) => 
       >
         <div
           style={{
-            background: 'var(--wax-bg-elevated)',
+            background: 'var(--wax-bg)',
+            border: '1px solid var(--wax-border)',
             borderRadius: '0.75rem',
             padding: '1.5rem',
             boxShadow: 'var(--wax-shadow-elevated)',
