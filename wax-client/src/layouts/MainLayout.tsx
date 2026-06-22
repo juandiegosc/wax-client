@@ -90,14 +90,16 @@ const MenuOverlay = ({ isMenuOpen, closeMenu, handleOverlayKeyDown }: MenuOverla
     style={{
       position: 'fixed',
       inset: 0,
-      zIndex: 18,
+      zIndex: 38,
       border: 0,
       padding: 0,
       margin: 0,
-      background: 'rgba(15, 15, 16, 0.52)',
+      background: 'rgba(15, 15, 16, 0.42)',
+      backdropFilter: isMenuOpen ? 'blur(8px)' : 'blur(0px)',
+      WebkitBackdropFilter: isMenuOpen ? 'blur(8px)' : 'blur(0px)',
       opacity: isMenuOpen ? 1 : 0,
       pointerEvents: isMenuOpen ? 'auto' : 'none',
-      transition: 'opacity 0.35s ease',
+      transition: 'opacity 0.35s ease, backdrop-filter 0.35s ease',
       cursor: 'pointer',
     }}
   />
@@ -120,9 +122,9 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
       position: 'fixed',
       top: 0,
       left: 0,
-      zIndex: 19,
       width: 'min(27rem, 100vw)',
       height: '100vh',
+      zIndex: 39,
       transform: isMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
       transition: 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
       display: 'grid',
@@ -136,8 +138,10 @@ const SideMenu = ({ isMenuOpen, toggleMenu, closeMenu, currentUserEmail, onLogou
         to={routePaths.home}
         onClick={closeMenu}
         className="wax-side-menu-wordmark"
+        aria-label="WAX"
       >
-        WAX
+        <img className="wax-side-menu-logo" src="/LogoWax.svg" alt="" />
+        <span className="wax-side-menu-logo-text">WAX</span>
       </Link>
       <MenuToggle
         isOpen={isMenuOpen}
@@ -316,9 +320,9 @@ const SiteHeader = ({
 
       {/* CENTER: brand */}
       <div className="site-header-center" style={{ justifySelf: 'center', textAlign: 'center', minWidth: 0 }}>
-        <Link to={routePaths.home} style={{ display: 'grid', gap: '0.08rem', minWidth: 0 }}>
+        <Link to={routePaths.home} aria-label={waxBrand.name} style={{ display: 'grid', gap: '0.08rem', minWidth: 0, justifyItems: 'center' }}>
           <span
-            className="site-brand-kicker"
+            className="site-brand-kicker site-brand-text"
             style={{
               fontSize: headerKickerSize,
               letterSpacing: '0.22em',
@@ -329,6 +333,7 @@ const SiteHeader = ({
             Maison 3D a medida
           </span>
           <strong
+            className="site-brand-text"
             style={{
               fontFamily: 'var(--wax-font-display)',
               fontSize: headerBrandSize,
@@ -342,6 +347,7 @@ const SiteHeader = ({
           >
             {waxBrand.name}
           </strong>
+          <img className="site-brand-logo-mobile" src="/LogoWax.svg" alt="" />
         </Link>
       </div>
 

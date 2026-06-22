@@ -99,7 +99,6 @@ html[data-theme='dark']{
 /* Texto mercurio: el guard evita texto invisible sin soporte de clip */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   [data-theme='dark'] .site-header-center strong,
-  [data-theme='dark'] .wax-side-menu-wordmark,
   [data-theme='dark'] .home-campaign-title,
   [data-theme='dark'] .catalog-page-title,
   [data-theme='dark'] .basket-title,
@@ -125,8 +124,7 @@ html[data-theme='dark']{
 
   /* shimmer solo en el wordmark: animarlo repinta en cada frame */
   @media (prefers-reduced-motion: no-preference) {
-    [data-theme='dark'] .site-header-center strong,
-    [data-theme='dark'] .wax-side-menu-wordmark {
+    [data-theme='dark'] .site-header-center strong {
       animation: wax-merc-flow 7s ease-in-out infinite;
     }
   }
@@ -151,8 +149,14 @@ html[data-theme='dark']{
 [data-theme='dark'] .site-header a,
 [data-theme='dark'] .site-header button,
 [data-theme='dark'] .site-header strong,
-[data-theme='dark'] .site-header span{
+[data-theme='dark'] .site-header span:not(.MuiBadge-badge){
   color: var(--wax-fg) !important;
+}
+
+/* el numerito del badge va sobre fondo claro: texto oscuro para que
+   no se pierda en dark (la regla de arriba lo dejaba claro/invisible) */
+[data-theme='dark'] .site-header .MuiBadge-badge{
+  color: var(--wax-bg) !important;
 }
 
 [data-theme='dark'] .site-header .site-brand-kicker,
@@ -933,6 +937,11 @@ select {
   transition: background 220ms ease, border-color 220ms ease;
 }
 
+/* el logo del header solo aparece en mobile; en desktop manda el texto WAX */
+.site-brand-logo-mobile {
+  display: none;
+}
+
 /* SIDE MENU (desktop base) */
 .wax-side-menu {
   background: var(--wax-color-porcelain);
@@ -949,14 +958,31 @@ select {
 }
 
 .wax-side-menu-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.wax-side-menu-logo {
+  height: 2rem;
+  width: auto;
+  display: block;
+  filter: invert(1);
+}
+
+[data-theme='dark'] .wax-side-menu-logo {
+  filter: none;
+}
+
+.wax-side-menu-logo-text {
   font-family: var(--wax-font-display);
   font-size: 1.55rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--wax-color-ink);
   font-weight: 400;
-  line-height: 1;
-  text-decoration: none;
+  color: var(--wax-fg);
 }
 
 .wax-side-menu-nav {
@@ -969,6 +995,11 @@ select {
   border-top: 1px solid rgba(15, 15, 16, 0.07);
   display: grid;
   gap: 1.1rem;
+}
+
+.pwa-ios-dialog::backdrop {
+  background: rgba(15, 15, 16, 0.55);
+  backdrop-filter: blur(4px);
 }
 
 .wax-side-menu-email {
@@ -1433,6 +1464,18 @@ select {
 
 .home-footer-region {
   justify-self: start;
+}
+
+.home-footer-logo {
+  justify-self: center;
+  height: clamp(2.4rem, 4vw, 3.4rem);
+  width: auto;
+  display: block;
+  filter: invert(1);
+}
+
+[data-theme='dark'] .home-footer-logo {
+  filter: none;
 }
 
 .home-footer-wordmark {
@@ -2176,10 +2219,142 @@ select {
   color: #1a1a1a;
 }
 
-.profile-quick-actions {
+/* ── Perfil: hero con identidad + logout ── */
+.profile-hero-top {
   display: flex;
-  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   flex-wrap: wrap;
+}
+
+.profile-hero-identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.profile-avatar {
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--wax-font-display);
+  font-size: 1.4rem;
+  color: var(--wax-color-porcelain);
+  background: var(--wax-accent-gradient);
+}
+
+.profile-hero-copy {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.profile-hero-email {
+  font-size: 0.85rem;
+  color: var(--wax-fg-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-logout-btn {
+  flex-shrink: 0;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--wax-border-strong);
+  border-radius: var(--wax-radius-soft);
+  background: transparent;
+  color: var(--wax-fg-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.profile-logout-btn:hover:not(:disabled) {
+  border-color: var(--wax-color-oxblood);
+  color: var(--wax-color-oxblood);
+}
+
+.profile-logout-btn:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+/* ── Perfil: accesos en grilla ── */
+.profile-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.profile-shortcut {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--wax-border);
+  border-radius: var(--wax-radius-strong);
+  background: var(--wax-bg-elevated);
+  text-decoration: none;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.profile-shortcut:hover {
+  border-color: var(--wax-border-strong);
+  transform: translateY(-2px);
+}
+
+.profile-shortcut-label {
+  font-family: var(--wax-font-display);
+  font-size: 1.15rem;
+  color: var(--wax-fg);
+}
+
+.profile-shortcut-desc {
+  font-size: 0.8rem;
+  color: var(--wax-fg-soft);
+  line-height: 1.4;
+}
+
+/* Atelier ocupa el ancho completo como acceso destacado */
+.profile-shortcut-feature {
+  grid-column: 1 / -1;
+  background: var(--wax-color-ink);
+  border-color: transparent;
+}
+
+.profile-shortcut-feature .profile-shortcut-label {
+  color: var(--wax-color-porcelain);
+}
+
+.profile-shortcut-feature .profile-shortcut-desc {
+  color: rgba(250, 249, 246, 0.7);
+}
+
+/* en dark el fondo ink se confunde con la pagina: lo distinguimos con un
+   borde de acento y una superficie levemente mas clara */
+[data-theme='dark'] .profile-shortcut-feature {
+  background: var(--wax-bg-elevated);
+  border: 1px solid var(--wax-accent);
+}
+
+[data-theme='dark'] .profile-shortcut-feature .profile-shortcut-label {
+  color: var(--wax-fg);
+}
+
+[data-theme='dark'] .profile-shortcut-feature .profile-shortcut-desc {
+  color: var(--wax-fg-soft);
+}
+
+@media (max-width: 560px) {
+  .profile-shortcuts {
+    grid-template-columns: 1fr;
+  }
 }
 
 .support-page {
@@ -5366,6 +5541,7 @@ select {
 
 @media (max-width: 820px) {
   .site-header-bar {
+    position: relative;
     padding: 0.75rem 0.9rem !important;
     grid-template-columns: auto 1fr auto !important;
     gap: 0.5rem !important;
@@ -5396,6 +5572,23 @@ select {
     display: none !important;
   }
 
+  /* en mobile el wordmark de texto se reemplaza por el logo (centra mejor) */
+  .site-brand-text {
+    display: none !important;
+  }
+
+  .site-brand-logo-mobile {
+    display: block;
+    height: 2rem;
+    width: auto;
+    filter: invert(1);
+  }
+
+  [data-theme='dark'] .site-brand-logo-mobile,
+  .site-header.is-floating .site-brand-logo-mobile {
+    filter: none;
+  }
+
   .site-search-button {
     margin-left: 0.1rem !important;
   }
@@ -5404,8 +5597,14 @@ select {
     gap: 0 !important;
   }
 
+  /* centrado real del logo respecto a la pantalla: el grid auto/1fr/auto
+     deja la columna central descentrada por los anchos distintos de los
+     lados, asi que el logo se ancla absoluto al centro del header */
   .site-header-center {
-    width: 100%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
   }
 
   .site-header-center strong {
@@ -6470,6 +6669,11 @@ select {
 }
 
 @media (max-width: 768px) {
+  /* el tab bar fijo tapaba el boton instalar; se reserva su alto + holgura */
+  .wax-side-menu-footer {
+    padding-bottom: calc(0.5rem + 72px + env(safe-area-inset-bottom));
+  }
+
   .wax-tabbar {
     position: fixed;
     left: 0;
