@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { routePaths } from '@/routes/routePaths';
 import { useProducts } from '@/features/catalog/hooks/useProducts';
+import { Reveal } from '@/components/Reveal';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
 
 type HomeFooterLink =
@@ -107,10 +108,10 @@ export const HomePage = () => {
 
       {showSection && (
         <section className="home-editorial-section">
-          <div className="home-editorial-header">
+          <Reveal className="home-editorial-header">
             <span className="home-editorial-kicker">New Studio Collection</span>
             <h2 className="home-editorial-title">ÚLTIMOS MODELOS</h2>
-          </div>
+          </Reveal>
 
           <div className="home-editorial-grid">
             {isLoading
@@ -140,11 +141,11 @@ export const HomePage = () => {
 
       <section className="home-service-strip">
         <div className="home-service-grid">
-          {homeServiceBlocks.map((block) => {
+          {homeServiceBlocks.map((block, index) => {
             const primaryLink = block.link;
 
             return (
-              <article key={block.title} className="home-service-card">
+              <Reveal as="article" key={block.title} delay={index * 90} className="home-service-card">
                 <span className="home-service-heading">{block.title}</span>
                 <p className="home-service-description">{block.description}</p>
                 {'to' in primaryLink ? (
@@ -156,7 +157,7 @@ export const HomePage = () => {
                     {block.ctaLabel}
                   </a>
                 )}
-              </article>
+              </Reveal>
             );
           })}
         </div>
