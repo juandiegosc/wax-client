@@ -1124,10 +1124,210 @@ select {
   }
 }
 
-.maison-reveal-header {
+/* ═══ MAISON — storytelling editorial ═══ */
+.maison-page {
+  display: grid;
+  gap: clamp(3.5rem, 7vw, 6rem);
+}
+
+.maison-header {
   display: grid;
   gap: 1rem;
   max-width: 46rem;
+}
+
+.maison-kicker,
+.maison-section-kicker,
+.maison-cta-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--wax-fg-soft);
+}
+
+.maison-title {
+  font-family: var(--wax-font-display);
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--wax-fg);
+  margin: 0;
+}
+
+.maison-title em {
+  font-style: italic;
+}
+
+.maison-lead {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--wax-fg-muted);
+  margin: 0;
+}
+
+.maison-paragraph {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--wax-fg-muted);
+  margin: 0;
+}
+
+.maison-section {
+  display: grid;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.maison-anchor {
+  position: absolute;
+  top: -5rem;
+}
+
+.maison-section-title {
+  font-family: var(--wax-font-display);
+  font-size: clamp(1.7rem, 2.6vw, 2.1rem);
+  margin: 0;
+  color: var(--wax-fg);
+}
+
+/* Timeline del proceso: numero grande + regla de color por paso */
+.maison-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.maison-step {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.6rem 1.5rem;
+  background: var(--wax-bg-elevated);
+  border: 1px solid var(--wax-border);
+  border-radius: var(--wax-radius-strong);
+}
+
+.maison-step-no {
+  font-family: var(--wax-font-display);
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.maison-step-rule {
+  width: 2.2rem;
+  height: 2px;
+  border-radius: 2px;
+}
+
+.maison-step-copy {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.maison-step-kicker {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--wax-fg-soft);
+}
+
+.maison-step-title {
+  font-family: var(--wax-font-display);
+  font-size: 1.15rem;
+  color: var(--wax-fg);
+}
+
+.maison-step-body {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--wax-fg-muted);
+  margin: 0;
+}
+
+.maison-cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.maison-card {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.5rem;
+  border: 1px solid var(--wax-border);
+  border-radius: var(--wax-radius-strong);
+}
+
+.maison-card-title {
+  font-family: var(--wax-font-display);
+  font-size: 1.15rem;
+  color: var(--wax-fg);
+}
+
+.maison-card-body {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--wax-fg-muted);
+  margin: 0;
+}
+
+.maison-cta {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+  padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 2.5rem);
+  background: var(--wax-color-ink);
+  color: var(--wax-color-porcelain);
+  border-radius: var(--wax-radius-strong);
+}
+
+.maison-cta-kicker {
+  color: rgba(250, 249, 246, 0.7);
+}
+
+.maison-cta-title {
+  font-family: var(--wax-font-display);
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  margin: 0;
+  max-width: 32rem;
+}
+
+.maison-cta-body {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 38rem;
+  color: rgba(250, 249, 246, 0.85);
+}
+
+.maison-cta-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.maison-cta-primary,
+.maison-cta-secondary {
+  display: inline-block;
+  padding: 0.85rem 1.4rem;
+  border-radius: var(--wax-radius-soft);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.maison-cta-primary {
+  background: var(--wax-color-porcelain);
+  color: var(--wax-color-ink);
+}
+
+.maison-cta-secondary {
+  border: 1px solid var(--wax-color-porcelain);
+  color: var(--wax-color-porcelain);
 }
 
 .home-campaign {
@@ -5395,6 +5595,22 @@ select {
   display: block;
   object-fit: cover;
   object-position: center;
+}
+
+/* zoom de entrada al abrir el producto (autofocus) */
+.product-details-image-enter {
+  animation: product-image-focus 1400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes product-image-focus {
+  from { transform: scale(1.12); }
+  to { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-details-image-enter {
+    animation: none;
+  }
 }
 
 .product-details-visual-badge,
