@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { ProductGrid } from '@/features/catalog/components/ProductGrid';
 import { useProducts } from '@/features/catalog/hooks/useProducts';
+import { Reveal } from '@/components/Reveal';
 
 const PAGE_SIZE = 12;
 
@@ -74,10 +75,10 @@ export const CatalogPageContent = () => {
   return (
     <section className="catalog-page">
       <header className="catalog-page-header">
-        <div className="catalog-page-header-left">
+        <Reveal className="catalog-page-header-left">
           <span className="catalog-kicker">Colección</span>
           <h1 className="catalog-page-title">Catálogo</h1>
-        </div>
+        </Reveal>
 
         <div className="catalog-page-header-right">
           <input

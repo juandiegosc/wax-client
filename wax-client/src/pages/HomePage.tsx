@@ -91,16 +91,18 @@ export const HomePage = () => {
 
           <div className="home-campaign-content">
             <div className="home-campaign-copy">
-              <span className="home-campaign-label">STUDIO</span>
-              <h1 className="home-campaign-title">
-                Diseñado para tu <em>identidad</em>
-              </h1>
+              <Reveal as="span" className="home-campaign-label" delay={150}>STUDIO</Reveal>
+              <Reveal as="div" delay={280}>
+                <h1 className="home-campaign-title">
+                  Diseñado para tu <em>identidad</em>
+                </h1>
+              </Reveal>
 
-              <div className="home-campaign-actions">
+              <Reveal className="home-campaign-actions" delay={460}>
                 <Link to={routePaths.catalog} className="home-campaign-action home-campaign-action-primary">
                   Ver selección
                 </Link>
-              </div>
+              </Reveal>
             </div>
           </div>
         </div>

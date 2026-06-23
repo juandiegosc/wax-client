@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { waxBrand } from '@/config/brand';
+import { Reveal } from '@/components/Reveal';
 import { routePaths } from '@/routes/routePaths';
 
 const PROCESS_STEPS = [
@@ -42,7 +43,7 @@ const VALUES = [
 
 export const MaisonPage = () => (
   <section className="maison-page" style={{ display: 'grid', gap: '4rem' }}>
-    <header style={{ display: 'grid', gap: '1rem', maxWidth: '46rem' }}>
+    <Reveal as="header" className="maison-reveal-header">
       <span
         style={{
           fontSize: '0.72rem',
@@ -88,7 +89,7 @@ export const MaisonPage = () => (
         Nuestro objetivo es visibilizar el talento de la región y posicionar el diseño 3D
         como una herramienta de expresión e innovación, hecha desde Latinoamérica para el mundo.
       </p>
-    </header>
+    </Reveal>
 
     <section style={{ display: 'grid', gap: '1.5rem' }}>
       <span
