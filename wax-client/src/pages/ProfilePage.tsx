@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
 import { toast } from 'react-toastify';
-import { useCurrentUser, useSaveAddress, useUserAddress } from '@/features/auth/hooks';
+import { useCurrentUser, useLogout, useSaveAddress, useUserAddress } from '@/features/auth/hooks';
 import { billingProfileSchema } from '@/lib/schemas/billingProfileSchema';
 import type { BillingProfileSchema } from '@/lib/schemas/billingProfileSchema';
 import type { Address, UserInfo } from '@/lib/types/user';
@@ -311,6 +311,7 @@ export const ProfilePage = () => {
   const { data: currentUser, isLoading } = useCurrentUser();
   const { data: address, isLoading: isLoadingAddress } = useUserAddress(Boolean(currentUser));
   const saveAddressMutation = useSaveAddress();
+  const logoutMutation = useLogout();
   const [isEditing, setIsEditing] = useState(false);
   const {
     register,
@@ -369,7 +370,25 @@ export const ProfilePage = () => {
     <section className="profile-page">
       <div className="profile-shell">
         <div className="profile-hero">
-          <h1 className="profile-title">Mi cuenta</h1>
+          <div className="profile-hero-top">
+            <div className="profile-hero-identity">
+              <span className="profile-avatar" aria-hidden>
+                {(currentUser.email?.[0] ?? 'W').toUpperCase()}
+              </span>
+              <div className="profile-hero-copy">
+                <h1 className="profile-title">Mi cuenta</h1>
+                <span className="profile-hero-email">{currentUser.email}</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="profile-logout-btn"
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+            >
+              {logoutMutation.isPending ? 'Saliendo…' : 'Cerrar sesión'}
+            </button>
+          </div>
           <ProfileStatusBanner needsProfileCompletion={needsProfileCompletion} />
         </div>
 
@@ -394,25 +413,30 @@ export const ProfilePage = () => {
           </div>
         ) : (
           <div className="profile-completed">
-            {address ? <ProfileDetailsCard address={address} currentUser={currentUser} onEdit={() => setIsEditing(true)} /> : null}
+            <nav className="profile-shortcuts" aria-label="Accesos de cuenta">
+              <Link to={routePaths.myOrders} className="profile-shortcut">
+                <span className="profile-shortcut-label">Mis pedidos</span>
+                <span className="profile-shortcut-desc">Historial y estado de tus compras</span>
+              </Link>
+              <Link to={routePaths.myCustomProducts} className="profile-shortcut">
+                <span className="profile-shortcut-label">Mis cotizaciones</span>
+                <span className="profile-shortcut-desc">Tus encargos y propuestas</span>
+              </Link>
+              <Link to={routePaths.atelier} className="profile-shortcut profile-shortcut-feature">
+                <span className="profile-shortcut-label">Atelier AI</span>
+                <span className="profile-shortcut-desc">Diseña tu pieza a medida</span>
+              </Link>
+              <Link to={routePaths.catalog} className="profile-shortcut">
+                <span className="profile-shortcut-label">Catálogo</span>
+                <span className="profile-shortcut-desc">Explora la colección</span>
+              </Link>
+              <Link to={routePaths.support} className="profile-shortcut">
+                <span className="profile-shortcut-label">Soporte</span>
+                <span className="profile-shortcut-desc">Ayuda y acompañamiento</span>
+              </Link>
+            </nav>
 
-            <div className="profile-quick-actions">
-              <Link to={routePaths.atelier} className="profile-btn profile-btn-primary">
-                Ir al Atelier AI
-              </Link>
-              <Link to={routePaths.catalog} className="profile-btn profile-btn-secondary">
-                Ver catálogo
-              </Link>
-              <Link to={routePaths.myOrders} className="profile-btn profile-btn-secondary">
-                Mis pedidos
-              </Link>
-              <Link to={routePaths.myCustomProducts} className="profile-btn profile-btn-secondary">
-                Mis cotizaciones
-              </Link>
-              <Link to={routePaths.support} className="profile-btn profile-btn-secondary">
-                Soporte
-              </Link>
-            </div>
+            {address ? <ProfileDetailsCard address={address} currentUser={currentUser} onEdit={() => setIsEditing(true)} /> : null}
           </div>
         )}
       </div>

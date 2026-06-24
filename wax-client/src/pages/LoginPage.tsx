@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useLocation, useNavigate } from 'react-router';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
+import { PasswordInput } from '@/components/PasswordInput';
 import { useCurrentUser, useLogin, useUserAddress } from '@/features/auth/hooks';
 import { loginSchema } from '@/lib/schemas/loginSchema';
 import type { LoginSchema } from '@/lib/schemas/loginSchema';
@@ -151,9 +152,8 @@ export const LoginPage = () => {
 
             <label className="login-field">
               <span className="login-label">Contraseña</span>
-              <input
+              <PasswordInput
                 className="login-input"
-                type="password"
                 autoComplete="current-password"
                 placeholder="Ingresa tu contraseña"
                 disabled={loginMutation.isPending || isLoadingUser}

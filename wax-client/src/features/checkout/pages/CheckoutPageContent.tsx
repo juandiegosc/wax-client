@@ -10,17 +10,13 @@ import { CheckoutOrderSummary } from '../components/CheckoutOrderSummary';
 import { useCreatePaymentIntent } from '../hooks/useCheckout';
 import { env } from '@/config/env';
 import { routePaths } from '@/routes/routePaths';
+import { getCurrentTheme } from '@/lib/utils/theme';
 
 const stripePromise = loadStripe(env.stripePk);
 
-// Stripe Appearance no soporta CSS variables (es JSON puro). Calculamos
-// la paleta una sola vez por sesión via matchMedia. En mobile usamos la
-// version dark; en desktop la light original.
-const isMobileViewport =
-  typeof globalThis !== 'undefined' && globalThis.matchMedia?.('(max-width: 768px)').matches;
-
-const appearance: Appearance = isMobileViewport
-  ? {
+// Stripe Appearance no soporta CSS variables (es JSON puro); se elige
+// la paleta segun el tema activo al montar el checkout.
+const darkAppearance: Appearance = {
       theme: 'night',
       variables: {
         colorPrimary: '#f5f2ec',
@@ -65,8 +61,9 @@ const appearance: Appearance = isMobileViewport
           boxShadow: 'none',
         },
       },
-    }
-  : {
+    };
+
+const lightAppearance: Appearance = {
       theme: 'stripe',
       variables: {
         colorPrimary: '#0f0f10',
@@ -144,6 +141,7 @@ export const CheckoutPageContent = () => {
   const options = useMemo(() => {
     const clientSecret = basket?.clientSecret;
     if (!clientSecret) return undefined;
+    const appearance = getCurrentTheme() === 'dark' ? darkAppearance : lightAppearance;
     return { clientSecret, appearance };
   }, [basket?.clientSecret]);
 
