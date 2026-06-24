@@ -1,5 +1,6 @@
 import { useParams } from 'react-router';
 import { formatCurrency } from '@/utils/currency';
+import { Reveal } from '@/components/Reveal';
 import { useProduct } from '@/features/catalog/hooks/useProduct';
 import { useAddToBasket } from '@/features/basket/hooks/useAddToBasket';
 import { useProfileGuard } from '@/lib/hooks/useProfileGuard';
@@ -24,8 +25,8 @@ export const ProductDetailsPageContent = () => {
 
   return (
     <section className="product-details-layout">
-      <div className="product-details-visual" style={{ background: 'var(--wax-color-stone)', boxShadow: 'var(--wax-shadow-soft)' }}>
-        <img src={product.pictureUrl} alt={product.name} className="product-details-image" />
+      <Reveal className="product-details-visual" style={{ background: 'var(--wax-color-stone)', boxShadow: 'var(--wax-shadow-soft)' }}>
+        <img src={product.pictureUrl} alt={product.name} className="product-details-image product-details-image-enter" />
 
         <div className="product-details-visual-badge">{product.brand}</div>
 
@@ -33,34 +34,36 @@ export const ProductDetailsPageContent = () => {
           <span>Pieza</span>
           <strong>{product.type}</strong>
         </div>
-      </div>
+      </Reveal>
 
       <div className="product-details-content">
-        <div className="product-details-header">
+        <Reveal className="product-details-header" delay={120}>
           <span className="product-details-kicker">Edición WAX</span>
           <h1 className="product-details-title">{product.name}</h1>
           <p className="product-details-lead">{product.description}</p>
-        </div>
+        </Reveal>
 
-        <div className="product-details-purchase-row">
+        <Reveal className="product-details-purchase-row" delay={220}>
           <strong className="product-details-price">{formatCurrency(product.price)}</strong>
           <span className="product-details-availability">{product.quantityInStock} disponibles</span>
-        </div>
+        </Reveal>
 
-        <button
-          className="product-details-add-btn"
-          disabled={outOfStock || isAdding}
-          onClick={() => requireProfile(() => addToBasket({ productId: product.id, quantity: 1 }))}
-        >
-          {addBtnLabel}
-        </button>
+        <Reveal delay={300}>
+          <button
+            className="product-details-add-btn"
+            disabled={outOfStock || isAdding}
+            onClick={() => requireProfile(() => addToBasket({ productId: product.id, quantity: 1 }))}
+          >
+            {addBtnLabel}
+          </button>
+        </Reveal>
 
-        <div className="product-details-facts">
+        <Reveal className="product-details-facts" delay={380}>
           <div className="product-details-fact-card">
             <span className="product-details-fact-label">Tipo</span>
             <strong className="product-details-fact-value">{product.type}</strong>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

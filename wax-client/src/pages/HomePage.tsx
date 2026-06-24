@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { routePaths } from '@/routes/routePaths';
 import { useProducts } from '@/features/catalog/hooks/useProducts';
+import { Reveal } from '@/components/Reveal';
 import homePageMainImage from '@/assets/images/editorial/HOME_PAGE_MAIN.png';
 
 type HomeFooterLink =
@@ -90,16 +91,18 @@ export const HomePage = () => {
 
           <div className="home-campaign-content">
             <div className="home-campaign-copy">
-              <span className="home-campaign-label">STUDIO</span>
-              <h1 className="home-campaign-title">
-                Diseñado para tu <em>identidad</em>
-              </h1>
+              <Reveal as="span" className="home-campaign-label" delay={150}>STUDIO</Reveal>
+              <Reveal as="div" delay={280}>
+                <h1 className="home-campaign-title">
+                  Diseñado para tu <em>identidad</em>
+                </h1>
+              </Reveal>
 
-              <div className="home-campaign-actions">
+              <Reveal className="home-campaign-actions" delay={460}>
                 <Link to={routePaths.catalog} className="home-campaign-action home-campaign-action-primary">
                   Ver selección
                 </Link>
-              </div>
+              </Reveal>
             </div>
           </div>
         </div>
@@ -107,10 +110,10 @@ export const HomePage = () => {
 
       {showSection && (
         <section className="home-editorial-section">
-          <div className="home-editorial-header">
+          <Reveal className="home-editorial-header">
             <span className="home-editorial-kicker">New Studio Collection</span>
             <h2 className="home-editorial-title">ÚLTIMOS MODELOS</h2>
-          </div>
+          </Reveal>
 
           <div className="home-editorial-grid">
             {isLoading
@@ -140,11 +143,11 @@ export const HomePage = () => {
 
       <section className="home-service-strip">
         <div className="home-service-grid">
-          {homeServiceBlocks.map((block) => {
+          {homeServiceBlocks.map((block, index) => {
             const primaryLink = block.link;
 
             return (
-              <article key={block.title} className="home-service-card">
+              <Reveal as="article" key={block.title} delay={index * 90} className="home-service-card">
                 <span className="home-service-heading">{block.title}</span>
                 <p className="home-service-description">{block.description}</p>
                 {'to' in primaryLink ? (
@@ -156,7 +159,7 @@ export const HomePage = () => {
                     {block.ctaLabel}
                   </a>
                 )}
-              </article>
+              </Reveal>
             );
           })}
         </div>
