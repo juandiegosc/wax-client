@@ -1469,7 +1469,7 @@ select {
 .home-editorial-section {
   width: 100%;
   max-width: 1600px;
-  margin: clamp(2rem, 4vw, 3.5rem) auto 0;
+  margin: clamp(1.5rem, 3vw, 2.5rem) auto 0;
   padding: 0 clamp(1.25rem, 2.2vw, 2.6rem);
   display: grid;
   gap: 1.6rem;
@@ -1574,7 +1574,7 @@ select {
 .home-service-strip {
   width: 100%;
   max-width: 1280px;
-  margin: clamp(2rem, 4vw, 3.5rem) auto 0;
+  margin: clamp(1.5rem, 3vw, 2.5rem) auto 0;
   padding: 0 1.5rem;
 }
 
@@ -1631,7 +1631,7 @@ select {
 .home-footer {
   width: 100%;
   max-width: 1280px;
-  margin: clamp(2rem, 4vw, 3.5rem) auto 0;
+  margin: clamp(1.5rem, 3vw, 2.5rem) auto 0;
   padding: 0 1.5rem 1.5rem;
   display: grid;
   gap: 0;
