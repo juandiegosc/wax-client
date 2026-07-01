@@ -5584,6 +5584,7 @@ select {
 
 .product-details-visual {
   position: relative;
+  width: 100%;
   overflow: hidden;
   border-radius: var(--wax-radius-strong);
   aspect-ratio: 1 / 1;
